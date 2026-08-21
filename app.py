@@ -89,7 +89,7 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 1rem !important;
+        padding-top: 0.5rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
     }}
@@ -120,21 +120,21 @@ st.markdown(f"""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 4px;
+        margin-top: 2px;
+        margin-bottom: 2px;
     }}
 
     .rst-emblem-box {{
-        padding: 4px 24px;
+        padding: 2px 20px;
         background: {card_bg};
-        border-radius: 12px;
+        border-radius: 10px;
         border: 2px solid {btn_text};
         box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
     }}
 
     .rst-emblem-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 900;
         letter-spacing: 3px;
         color: {btn_text};
@@ -144,7 +144,7 @@ st.markdown(f"""
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 14px !important;
+        font-size: 13px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 2px;
@@ -158,7 +158,7 @@ st.markdown(f"""
         border-radius: 20px;
         padding: 2px 10px;
         width: fit-content;
-        margin: 0 auto 10px auto;
+        margin: 0 auto 6px auto;
         font-size: 8px;
         letter-spacing: 1px;
         color: {text_secondary};
@@ -168,7 +168,7 @@ st.markdown(f"""
     .profile-box {{
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         gap: 6px;
         background: {card_bg};
         border: 1px solid {card_border};
@@ -224,7 +224,7 @@ st.markdown(f"""
         font-weight: 700 !important;
         color: {btn_text} !important;
         margin-bottom: 4px !important;
-        margin-top: 8px !important;
+        margin-top: 6px !important;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -281,26 +281,24 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP HEADER LAYOUT: [Admin | User Name] in row 1, [Light/Dark] right under Admin
-    top_col1, top_col2 = st.columns(2)
+    # UNIFIED SINGLE ROW FOR ADMIN, LIGHT/DARK, AND USER/GUEST
+    col_admin, col_light, col_user = st.columns(3)
 
-    with top_col1:
-        # Admin button and Light button stacked closely together vertically
+    with col_admin:
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
         st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown('<div class="gold-animated-btn" style="margin-top: 4px;">', unsafe_allow_html=True)
+
+    with col_light:
+        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
             st.session_state.theme = "light" if is_dark else "dark"
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with top_col2:
-        # User Name placed directly to the right of Admin button
-        st.markdown("<div style='height: 2px;'></div>", unsafe_allow_html=True) # minor alignment offset
+    with col_user:
         if st.session_state.user_email:
             st.markdown(f"""
                 <div class="profile-box">
@@ -338,7 +336,7 @@ else:
         if st.button("🎙️ Voice Gen"): 
             st.session_state.active_mode = "voice"
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 10px 0 8px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 8px 0 6px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
