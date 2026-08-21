@@ -17,76 +17,94 @@ if "GEMINI_API_KEY" in st.secrets:
 # 2. Page Config
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
-# 3. DIRECT WORKING ANIMATED BACKGROUND & CIRCLE BADGE CSS
+# 3. HIGH-KICK ULTRA-TRANSPARENT NEON UI & ANIMATION CSS
 st.markdown("""
     <style>
-    /* Full Page Background Gradient Animation */
+    /* Glowing Animated Cyber Background */
     .stApp {
-        background: linear-gradient(-45deg, #05050f, #0d1b2a, #1b263b, #000814);
-        background-size: 400% 400%;
-        animation: gradientBg 10s ease infinite !important;
+        background: radial-gradient(circle at 20% 20%, rgba(255, 0, 85, 0.15), transparent 40%),
+                    radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.15), transparent 40%),
+                    linear-gradient(135deg, #030008, #0a0518, #020d1a);
+        background-size: 200% 200%;
+        animation: cyberGlow 12s ease infinite !important;
         color: #00f0ff;
     }
 
-    @keyframes gradientBg {
+    @keyframes cyberGlow {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
-    /* Glass Container */
+    /* Ultra Transparent Glass Box */
     .glass-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 240, 255, 0.3);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(20px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+        border: 1px solid rgba(0, 240, 255, 0.25) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 
+                    inset 0 0 15px rgba(0, 240, 255, 0.1) !important;
     }
 
-    /* Circle Profile Badge at Top Right */
+    /* Top-Right Glowing Circle Profile Badge */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
         gap: 12px;
-        background: rgba(0, 240, 255, 0.1);
-        border: 1px solid #00f0ff;
-        padding: 6px 15px;
-        border-radius: 50px;
-        box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.5);
+        padding: 6px 18px 6px 8px;
+        border-radius: 40px;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
     }
 
     .circle-avatar {
-        width: 35px;
-        height: 35px;
+        width: 38px;
+        height: 38px;
         background: linear-gradient(135deg, #ff0055, #7928ca);
-        color: white;
+        color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 17px;
+        box-shadow: 0 0 12px #ff0055;
     }
 
-    /* Button Customization */
+    /* Neon Glass Buttons */
     .stButton>button {
-        background: rgba(0, 240, 255, 0.1) !important;
+        background: rgba(0, 240, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
         color: #00f0ff !important;
-        border: 1px solid #00f0ff !important;
-        border-radius: 10px !important;
+        border: 1px solid rgba(0, 240, 255, 0.4) !important;
+        border-radius: 12px !important;
         font-weight: bold !important;
-        transition: 0.3s !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease-in-out !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
     }
 
     .stButton>button:hover {
-        background: #ff0055 !important;
-        color: white !important;
+        background: linear-gradient(135deg, #ff0055, #7928ca) !important;
+        color: #ffffff !important;
         border-color: #ff0055 !important;
-        box-shadow: 0 0 15px #ff0055 !important;
+        box-shadow: 0 0 25px rgba(255, 0, 85, 0.9) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+    }
+
+    /* Transparent Input Fields */
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea {
+        background: rgba(0, 0, 0, 0.5) !important;
+        color: #00f0ff !important;
+        border: 1px solid rgba(0, 240, 255, 0.3) !important;
+        border-radius: 12px !important;
+        backdrop-filter: blur(10px) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -103,38 +121,43 @@ if "chat_history_db" not in st.session_state:
 if "active_mode" not in st.session_state:
     st.session_state.active_mode = "chat"
 
-# 5. LOGIN PAGE
+# 5. LOGIN SCREEN
 def show_login_page():
     st.markdown("<br><br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown('<div class="glass-card"><h2 style="text-align:center; color:#ff0055;">⚡ RST LOGIN</h2></div>', unsafe_allow_html=True)
+        st.markdown('''
+            <div class="glass-card" style="text-align:center;">
+                <h1 style="color:#ff0055; text-shadow:0 0 15px #ff0055; margin-bottom:5px;">⚡ RST LOGIN</h1>
+                <p style="color:#8b949e; font-size:13px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+            </div>
+        ''', unsafe_allow_html=True)
         with st.form("login_form"):
-            name_in = st.text_input("👤 Name:")
-            email_in = st.text_input("📧 Email:")
-            submit = st.form_submit_button("🚀 Submit")
+            name_in = st.text_input("👤 Enter Your Name:")
+            email_in = st.text_input("📧 Enter Your Email:")
+            submit = st.form_submit_button("🚀 Unlock Unlimited Access")
             if submit:
                 if name_in.strip() and "@" in email_in:
                     st.session_state.user_name = name_in.strip()
                     st.session_state.user_email = email_in.strip()
-                    st.success("வெற்றி!")
+                    st.success("✅ லாக் இன் வெற்றி!")
                     st.rerun()
                 else:
-                    st.error("சரியான பெயர் மற்றும் Email உள்ளிடவும்.")
+                    st.error("❌ சரியான பெயர் மற்றும் Email உள்ளிடவும்.")
 
-# 6. MAIN APP
+# 6. MAIN APPLICATION
 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # Top Right Profile Circle
+    # Top-Right Transparent Circle Avatar
     if st.session_state.user_email:
         avatar_letter = st.session_state.user_name[0].upper()
         st.markdown(f"""
             <div class="profile-box">
                 <div class="circle-avatar">{avatar_letter}</div>
                 <div>
-                    <div style="color:white; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
-                    <div style="color:#00f0ff; font-size:10px;">{st.session_state.user_email}</div>
+                    <div style="color:#ffffff; font-weight:bold; font-size:13px; line-height:1.2;">{st.session_state.user_name}</div>
+                    <div style="color:#00f0ff; font-size:10px; opacity:0.8;">{st.session_state.user_email}</div>
                 </div>
             </div>
             <div style="clear:both;"></div>
@@ -145,19 +168,20 @@ else:
             <div class="profile-box">
                 <div class="circle-avatar">G</div>
                 <div>
-                    <div style="color:white; font-weight:bold; font-size:13px;">Guest User</div>
-                    <div style="color:#ff0055; font-size:10px;">{left} Uses Left</div>
+                    <div style="color:#ffffff; font-weight:bold; font-size:13px; line-height:1.2;">Guest User</div>
+                    <div style="color:#ff0055; font-size:10px; font-weight:bold;">{left} Free Uses Left</div>
                 </div>
             </div>
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
-    # Title & Owner Info
-    st.markdown("<h1 style='text-align: center; color: #ff0055;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
+    # Main Header
+    st.markdown("<h1 style='text-align: center; color: #ff0055; text-shadow: 0 0 25px #ff0055; font-size: 42px;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
+    
     st.markdown("""
-        <div class="glass-card" style="text-align: center; padding: 10px;">
-            <b style="color:white;">SYSTEM INFORMATION</b> | 
-            <b>OWNER:</b> <span style="color:#00f0ff;">MOHAMMED RASITH</span>
+        <div class="glass-card" style="text-align: center; padding: 12px !important; max-width: 650px; margin: 0 auto 25px auto;">
+            <span style="color:#8b949e; font-size:12px; letter-spacing:1px;">SYSTEM INFORMATION</span><br>
+            <b style="color:#ffffff;">OWNER:</b> <span style="color:#00f0ff; text-shadow:0 0 8px #00f0ff;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
@@ -176,11 +200,11 @@ else:
     with c6:
         if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
-    st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.2);'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.2); margin: 20px 0;'>", unsafe_allow_html=True)
 
-    # Mode 1: AI Chat
+    # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
-        st.subheader("🤖 RST Smart Chatbot")
+        st.subheader("🤖 RST Interactive Smart AI Chatbot")
         
         if "messages" not in st.session_state:
             st.session_state.messages = []
@@ -189,31 +213,31 @@ else:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-        user_input = st.chat_input("Ask something...")
+        user_input = st.chat_input("Ask RST Assistant anything...")
 
         if user_input:
             if st.session_state.user_email is None:
                 st.session_state.usage_count += 1
                 
-            display_user = f"{st.session_state.user_name} ({st.session_state.user_email})" if st.session_state.user_email else "Guest"
+            display_user = f"{st.session_state.user_name} ({st.session_state.user_email})" if st.session_state.user_email else "Guest User"
             st.session_state.chat_history_db.append({"user": display_user, "prompt": user_input})
 
             st.session_state.messages.append({"role": "user", "content": user_input})
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.spinner("Thinking..."):
+            with st.spinner("⚡ RST Thinking..."):
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
                             model="gemini-3.6-flash",
-                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
+                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Be smart, quick and concise. Reply to: {user_input}"
                         )
                         reply = response.text
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "வணக்கம்! நான் RST AI Assistant."
+                    reply = "வணக்கம்! நான் RST AI Assistant. உங்களுக்கு எப்படி உதவட்டும்?"
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
@@ -222,21 +246,36 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # Mode 2: Voice Gen
+    # 2. VOICE GEN MODE
     elif st.session_state.active_mode == "voice":
-        st.subheader("🎙️ Voice Generator")
-        v_text = st.text_area("உரை சமர்ப்பிக்கவும்:", "வணக்கம்!")
-        if st.button("Generate Voice"):
+        st.subheader("🎙️ RST Voice Generator")
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
+        if st.button("Generate Voice Now"):
             if v_text:
-                async def make_voice():
-                    comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
-                    await comm.save("voice.mp3")
-                asyncio.run(make_voice())
-                st.audio("voice.mp3")
+                if st.session_state.user_email is None:
+                    st.session_state.usage_count += 1
+                with st.spinner("⚡ RST Generating Voice..."):
+                    async def make_voice():
+                        comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
+                        await comm.save("voice.mp3")
+                    asyncio.run(make_voice())
+                    st.audio("voice.mp3")
+                if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
+                    st.rerun()
 
-    # Mode 3: Admin
+    # 3. ADMIN PANEL MODE
     elif st.session_state.active_mode == "admin":
-        st.subheader("👑 Admin Panel")
-        pwd = st.text_input("Password:", type="password")
+        st.subheader("👑 Master Admin Control Panel")
+        pwd = st.text_input("Master Password:", type="password")
         if pwd == "RSTA02EHYDR6":
-            st.write(st.session_state.chat_history_db)
+            st.success("அனுமதி வழங்கப்பட்டது!")
+            if st.session_state.chat_history_db:
+                for log in reversed(st.session_state.chat_history_db):
+                    st.markdown(f"""
+                        <div class="glass-card" style="padding: 10px 15px !important;">
+                            <p style="color: #ff0055; margin: 0; font-size: 13px;"><b>User:</b> {log['user']}</p>
+                            <p style="color: #00f0ff; margin: 4px 0 0 0;"><b>Prompt:</b> {log['prompt']}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("இன்னும் எந்த உரையாடல்களும் பதிவாகவில்லை.")
