@@ -182,21 +182,35 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
 
-    # ---------------- 4. MODE: VOICE GENERATOR ----------------
+# ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
         
-        voice_options = {
-            "Tamil - Valluvar (Male)": "ta-IN-ValluvarNeural",
-            "Tamil - Pallavi (Female)": "ta-IN-PallaviNeural",
-            "English (US) - Jenny (Female)": "en-US-JennyNeural",
-            "English (US) - Guy (Male)": "en-US-GuyNeural",
-            "English (UK) - Sonia (Female)": "en-GB-SoniaNeural",
-            "English (UK) - Ryan (Male)": "en-GB-RyanNeural"
-        }
+        col1, col2 = st.columns(2)
         
-        selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
-        selected_voice_id = voice_options[selected_voice_name]
+        with col1:
+            voice_options = {
+                "Tamil - Valluvar (Male)": "ta-IN-ValluvarNeural",
+                "Tamil - Pallavi (Female)": "ta-IN-PallaviNeural",
+                "English (US) - Jenny (Female)": "en-US-JennyNeural",
+                "English (US) - Guy (Male)": "en-US-GuyNeural",
+                "English (UK) - Sonia (Female)": "en-GB-SoniaNeural",
+                "English (UK) - Ryan (Male)": "en-GB-RyanNeural"
+            }
+            selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
+            selected_voice_id = voice_options[selected_voice_name]
+
+        with col2:
+            # Voice Speed Option (+0%, +25%, -25% etc.)
+            speed_options = {
+                "Normal Speed (1.0x)": "+0%",
+                "Fast (1.25x)": "+25%",
+                "Very Fast (1.5x)": "+50%",
+                "Slow (0.8x)": "-20%",
+                "Very Slow (0.6x)": "-40%"
+            }
+            selected_speed_label = st.selectbox("Select Voice Speed:", list(speed_options.keys()))
+            selected_rate = speed_options[selected_speed_label]
 
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
         
@@ -204,13 +218,12 @@ if check_password():
             if v_text:
                 with st.spinner("⚡ RST Generating Voice..."):
                     async def make_custom_voice():
-                        comm = edge_tts.Communicate(v_text, selected_voice_id)
+                        comm = edge_tts.Communicate(v_text, selected_voice_id, rate=selected_rate)
                         await comm.save("custom_voice.mp3")
                     asyncio.run(make_custom_voice())
                     st.audio("custom_voice.mp3")
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
-
     # ---------------- 5. MODE: PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
