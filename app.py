@@ -39,14 +39,15 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GEMINI SETUP
+# 2. GEMINI SETUP (UPDATED FOR AQ... API KEYS)
 HAS_GEMINI = False
-client = None
+model = None
 
 if "GEMINI_API_KEY" in st.secrets:
     try:
-        from google import genai
-        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        import google.generativeai as genai
+        genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+        model = genai.GenerativeModel("gemini-1.5-flash")
         HAS_GEMINI = True
     except Exception:
         HAS_GEMINI = False
@@ -383,13 +384,9 @@ else:
                 st.markdown(user_input)
 
             with st.spinner("⚡ RST Processing..."):
-                if HAS_GEMINI and client is not None:
+                if HAS_GEMINI and model is not None:
                     try:
-                        # சரியான gemini-3.6-flash மாடல் பயன்படுத்தப்பட்டுள்ளது
-                        response = client.models.generate_content(
-                            model="gemini-3.6-flash",
-                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
-                        )
+                        response = model.generate_content(f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}")
                         reply = response.text
                     except Exception as e:
                         reply = f"Error: {str(e)}"
