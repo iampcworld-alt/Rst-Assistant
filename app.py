@@ -150,19 +150,51 @@ if check_password():
             asyncio.run(speak())
             st.audio("rst_response.mp3")
 
-    # ---------------- 2. MODE: IMAGE GENERATOR ----------------
-    elif st.session_state.active_mode == "image":
-        st.subheader("🎨 RST AI Image Generator")
-        img_prompt = st.text_input("Enter Image Prompt:")
-        if st.button("Generate Image Now"):
-            if img_prompt:
-                with st.spinner("⚡ RST Processing Image..."):
-                    encoded_prompt = urllib.parse.quote(img_prompt)
-                    img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-                    st.image(img_url, width=280)
-                    st.markdown(f'<a href="{img_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">📥 Download HD Image</button></a>', unsafe_allow_html=True)
+# ---------------- 4. MODE: VOICE GENERATOR ----------------
+    elif st.session_state.active_mode == "voice":
+        st.subheader("🎙️ RST Voice Generator")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            voice_options = {
+                "🕵️‍♂️ Hacker / Cyber Voice (Male)": ("en-US-GuyNeural", "-15Hz", "-10%"),
+                "Tamil (LK) - Sarar (Male - Sri Lanka)": ("ta-LK-KumarNeural", "+0Hz", "+0%"),
+                "Tamil (LK) - Saranya (Female - Sri Lanka)": ("ta-LK-SaranyaNeural", "+0Hz", "+0%"),
+                "Tamil (IN) - Valluvar (Male - India)": ("ta-IN-ValluvarNeural", "+0Hz", "+0%"),
+                "Tamil (IN) - Pallavi (Female - India)": ("ta-IN-PallaviNeural", "+0Hz", "+0%"),
+                "English (US) - Jenny (Female)": ("en-US-JennyNeural", "+0Hz", "+0%"),
+                "English (US) - Guy (Male)": ("en-US-GuyNeural", "+0Hz", "+0%"),
+                "English (UK) - Sonia (Female)": ("en-GB-SoniaNeural", "+0Hz", "+0%"),
+                "English (UK) - Ryan (Male)": ("en-GB-RyanNeural", "+0Hz", "+0%")
+            }
+            selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
+            selected_voice_id, default_pitch, default_rate = voice_options[selected_voice_name]
+
+        with col2:
+            speed_options = {
+                "Normal Speed (1.0x)": "+0%",
+                "Fast (1.25x)": "+25%",
+                "Very Fast (1.5x)": "+50%",
+                "Slow (0.8x)": "-20%",
+                "Very Slow (0.6x)": "-40%"
+            }
+            selected_speed_label = st.selectbox("Select Voice Speed:", list(speed_options.keys()))
+            # If hacker voice is chosen, use custom rate or default speed
+            selected_rate = default_rate if "Hacker" in selected_voice_name else speed_options[selected_speed_label]
+
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "System hacked. Access granted to RST Control Center.")
+        
+        if st.button("Generate Voice Now"):
+            if v_text:
+                with st.spinner("⚡ RST Generating Voice..."):
+                    async def make_custom_voice():
+                        comm = edge_tts.Communicate(v_text, selected_voice_id, pitch=default_pitch, rate=selected_rate)
+                        await comm.save("custom_voice.mp3")
+                    asyncio.run(make_custom_voice())
+                    st.audio("custom_voice.mp3")
             else:
-                st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
+                st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
  # ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
