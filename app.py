@@ -39,18 +39,19 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GEMINI SETUP (UPDATED FOR AQ... API KEYS)
+# 2. GEMINI SETUP (FIXED & CORRECTED)
 HAS_GEMINI = False
 model = None
 
-if "GEMINI_API_KEY" in st.secrets:
-    try:
-        import google.generativeai as genai
-        genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+try:
+    import google.generativeai as genai
+    if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"]
+        genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-1.5-flash")
         HAS_GEMINI = True
-    except Exception:
-        HAS_GEMINI = False
+except Exception as e:
+    HAS_GEMINI = False
 
 # 3. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
@@ -391,7 +392,7 @@ else:
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "வணக்கம்! நான் RST AI Assistant."
+                    reply = "⚠️ Gemini API Key not configured or connection failed."
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
