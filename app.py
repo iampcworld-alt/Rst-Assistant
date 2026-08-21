@@ -1,7 +1,7 @@
 import streamlit as st
 import edge_tts
 import asyncio
-import os
+import urllib.parse
 
 # Page Config & Futuristic Dark UI
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
@@ -24,7 +24,7 @@ def check_password():
         st.title("🔒 RST ASSISTANT - RESTRICTED ACCESS")
         password = st.text_input("Enter Master Password:", type="password")
         if st.button("Unlock RST System"):
-            if password == "RSTA02EHYDR6":  # Updated Security Key
+            if password == "RSTA02EHYDR6":
                 st.session_state["authenticated"] = True
                 st.rerun()
             else:
@@ -48,43 +48,63 @@ if check_password():
         </div>
     """, unsafe_allow_html=True)
 
-    # Interactive Chatbot Engine
-    st.subheader("🤖 RST Interactive Chatbot")
-    
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    # Sidebar Options
+    st.sidebar.title("⚡ RST Control Panel")
+    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", ["🤖 RST Chatbot", "🎨 Image Generator"])
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    # 1. Chatbot Mode
+    if mode == "🤖 RST Chatbot":
+        st.subheader("🤖 RST Interactive Chatbot")
+        
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
 
-    user_input = st.chat_input("Ask RST Assistant something...")
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.markdown(user_input)
+        user_input = st.chat_input("Ask RST Assistant something...")
 
-        query = user_input.lower()
-        if any(keyword in query for keyword in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "யார் உருவாக்கினா", "விவரம்"]):
-            reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
-            
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            with st.chat_message("user"):
+                st.markdown(user_input)
+
+            query = user_input.lower()
+            if any(keyword in query for keyword in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "யார் உருவாக்கினா", "விவரம்"]):
+                reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
+                
 📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
 📞 **Phone:** 0753967528  
 ⚡ **System:** RST ASSISTANT Engine"""
-        else:
-            reply = f"வணக்கம்! நான் உங்கள் RST ASSISTANT. நீங்கள் கேட்ட செய்தி: '{user_input}'. உங்களுக்கு உதவ நான் தயாராக உள்ளேன்!"
+            else:
+                reply = f"வணக்கம்! நான் உங்கள் RST ASSISTANT. நீங்கள் கேட்ட செய்தி: '{user_input}'. உங்களுக்கு உதவ நான் தயாராக உள்ளேன்!"
 
-        with st.chat_message("assistant"):
-            st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+            with st.chat_message("assistant"):
+                st.markdown(reply)
+            st.session_state.messages.append({"role": "assistant", "content": reply})
 
-        # Voice Output Engine
-async def speak():
-    clean_text = reply.replace("*", "")
-    # ta-IN-ValluvarNeural என மாற்றுவதன் மூலம் ஆண்குரல் இயங்கும்
-    communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
-    await communicate.save("rst_response.mp3")
+            # Male Voice Output Engine (ValluvarVoice)
+            async def speak():
+                clean_text = reply.replace("*", "")
+                communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
+                await communicate.save("rst_response.mp3")
 
-        asyncio.run(speak())
-        st.audio("rst_response.mp3")
+            asyncio.run(speak())
+            st.audio("rst_response.mp3")
+
+    # 2. Image Generator Mode
+    elif mode == "🎨 Image Generator":
+        st.subheader("🎨 RST AI Image Generator")
+        st.write("உங்களுக்குத் தேவையான படத்தின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
+        
+        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cybernetic lion):")
+        
+        if st.button("Generate Image"):
+            if prompt:
+                with st.spinner("உங்களது புகைப்படம் உருவாக்கப்பட்டு கொண்டிருக்கிறது..."):
+                    encoded_prompt = urllib.parse.quote(prompt)
+                    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+                    st.image(image_url, caption=f"Generated: {prompt}", use_column_width=True)
+            else:
+                st.warning("தயவுசெய்து ஏதேனும் விவரத்தை டைப் செய்யவும்!")
