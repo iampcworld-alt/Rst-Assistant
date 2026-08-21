@@ -51,7 +51,7 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. SESSION STATES FOR THEME & MODES
+# 3. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
 if "usage_count" not in st.session_state: st.session_state.usage_count = 0
 if "user_name" not in st.session_state: st.session_state.user_name = None
@@ -60,55 +60,69 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & DYNAMIC THEME CSS
+# 4. STREAMLIT CONFIG & HIGH-CONTRAST DYNAMIC THEME CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
 
-bg_app = "#0b0f19" if is_dark else "#e2e8f0"
-text_primary = "#f8fafc" if is_dark else "#0f172a"
+# Color Tokens for Dark & Light Themes
+bg_app = "#0d1117" if is_dark else "#f8fafc"
+text_primary = "#ffffff" if is_dark else "#0f172a"
 text_secondary = "#94a3b8" if is_dark else "#475569"
-card_bg = "#1e293b" if is_dark else "#ffffff"
-card_border = "rgba(56, 189, 248, 0.2)" if is_dark else "rgba(15, 23, 42, 0.1)"
-btn_bg = "#1e293b" if is_dark else "#ffffff"
+card_bg = "#161b22" if is_dark else "#ffffff"
+card_border = "rgba(56, 189, 248, 0.25)" if is_dark else "rgba(203, 213, 225, 0.8)"
+btn_bg = "#21262d" if is_dark else "#ffffff"
 btn_text = "#38bdf8" if is_dark else "#0284c7"
-btn_border = "rgba(56, 189, 248, 0.4)" if is_dark else "rgba(2, 132, 199, 0.4)"
+btn_border = "#30363d" if is_dark else "#cbd5e1"
+input_bg = "#0d1117" if is_dark else "#f1f5f9"
 
 st.markdown(f"""
     <style>
-    .stApp {{
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+    /* Global Reset with Custom Modern Font */
+    html, body, [class*="css"], .stApp {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }}
 
+    .block-container {{
+        padding-top: 1.5rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 1200px !important;
+    }}
+
+    /* Card Containers */
     .rst-card {{
         background: {card_bg} !important;
         border: 1px solid {card_border} !important;
-        border-radius: 18px !important;
+        border-radius: 16px !important;
         padding: 20px !important;
         margin-bottom: 16px !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
     }}
 
+    /* Title & Emblem Styles */
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-top: 8px;
+        margin-bottom: 8px;
     }}
 
     .rst-emblem-box {{
-        padding: 10px 32px;
+        padding: 8px 32px;
         background: {card_bg};
-        border-radius: 20px;
-        border: 2px solid {btn_border};
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        border-radius: 18px;
+        border: 2px solid {btn_text};
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
     }}
 
     .rst-emblem-text {{
-        font-size: 48px;
+        font-family: 'Poppins', sans-serif !important;
+        font-size: 44px;
         font-weight: 900;
         letter-spacing: 6px;
         color: {btn_text};
@@ -117,7 +131,8 @@ st.markdown(f"""
     }}
 
     .rst-title-text {{
-        font-size: 22px !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-size: 20px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 3px;
@@ -126,81 +141,98 @@ st.markdown(f"""
     }}
 
     .owner-badge {{
+        font-family: 'Inter', sans-serif !important;
         background: {card_bg};
         border: 1px solid {card_border};
         border-radius: 20px;
-        padding: 6px 18px;
+        padding: 4px 16px;
         width: fit-content;
-        margin: 0 auto 20px auto;
+        margin: 0 auto 18px auto;
         font-size: 11px;
         letter-spacing: 1px;
         color: {text_secondary};
+        font-weight: 600;
     }}
 
+    /* Header Profile Badge */
     .profile-box {{
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 10px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 6px 16px;
-        border-radius: 30px;
+        padding: 5px 14px;
+        border-radius: 24px;
+        height: 42px;
     }}
 
     .circle-avatar {{
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
+        font-weight: 700;
+        font-size: 13px;
     }}
 
+    /* Buttons Typography & Colors */
     .stButton>button {{
+        font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
         color: {btn_text} !important;
         border: 1px solid {btn_border} !important;
         border-radius: 12px !important;
         font-weight: 700 !important;
-        font-size: 14px !important;
+        font-size: 13px !important;
         width: 100% !important;
-        padding: 10px 18px !important;
+        height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         transition: all 0.2s ease !important;
     }}
 
     .stButton>button:hover {{
         background: {btn_text} !important;
         color: #ffffff !important;
+        border-color: {btn_text} !important;
     }}
 
-    div[data-testid="stColumn"]:first-child .stButton>button {{
-        background: {card_bg} !important;
+    .admin-btn-col .stButton>button {{
         color: #d97706 !important;
         border: 1px solid rgba(217, 119, 6, 0.4) !important;
     }}
 
-    div[data-testid="stColumn"]:first-child .stButton>button:hover {{
+    .admin-btn-col .stButton>button:hover {{
         background: #d97706 !important;
         color: #ffffff !important;
     }}
 
+    /* Form Control & Inputs Text Colors */
     .stTextInput input, .stTextArea textarea, .stSelectbox > div {{
-        background-color: {card_bg} !important;
+        background-color: {input_bg} !important;
         color: {text_primary} !important;
         border: 1px solid {card_border} !important;
         border-radius: 12px !important;
+        font-family: 'Inter', sans-serif !important;
+    }}
+
+    /* Headings and Titles Text Contrast */
+    h1, h2, h3, h4, h5, h6, .stMarkdown, p, span, label {{
+        color: {text_primary} !important;
     }}
     </style>
 """, unsafe_allow_html=True)
 
 # 5. LOGIN SCREEN
 def show_login_page():
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1.5, 1])
     with col2:
         st.markdown(f"""
             <div class="rst-card" style="text-align:center;">
@@ -210,7 +242,7 @@ def show_login_page():
                     </div>
                 </div>
                 <div class="rst-title-text">LOGIN</div>
-                <p style="color:{text_secondary}; font-size:13px; margin-top:8px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+                <p style="color:{text_secondary} !important; font-size:12px; margin-top:4px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
         with st.form("login_form"):
@@ -246,9 +278,9 @@ def show_admin_dashboard():
 
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text}; margin:0;">{total_chats}</h2><p style="color:{text_secondary}; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text} !important; margin:0;">{total_chats}</h2><p style="color:{text_secondary} !important; margin:0; font-size:12px;">Total Searches Logged</p></div>', unsafe_allow_html=True)
     with col_m2:
-        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text}; margin:0;">{unique_users}</h2><p style="color:{text_secondary}; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text} !important; margin:0;">{unique_users}</h2><p style="color:{text_secondary} !important; margin:0; font-size:12px;">Total Registered Users</p></div>', unsafe_allow_html=True)
 
     st.subheader("🔍 Search User Activity")
     search_query = st.text_input("🔎 Filter by Name, Email or Prompt Keyword:")
@@ -259,60 +291,59 @@ def show_admin_dashboard():
             if search_query.lower() in name.lower() or search_query.lower() in email.lower() or search_query.lower() in prompt.lower():
                 st.markdown(f"""
                     <div class="rst-card">
-                        <p style="color: {btn_text}; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:{text_secondary}; font-size:11px;">{time_stamp}</span></p>
-                        <p style="color: {text_primary}; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
+                        <p style="color: {btn_text} !important; margin:0; font-size:13px;"><b>User:</b> {name} ({email}) | <span style="color:{text_secondary} !important; font-size:11px;">{time_stamp}</span></p>
+                        <p style="color: {text_primary} !important; margin: 5px 0 0 0; font-size:14px;"><b>Prompt:</b> {prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
     else:
         st.info("தரவுகள் எதுவும் இல்லை.")
 
-# 7. MAIN ROUTING
+# 7. MAIN APP ROUTING
 if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
     show_admin_dashboard()
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP HEADER ROW WITH THEME TOGGLE & USER PROFILE
-    top_col_left, top_col_right = st.columns([1, 2])
+    # ALIGNED TOP HEADER BAR
+    top_col_admin, top_col_spacer, top_col_theme, top_col_user = st.columns([1.2, 3, 1.5, 2.3])
     
-    with top_col_left:
+    with top_col_admin:
+        st.markdown('<div class="admin-btn-col">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    with top_col_right:
-        u_col1, u_col2 = st.columns([1, 1.5])
-        with u_col1:
-            # Theme Switch Button
-            theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
-            if st.button(f"{theme_icon} Mode"):
-                st.session_state.theme = "light" if is_dark else "dark"
-                st.rerun()
+    with top_col_theme:
+        theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
+        if st.button(f"{theme_icon} Mode"):
+            st.session_state.theme = "light" if is_dark else "dark"
+            st.rerun()
 
-        with u_col2:
-            if st.session_state.user_email:
-                avatar_letter = st.session_state.user_name[0].upper()
-                st.markdown(f"""
-                    <div class="profile-box">
-                        <div class="circle-avatar">{avatar_letter}</div>
-                        <div>
-                            <div style="color:{text_primary}; font-weight:bold; font-size:12px;">{st.session_state.user_name}</div>
-                            <div style="color:{btn_text}; font-size:10px;">{st.session_state.user_email}</div>
-                        </div>
+    with top_col_user:
+        if st.session_state.user_email:
+            avatar_letter = st.session_state.user_name[0].upper()
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">{avatar_letter}</div>
+                    <div style="text-align:right;">
+                        <div style="color:{text_primary} !important; font-weight:700; font-size:12px; line-height:1.1;">{st.session_state.user_name}</div>
+                        <div style="color:{btn_text} !important; font-size:10px;">{st.session_state.user_email}</div>
                     </div>
-                """, unsafe_allow_html=True)
-            else:
-                left = 2 - st.session_state.usage_count
-                st.markdown(f"""
-                    <div class="profile-box">
-                        <div class="circle-avatar">G</div>
-                        <div>
-                            <div style="color:{text_primary}; font-weight:bold; font-size:12px;">Guest User</div>
-                            <div style="color:#e11d48; font-size:10px;">{left} Uses Left</div>
-                        </div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            left = 2 - st.session_state.usage_count
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">G</div>
+                    <div style="text-align:right;">
+                        <div style="color:{text_primary} !important; font-weight:700; font-size:12px; line-height:1.1;">Guest User</div>
+                        <div style="color:#e11d48 !important; font-size:10px;">{left} Uses Left</div>
                     </div>
-                """, unsafe_allow_html=True)
+                </div>
+            """, unsafe_allow_html=True)
 
-    # Main Header
+    # Main Header Emblem Banner
     st.markdown(f"""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
@@ -321,19 +352,19 @@ else:
         </div>
         <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
-            SYSTEM ARCHITECT: <span style="color:{btn_text}; font-weight:bold;">MOHAMMED RASITH</span>
+            SYSTEM ARCHITECT: <span style="color:{btn_text} !important; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # CENTER NAVIGATION BUTTONS
-    c_space_left, c_btn1, c_btn2, c_space_right = st.columns([2, 1.5, 1.5, 2])
+    # CENTERED NAVIGATION BUTTONS
+    c_space_l, c_btn1, c_btn2, c_space_r = st.columns([2.5, 1.5, 1.5, 2.5])
     
     with c_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
     with c_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 16px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
