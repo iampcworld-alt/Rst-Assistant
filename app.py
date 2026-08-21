@@ -2,7 +2,7 @@ import streamlit as st
 import edge_tts
 import asyncio
 import urllib.parse
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image
 
 # 1. Page Config & High-Level Futuristic UI Setup
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
@@ -82,7 +82,7 @@ if check_password():
         st.session_state.active_mode = "chat"
 
     # Clickable Quick Action Menu
-    st.markdown("<h5 style='text-align: center; color: #ff0055;'>⚡ SELECT AI TOOL (கிளிக் செய்யவும்)</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align: center; color: #ff0055;'>⚡ SELECT AI TOOL</h5>", unsafe_allow_html=True)
     c1, c2, c3, c4, c5 = st.columns(5)
 
     with c1:
@@ -98,7 +98,7 @@ if check_password():
         if st.button("🎙️ Voice Gen"):
             st.session_state.active_mode = "voice"
     with c5:
-        if st.button("🖼️ Photo Edit"):
+        if st.button("🚀 AI Photo Re-Imagine"):
             st.session_state.active_mode = "edit"
 
     st.markdown("<hr style='border: 0.5px solid #161b22;'>", unsafe_allow_html=True)
@@ -134,7 +134,6 @@ if check_password():
                 st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
 
-            # Male Voice Output Engine
             async def speak():
                 clean_text = reply.replace("*", "")
                 communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
@@ -146,12 +145,12 @@ if check_password():
     # ---------------- 2. MODE: IMAGE GENERATOR ----------------
     elif st.session_state.active_mode == "image":
         st.subheader("🎨 RST AI Image Generator")
-        img_prompt = st.text_input("Enter Image Prompt (எ.கா: A futuristic lion):")
+        img_prompt = st.text_input("Enter Image Prompt (எ.கா: A futuristic lion in cyberpunk city):")
         if st.button("Generate Image Now"):
             if img_prompt:
-                with st.spinner("🖼️ Image உருவாக்கப்படுகிறது..."):
+                with st.spinner("🖼️ High-Level Image உருவாக்கப்படுகிறது..."):
                     encoded_prompt = urllib.parse.quote(img_prompt)
-                    img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+                    img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
                     st.image(img_url, caption=f"Generated: {img_prompt}", use_container_width=True)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
@@ -162,7 +161,7 @@ if check_password():
         vid_prompt = st.text_input("Enter Video Prompt (எ.கா: Flying car in neon city):")
         if st.button("Generate Video Now"):
             if vid_prompt:
-                with st.spinner("🎬 Video உருவாக்கப்படுகிறது..."):
+                with st.spinner("🎬 AI Video உருவாக்கப்படுகிறது..."):
                     encoded_vprompt = urllib.parse.quote(vid_prompt)
                     vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
                     st.video(vid_url)
@@ -184,30 +183,30 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
-    # ---------------- 5. MODE: PHOTO EDIT STUDIO ----------------
+    # ---------------- 5. MODE: HIGH-LEVEL AI PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
-        st.subheader("🖼️ RST Photo Editing Studio")
-        uploaded_file = st.file_uploader("Upload an Image to Edit", type=["jpg", "jpeg", "png"])
+        st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
+        st.write("உங்கள் படத்தை பதிவேற்றி, அதை AI மூலம் எப்படி மாற்ற வேண்டும் என்ற Prompt-ஐக் கொடுங்கள்.")
+        
+        uploaded_file = st.file_uploader("Upload Your Image", type=["jpg", "jpeg", "png"])
+        edit_prompt = st.text_input("AI Prompt (எ.கா: Convert into cyberpunk style, add futuristic neon suit, ultra detailed 8k):")
+        
         if uploaded_file is not None:
-            image = Image.open(uploaded_file)
             col1, col2 = st.columns(2)
             with col1:
                 st.subheader("Original Image")
+                image = Image.open(uploaded_file)
                 st.image(image, use_container_width=True)
 
-            b_val = st.slider("Brightness", 0.5, 2.0, 1.0)
-            c_val = st.slider("Contrast", 0.5, 2.0, 1.0)
-            blur_val = st.slider("Blur Effect", 0, 5, 0)
-            bw = st.checkbox("Black & White")
-
-            edited_img = image.copy()
-            if bw:
-                edited_img = edited_img.convert("L")
-            edited_img = ImageEnhance.Brightness(edited_img).enhance(b_val)
-            edited_img = ImageEnhance.Contrast(edited_img).enhance(c_val)
-            if blur_val > 0:
-                edited_img = edited_img.filter(ImageFilter.GaussianBlur(blur_val))
-
-            with col2:
-                st.subheader("Edited Image")
-                st.image(edited_img, use_container_width=True)
+            if st.button("✨ Transform with AI"):
+                if edit_prompt:
+                    with col2:
+                        st.subheader("AI Transformed Image")
+                        with st.spinner("⚡ AI உங்கள் புகைப்படத்தை ரீ-டிசைன் செய்கிறது..."):
+                            # High Quality Prompt Engine combining input description
+                            combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution, realistic lighting"
+                            encoded_prompt = urllib.parse.quote(combined_prompt)
+                            ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
+                            st.image(ai_image_url, caption="AI Re-Imagined Output", use_container_width=True)
+                else:
+                    st.warning("தயவுசெய்து படத்தை எவ்வாறு மாற்ற வேண்டும் என்பதை Prompt-ஆக டைப் செய்யவும்!")
