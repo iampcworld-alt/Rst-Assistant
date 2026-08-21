@@ -1,2 +1,6 @@
 streamlit
+google-genai
 edge-tts
+pillow
+streamlit-option-menu
+supabase
