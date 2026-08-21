@@ -109,6 +109,7 @@ st.markdown(f"""
         width: 90px !important;
         height: 26px !important;
         font-size: 8px !important;
+        border-radius: 20px !important;
     }}
 
     .absolute-header-grid {{
@@ -212,18 +213,22 @@ st.markdown(f"""
         flex-shrink: 0;
     }}
 
-    /* Global button style restriction for top/mode buttons only */
-    .stButton>button {{
+    /* Specific styling only for Top/Mode buttons to keep them compact */
+    .custom-top-btn button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
         color: {btn_text} !important;
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
+        font-size: 8px !important;
+        width: 90px !important;
+        height: 26px !important;
+        padding: 0px !important;
         transition: all 0.2s ease !important;
     }}
 
-    .stButton>button:hover {{
+    .custom-top-btn button:hover {{
         background: {btn_text} !important;
         color: #ffffff !important;
     }}
@@ -302,12 +307,12 @@ else:
     
     # LEFT CORNER
     st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
-    st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
+    st.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
         st.session_state.active_mode = "admin"
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
+    st.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
     theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
     if st.button(f"{theme_icon}"):
         st.session_state.theme = "light" if is_dark else "dark"
@@ -351,11 +356,15 @@ else:
     # MODE SWITCHERS
     btn_chat_col, btn_voice_col = st.columns(2)
     with btn_chat_col:
+        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
         if st.button("🤖 AI Chat"): 
             st.session_state.active_mode = "chat"
+        st.markdown('</div>', unsafe_allow_html=True)
     with btn_voice_col:
+        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
         if st.button("🎙️ Voice Gen"): 
             st.session_state.active_mode = "voice"
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 8px 0 6px 0;'>", unsafe_allow_html=True)
 
