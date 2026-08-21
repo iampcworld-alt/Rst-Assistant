@@ -163,15 +163,15 @@ st.markdown("""
         font-size: 15px;
     }
 
-    /* Buttons Styling */
+    /* Standard Navigation Buttons styling */
     .stButton>button {
-        background: rgba(15, 23, 42, 0.7) !important;
+        background: rgba(15, 23, 42, 0.8) !important;
         color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
         border-radius: 12px !important;
         font-weight: 600 !important;
         width: 100% !important;
-        padding: 10px 14px !important;
+        padding: 8px 16px !important;
         transition: all 0.3s ease !important;
     }
 
@@ -179,7 +179,21 @@ st.markdown("""
         background: #38bdf8 !important;
         color: #0f172a !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 18px rgba(56, 189, 248, 0.5) !important;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.6) !important;
+    }
+
+    /* Unique Premium Gold Design for Admin Button */
+    div[data-testid="stColumn"]:first-child .stButton>button {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)) !important;
+        color: #fbbf24 !important;
+        border: 1px solid rgba(251, 191, 36, 0.5) !important;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    div[data-testid="stColumn"]:first-child .stButton>button:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #0f172a !important;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -267,7 +281,7 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP HEADER ROW: Admin button on Left Corner, User Badge on Right Corner
+    # TOP HEADER ROW: Gold Admin button on Left, User Badge on Right
     top_col_left, top_col_right = st.columns([1, 1])
     
     with top_col_left:
@@ -311,8 +325,8 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # MAIN CENTERED NAVIGATION (AI Chat & Voice Gen only)
-    c_left, c_btn1, c_btn2, c_right = st.columns([2, 2, 2, 2])
+    # TIGHT CENTER NAVIGATION (AI Chat & Voice Gen placed closely in the center)
+    c_space_left, c_btn1, c_btn2, c_space_right = st.columns([3, 1.2, 1.2, 3])
     
     with c_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
