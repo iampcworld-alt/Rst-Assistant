@@ -60,7 +60,7 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & GOLD ANIMATION CSS
+# 4. STREAMLIT CONFIG & FIXED THEME CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -82,6 +82,11 @@ st.markdown(f"""
         background-color: {bg_app} !important;
         color: {text_primary} !important;
         font-family: 'Inter', sans-serif !important;
+    }}
+
+    /* Fix Streamlit Markdown text colors based on theme */
+    p, span, label, div[data-testid="stMarkdownContainer"] {{
+        color: {text_primary} !important;
     }}
 
     .block-container {{
@@ -110,6 +115,7 @@ st.markdown(f"""
         animation: goldGlow 2.5s infinite ease-in-out !important;
         color: #ffd700 !important;
         font-weight: 800 !important;
+        background: {card_bg} !important;
     }}
 
     /* Emblem Logo Centered */
@@ -292,8 +298,7 @@ else:
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
-            st.theme = "light" if is_dark else "dark"
-            st.session_state.theme = st.theme
+            st.session_state.theme = "light" if is_dark else "dark"
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -302,7 +307,7 @@ else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:11px; font-weight:600;">{st.session_state.user_name}</span>
+                    <span style="font-size:11px; font-weight:600; color:{text_primary};">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
