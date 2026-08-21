@@ -51,44 +51,76 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & UI CSS
+# 3. STREAMLIT PAGE CONFIG & ADVANCED ANIMATED UI CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
+    /* Dark Eye-Friendly Background */
     .stApp {
         background: radial-gradient(circle at 50% 10%, #0f172a 0%, #0b0f19 100%) !important;
         color: #f8fafc !important;
     }
 
-    .rst-holo-logo {
-        font-size: 42px !important;
-        font-weight: 900 !important;
-        text-align: center !important;
-        letter-spacing: 2px;
-        background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: textShine 4s linear infinite;
-        margin-bottom: 5px !important;
+    /* Animated Standalone RST Emblem Logo */
+    .rst-emblem-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 12px;
     }
 
-    @keyframes textShine {
-        to { background-position: 200% center; }
+    .rst-emblem {
+        font-size: 50px;
+        font-weight: 900;
+        letter-spacing: 6px;
+        color: #38bdf8;
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        animation: pulseGlow 3s ease-in-out infinite alternate;
+        padding: 5px 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        background-color: rgba(15, 23, 42, 0.6);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+    }
+
+    @keyframes pulseGlow {
+        0% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+        }
+        100% {
+            transform: scale(1.04);
+            filter: drop-shadow(0 0 22px rgba(129, 140, 248, 0.8));
+        }
+    }
+
+    /* Subtitle Title Text */
+    .rst-title-text {
+        font-size: 28px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        letter-spacing: 3px;
+        color: #f8fafc;
+        margin-bottom: 6px !important;
     }
 
     .owner-badge {
         background: rgba(15, 23, 42, 0.8);
         border: 1px solid rgba(56, 189, 248, 0.3);
         border-radius: 20px;
-        padding: 5px 18px;
+        padding: 4px 18px;
         width: fit-content;
         margin: 0 auto 20px auto;
-        font-size: 12px;
-        letter-spacing: 1px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
     }
 
+    /* Glassmorphic UI Cards */
     .glass-card {
         background: rgba(30, 41, 59, 0.5) !important;
         backdrop-filter: blur(12px) !important;
@@ -99,6 +131,7 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     }
 
+    /* User Profile Badge */
     .profile-box {
         float: right;
         display: flex;
@@ -123,6 +156,7 @@ st.markdown("""
         font-size: 15px;
     }
 
+    /* Navigation Buttons */
     .stButton>button {
         background: rgba(15, 23, 42, 0.7) !important;
         color: #38bdf8 !important;
@@ -131,14 +165,14 @@ st.markdown("""
         font-weight: 600 !important;
         width: 100% !important;
         padding: 10px 14px !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s ease !important;
     }
 
     .stButton>button:hover {
         background: #38bdf8 !important;
         color: #0f172a !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.5) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -158,8 +192,9 @@ def show_login_page():
     with col2:
         st.markdown("""
             <div class="glass-card" style="text-align:center;">
-                <div class="rst-holo-logo">⚡ RST LOGIN</div>
-                <p style="color:#94a3b8;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+                <div class="rst-emblem-container"><div class="rst-emblem">RST</div></div>
+                <div class="rst-title-text">LOGIN</div>
+                <p style="color:#94a3b8; font-size:13px; margin-top:8px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
         with st.form("login_form"):
@@ -175,7 +210,8 @@ def show_login_page():
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="rst-holo-logo">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
+    st.markdown('<div class="rst-emblem-container"><div class="rst-emblem">RST</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="rst-title-text">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
@@ -240,15 +276,18 @@ else:
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
-    # Header
+    # High Level Animated Header
     st.markdown("""
-        <div class="rst-holo-logo">⚡ RST ASSISTANT ⚡</div>
+        <div class="rst-emblem-container">
+            <div class="rst-emblem">RST</div>
+        </div>
+        <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
             SYSTEM ARCHITECT: <span style="color:#38bdf8; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # Cleaned Navigation Tabs (Only AI Chat, Voice Gen, Admin)
+    # Navigation Bar (AI Chat, Voice Gen, Admin)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
@@ -259,7 +298,7 @@ else:
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
 
-    # CHAT MODE
+    # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Smart AI Assistant")
 
@@ -302,7 +341,7 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # VOICE GENERATION MODE
+    # 2. VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
@@ -317,7 +356,7 @@ else:
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
-    # ADMIN LOGIN MODE
+    # 3. ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
         st.subheader("👑 Admin Authentication")
         pwd = st.text_input("Enter Master Password:", type="password")
