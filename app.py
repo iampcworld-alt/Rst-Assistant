@@ -79,7 +79,8 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
-    html, body, [class*="css"], .stApp {{
+    /* Force background and text color globally across all Streamlit elements */
+    html, body, [class*="css"], .stApp, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
         font-family: 'Inter', sans-serif !important;
@@ -93,6 +94,7 @@ st.markdown(f"""
         padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
+        background-color: {bg_app} !important;
     }}
 
     @keyframes goldGlow {{
