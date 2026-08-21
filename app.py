@@ -2,7 +2,6 @@ import streamlit as st
 import edge_tts
 import asyncio
 import urllib.parse
-import requests
 from PIL import Image
 
 # 1. Page Config & High-Level Futuristic UI Setup
@@ -53,8 +52,8 @@ st.markdown("""
         margin: 15px 0;
     }
     .rst-circle {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border: 3px solid #161b22;
         border-top: 3px solid #ff0055;
         border-right: 3px solid #00f0ff;
@@ -62,9 +61,9 @@ st.markdown("""
         animation: spin 1s linear infinite;
     }
     .rst-text-pulse {
-        margin-top: 10px;
+        margin-top: 8px;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 13px;
         color: #00f0ff;
         letter-spacing: 1px;
     }
@@ -186,8 +185,9 @@ if check_password():
                 encoded_prompt = urllib.parse.quote(img_prompt)
                 img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
                 
-                with st.expander("👁️ Click to View & Download Image", expanded=True):
-                    st.image(img_url, use_container_width=True)
+                col1, col2, col3 = st.columns([1, 1, 1])
+                with col1:
+                    st.image(img_url, width=300)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
@@ -206,7 +206,8 @@ if check_password():
                 encoded_vprompt = urllib.parse.quote(vid_prompt)
                 vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
                 
-                with st.expander("👁️ Click to Play Video", expanded=True):
+                col1, col2, col3 = st.columns([1, 2, 1])
+                with col2:
                     st.video(vid_url)
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
@@ -231,7 +232,7 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
-    # ---------------- 5. MODE: CLEAN POPUP AI PHOTO RE-IMAGINE ----------------
+    # ---------------- 5. MODE: ULTRA-COMPACT SMALL PREVIEW PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
         
@@ -251,17 +252,17 @@ if check_password():
                 encoded_prompt = urllib.parse.quote(combined_prompt)
                 ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
 
-                # Compact Expandable Result Card
-                st.success("✅ RST AI Image Created Successfully!")
-                with st.expander("👁️ Click Here to Preview, Re-Edit & Download", expanded=True):
-                    st.image(ai_image_url, use_container_width=True)
-                    
-                    # Direct Action Buttons Box
-                    col_a, col_b = st.columns(2)
-                    with col_a:
-                        st.markdown(f'<a href="{ai_image_url}" target="_blank" style="text-decoration:none;"><button style="width:100%; height:45px; background:#00f0ff; color:#000; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📥 Open / Download Full HD Image</button></a>', unsafe_allow_html=True)
-                    with col_b:
-                        if st.button("🔄 Re-Edit Image Prompt"):
-                            st.session_state.active_mode = "edit"
+                st.success("✅ RST AI Image Created!")
+
+                # Small Preview Column Layout
+                col_left, col_right = st.columns([1, 2])
+                
+                with col_left:
+                    st.write("**Small Preview (சிறிய பார்வை):**")
+                    st.image(ai_image_url, width=280)  # Fixed small width!
+
+                with col_right:
+                    st.write("**Actions (செயல்கள்):**")
+                    st.markdown(f'<a href="{ai_image_url}" target="_blank" style="text-decoration:none;"><button style="width:250px; height:45px; background:#00f0ff; color:#000; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📥 Download / View Full Image</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து Prompt டைப் செய்யவும்!")
