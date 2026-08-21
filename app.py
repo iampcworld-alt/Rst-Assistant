@@ -60,7 +60,7 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & CSS TUNING
+# 4. STREAMLIT CONFIG & GOLD ANIMATION CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -85,9 +85,31 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 3.5rem !important;
+        padding-top: 3rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
+    }}
+
+    /* Gold Glowing Animation for Admin & Light Buttons */
+    @keyframes goldGlow {{
+        0% {{
+            border-color: #ffd700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4), inset 0 0 5px rgba(255, 215, 0, 0.2);
+        }}
+        50% {{
+            border-color: #ffae00;
+            box-shadow: 0 0 15px rgba(255, 174, 0, 0.8), inset 0 0 10px rgba(255, 174, 0, 0.4);
+        }}
+        100% {{
+            border-color: #ffd700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4), inset 0 0 5px rgba(255, 215, 0, 0.2);
+        }}
+    }}
+
+    .gold-animated-btn button {{
+        animation: goldGlow 2.5s infinite ease-in-out !important;
+        color: #ffd700 !important;
+        font-weight: 800 !important;
     }}
 
     /* Emblem Logo Centered */
@@ -95,7 +117,7 @@ st.markdown(f"""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
+        margin-top: 15px;
         margin-bottom: 6px;
     }}
 
@@ -168,7 +190,7 @@ st.markdown(f"""
         font-size: 10px;
     }}
 
-    /* Compact Top Buttons */
+    /* Universal Buttons */
     .stButton>button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
@@ -195,7 +217,6 @@ st.markdown(f"""
         margin-bottom: 14px !important;
     }}
 
-    /* Custom Subheader Positioning */
     .custom-subheader {{
         font-size: 14px !important;
         font-weight: 700 !important;
@@ -258,18 +279,23 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # BALANCED TOP NAVIGATION BAR
-    col_left, col_theme, col_user = st.columns([1, 1, 1.8])
+    # COMPACT TOP NAVIGATION BAR WITH CLOSELY PLACED ADMIN & LIGHT BUTTONS
+    col_admin, col_theme, col_space, col_user = st.columns([0.8, 0.8, 1.4, 1.8])
 
-    with col_left:
+    with col_admin:
+        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_theme:
+        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
-            st.session_state.theme = "light" if is_dark else "dark"
+            st.theme = "light" if is_dark else "dark"
+            st.session_state.theme = st.theme
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_user:
         if st.session_state.user_email:
