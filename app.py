@@ -51,77 +51,95 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & HIGH-LEVEL ANIMATED CSS
-st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
+# 3. STREAMLIT PAGE CONFIG & ADVANCED HIGH-LEVEL UI CSS
+st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Smooth Animated Dark Background */
+    /* Deep Cybernetic Background with Grid Motion */
     .stApp {
-        background: linear-gradient(-45deg, #0f172a, #0b0f19, #1e1b4b, #0f172a) !important;
-        background-size: 400% 400% !important;
-        animation: gradientBG 15s ease infinite !important;
-        color: #f1f5f9 !important;
+        background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 50%, #030712 100%) !important;
+        background-attachment: fixed !important;
+        color: #f8fafc !important;
     }
 
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+    /* Animated Holographic RST Logo Header */
+    .logo-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto 10px auto;
+        padding: 20px;
     }
 
-    /* Animated RST Logo Title */
-    .rst-logo-title {
-        font-size: 42px !important;
+    .rst-holo-logo {
+        font-size: 48px !important;
         font-weight: 900 !important;
-        text-align: center !important;
+        letter-spacing: 4px;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #000000 100%);
         background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: shine 4s linear infinite, logoPulse 3s ease-in-out infinite alternate;
-        margin-bottom: 5px !important;
+        animation: textShine 3s linear infinite, floatAnim 4s ease-in-out infinite;
+        text-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
     }
 
-    @keyframes shine {
+    @keyframes textShine {
         to { background-position: 200% center; }
     }
 
-    @keyframes logoPulse {
-        0% { filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.3)); }
-        100% { filter: drop-shadow(0 0 20px rgba(129, 140, 248, 0.7)); }
+    @keyframes floatAnim {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(0.5deg); }
     }
 
-    /* Glassmorphic Card with Smooth Hover Lift */
+    /* Subtitle Tag */
+    .owner-badge {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 6px 20px;
+        width: fit-content;
+        margin: 0 auto 25px auto;
+        font-size: 13px;
+        letter-spacing: 1px;
+    }
+
+    /* High-End Glassmorphism Card */
     .glass-card {
-        background: rgba(30, 41, 59, 0.6) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(56, 189, 248, 0.2) !important;
-        border-radius: 16px !important;
-        padding: 18px 22px !important;
-        margin-bottom: 15px !important;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
-        transition: all 0.3s ease-in-out !important;
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(16px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-top: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
 
     .glass-card:hover {
-        transform: translateY(-4px) !important;
+        transform: translateY(-5px) scale(1.01) !important;
         border-color: rgba(56, 189, 248, 0.5) !important;
-        box-shadow: 0 12px 40px 0 rgba(56, 189, 248, 0.15) !important;
+        box-shadow: 0 25px 60px rgba(56, 189, 248, 0.2) !important;
     }
 
-    /* Profile Badge */
+    /* Glowing Profile Badge */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
         gap: 12px;
         background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(56, 189, 248, 0.4);
-        padding: 6px 16px;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        padding: 6px 18px;
         border-radius: 30px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
     }
 
     .circle-avatar {
@@ -135,18 +153,19 @@ st.markdown("""
         justify-content: center;
         font-weight: bold;
         font-size: 16px;
-        box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 12px #38bdf8;
     }
 
-    /* Modern Responsive Interactive Buttons */
+    /* Cyber Navigation Buttons */
     .stButton>button {
-        background: rgba(30, 41, 59, 0.8) !important;
+        background: rgba(15, 23, 42, 0.6) !important;
         color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
+        border-radius: 14px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px !important;
         width: 100% !important;
-        padding: 10px 14px !important;
+        padding: 12px 16px !important;
         transition: all 0.3s ease !important;
     }
 
@@ -154,8 +173,8 @@ st.markdown("""
         background: linear-gradient(135deg, #38bdf8, #6366f1) !important;
         color: #ffffff !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 18px rgba(56, 189, 248, 0.4) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important;
+        transform: translateY(-3px) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -173,11 +192,16 @@ def show_login_page():
     st.markdown("<br><br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown('<div class="glass-card" style="text-align:center;"><div class="rst-logo-title">⚡ RST LOGIN</div><p style="color:#94a3b8;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p></div>', unsafe_allow_html=True)
+        st.markdown("""
+            <div class="glass-card" style="text-align:center;">
+                <div class="rst-holo-logo">⚡ RST LOGIN</div>
+                <p style="color:#94a3b8;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+            </div>
+        """, unsafe_allow_html=True)
         with st.form("login_form"):
             name_in = st.text_input("👤 Enter Your Name:")
             email_in = st.text_input("📧 Enter Your Email:")
-            submit = st.form_submit_button("🚀 Unlock Unlimited Access")
+            submit = st.form_submit_button("🚀 Access AI Assistant")
             if submit:
                 if name_in.strip() and "@" in email_in:
                     st.session_state.user_name = name_in.strip()
@@ -187,7 +211,7 @@ def show_login_page():
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="rst-logo-title">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
+    st.markdown('<div class="logo-container"><div class="rst-holo-logo">👑 OWNER ADMIN DASHBOARD</div></div>', unsafe_allow_html=True)
     
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
@@ -252,15 +276,17 @@ else:
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
-    # Animated Logo Header
-    st.markdown('<div class="rst-logo-title">⚡ RST ASSISTANT ⚡</div>', unsafe_allow_html=True)
+    # Animated Hologram Header
     st.markdown("""
-        <div class="glass-card" style="text-align: center; padding: 8px 15px !important; max-width: 450px; margin: 0 auto 15px auto;">
-            <b>SYSTEM OWNER:</b> <span style="color:#38bdf8;">MOHAMMED RASITH</span>
+        <div class="logo-container">
+            <div class="rst-holo-logo">⚡ RST ASSISTANT ⚡</div>
+        </div>
+        <div class="owner-badge">
+            SYSTEM ARCHITECT: <span style="color:#38bdf8; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # Navigation Buttons
+    # Navigation Tabs
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     with c1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
@@ -275,11 +301,11 @@ else:
     with c6:
         if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
-    st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.2); margin: 15px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
 
     # Chat Mode
     if st.session_state.active_mode == "chat":
-        st.subheader("🤖 RST Smart Assistant")
+        st.subheader("🤖 RST Neural Intelligence Engine")
 
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -300,7 +326,7 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.spinner("⚡ RST Processing..."):
+            with st.spinner("⚡ Processing Neural Response..."):
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
