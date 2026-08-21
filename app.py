@@ -106,6 +106,9 @@ st.markdown(f"""
         color: #ffd700 !important;
         font-weight: 800 !important;
         background: {card_bg} !important;
+        width: 90px !important;
+        height: 26px !important;
+        font-size: 8px !important;
     }}
 
     .absolute-header-grid {{
@@ -209,6 +212,7 @@ st.markdown(f"""
         flex-shrink: 0;
     }}
 
+    /* Global button style restriction for top/mode buttons only */
     .stButton>button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
@@ -216,11 +220,6 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 8px !important;
-        width: 90px !important;
-        height: 26px !important;
-        padding: 0px !important;
-        white-space: nowrap !important;
         transition: all 0.2s ease !important;
     }}
 
