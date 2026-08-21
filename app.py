@@ -164,23 +164,49 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
-    # ---------------- 3. MODE: VIDEO GENERATOR ----------------
-    elif st.session_state.active_mode == "video":
-        st.subheader("🎬 RST AI Video & Motion Generator")
-        vid_prompt = st.text_input("Enter Video Prompt:")
-        if st.button("Generate Video Now"):
-            if vid_prompt:
-                with st.spinner("⚡ RST Generating Cinematic AI Motion..."):
-                    encoded_vprompt = urllib.parse.quote(f"cinematic animation, high quality video motion, {vid_prompt}")
-                    motion_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&width=1280&height=720&nologo=true"
-                    st.success("✅ RST Motion Frame Created!")
-                    col1, col2 = st.columns([2, 1])
-                    with col1:
-                        st.image(motion_url, caption="RST Cinematic AI Motion", width=500)
-                    with col2:
-                        st.markdown(f'<a href="{motion_url}" target="_blank"><button style="width:100%; background:#00f0ff; color:#000; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download HD Motion</button></a>', unsafe_allow_html=True)
+ # ---------------- 4. MODE: VOICE GENERATOR ----------------
+    elif st.session_state.active_mode == "voice":
+        st.subheader("🎙️ RST Voice Generator")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            voice_options = {
+                "Tamil (LK) - Sarar (Male - Sri Lanka)": "ta-LK-KumarNeural",
+                "Tamil (LK) - Saranya (Female - Sri Lanka)": "ta-LK-SaranyaNeural",
+                "Tamil (IN) - Valluvar (Male - India)": "ta-IN-ValluvarNeural",
+                "Tamil (IN) - Pallavi (Female - India)": "ta-IN-PallaviNeural",
+                "English (US) - Jenny (Female)": "en-US-JennyNeural",
+                "English (US) - Guy (Male)": "en-US-GuyNeural",
+                "English (UK) - Sonia (Female)": "en-GB-SoniaNeural",
+                "English (UK) - Ryan (Male)": "en-GB-RyanNeural"
+            }
+            selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
+            selected_voice_id = voice_options[selected_voice_name]
+
+        with col2:
+            speed_options = {
+                "Normal Speed (1.0x)": "+0%",
+                "Fast (1.25x)": "+25%",
+                "Very Fast (1.5x)": "+50%",
+                "Slow (0.8x)": "-20%",
+                "Very Slow (0.6x)": "-40%"
+            }
+            selected_speed_label = st.selectbox("Select Voice Speed:", list(speed_options.keys()))
+            selected_rate = speed_options[selected_speed_label]
+
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், நான் Sarar பேசுறேன்.")
+        
+        if st.button("Generate Voice Now"):
+            if v_text:
+                with st.spinner("⚡ RST Generating Voice..."):
+                    async def make_custom_voice():
+                        comm = edge_tts.Communicate(v_text, selected_voice_id, rate=selected_rate)
+                        await comm.save("custom_voice.mp3")
+                    asyncio.run(make_custom_voice())
+                    st.audio("custom_voice.mp3")
             else:
-                st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
+                st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
 # ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
