@@ -196,7 +196,7 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
- # ---------------- 4. MODE: VOICE GENERATOR ----------------
+# ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
         
@@ -204,36 +204,33 @@ if check_password():
         
         with col1:
             voice_options = {
-                "Tamil (LK) - Sarar (Male - Sri Lanka)": "ta-LK-KumarNeural",
-                "Tamil (LK) - Saranya (Female - Sri Lanka)": "ta-LK-SaranyaNeural",
-                "Tamil (IN) - Valluvar (Male - India)": "ta-IN-ValluvarNeural",
-                "Tamil (IN) - Pallavi (Female - India)": "ta-IN-PallaviNeural",
-                "English (US) - Jenny (Female)": "en-US-JennyNeural",
-                "English (US) - Guy (Male)": "en-US-GuyNeural",
-                "English (UK) - Sonia (Female)": "en-GB-SoniaNeural",
-                "English (UK) - Ryan (Male)": "en-GB-RyanNeural"
+                "🇱🇰 Sarar (Sri Lanka Male)": ("ta-LK-KumarNeural", "+0Hz", "+0%"),
+                "🇱🇰 Saranya (Sri Lanka Female)": ("ta-LK-SaranyaNeural", "+0Hz", "+0%"),
+                "🇮🇳 Valluvar (India Male)": ("ta-IN-ValluvarNeural", "+0Hz", "+0%"),
+                "🇮🇳 Pallavi (India Female)": ("ta-IN-PallaviNeural", "+0Hz", "+0%"),
+                "🕵️‍♂️ Tamil Hacker / Cyber Voice": ("ta-IN-ValluvarNeural", "-20Hz", "-15%")
             }
-            selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
-            selected_voice_id = voice_options[selected_voice_name]
+            selected_voice_name = st.selectbox("Select Voice:", list(voice_options.keys()))
+            selected_voice_id, default_pitch, default_rate = voice_options[selected_voice_name]
 
         with col2:
             speed_options = {
-                "Normal Speed (1.0x)": "+0%",
+                "Normal (1.0x)": "+0%",
                 "Fast (1.25x)": "+25%",
                 "Very Fast (1.5x)": "+50%",
                 "Slow (0.8x)": "-20%",
                 "Very Slow (0.6x)": "-40%"
             }
-            selected_speed_label = st.selectbox("Select Voice Speed:", list(speed_options.keys()))
-            selected_rate = speed_options[selected_speed_label]
+            selected_speed_label = st.selectbox("Select Speed:", list(speed_options.keys()))
+            selected_rate = default_rate if "Hacker" in selected_voice_name else speed_options[selected_speed_label]
 
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், நான் Sarar பேசுறேன்.")
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "சிஸ்டம் ஹேக் செய்யப்பட்டது. அக்சஸ் வழங்கப்பட்டுள்ளது.")
         
         if st.button("Generate Voice Now"):
             if v_text:
                 with st.spinner("⚡ RST Generating Voice..."):
                     async def make_custom_voice():
-                        comm = edge_tts.Communicate(v_text, selected_voice_id, rate=selected_rate)
+                        comm = edge_tts.Communicate(v_text, selected_voice_id, pitch=default_pitch, rate=selected_rate)
                         await comm.save("custom_voice.mp3")
                     asyncio.run(make_custom_voice())
                     st.audio("custom_voice.mp3")
