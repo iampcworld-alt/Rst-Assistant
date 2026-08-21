@@ -120,6 +120,8 @@ if "chat_history_db" not in st.session_state:
     st.session_state.chat_history_db = []
 if "active_mode" not in st.session_state:
     st.session_state.active_mode = "chat"
+if "admin_authenticated" not in st.session_state:
+    st.session_state.admin_authenticated = False
 
 # 5. LOGIN SCREEN
 def show_login_page():
@@ -145,8 +147,63 @@ def show_login_page():
                 else:
                     st.error("❌ சரியான பெயர் மற்றும் Email உள்ளிடவும்.")
 
-# 6. MAIN APPLICATION
-if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
+# 6. SEPARATE DEDICATED ADMIN DASHBOARD
+def show_admin_dashboard():
+    st.markdown("<h1 style='text-align: center; color: #ff0055; text-shadow: 0 0 25px #ff0055;'>👑 OWNER ADMIN DASHBOARD</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #00f0ff;'>RST Assistant System Control & User Activity Center</p>", unsafe_allow_html=True)
+    
+    col_exit, col_clear = st.columns([1, 5])
+    with col_exit:
+        if st.button("🚪 Exit Admin Panel"):
+            st.session_state.admin_authenticated = False
+            st.session_state.active_mode = "chat"
+            st.rerun()
+            
+    st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.2); margin: 15px 0;'>", unsafe_allow_html=True)
+
+    # Analytics Cards
+    total_chats = len(st.session_state.chat_history_db)
+    unique_users = len(set([log['user'] for log in st.session_state.chat_history_db])) if total_chats > 0 else 0
+
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.markdown(f'''
+            <div class="glass-card" style="text-align:center; padding:15px !important;">
+                <h3 style="color:#00f0ff; margin:0;">{total_chats}</h3>
+                <p style="color:#ffffff; margin:0; font-size:12px;">Total Chat Prompts</p>
+            </div>
+        ''', unsafe_allow_html=True)
+    with m2:
+        st.markdown(f'''
+            <div class="glass-card" style="text-align:center; padding:15px !important;">
+                <h3 style="color:#ff0055; margin:0;">{unique_users}</h3>
+                <p style="color:#ffffff; margin:0; font-size:12px;">Active Users Registered</p>
+            </div>
+        ''', unsafe_allow_html=True)
+    with m3:
+        st.markdown('''
+            <div class="glass-card" style="text-align:center; padding:15px !important;">
+                <h3 style="color:#00ff88; margin:0;">ONLINE</h3>
+                <p style="color:#ffffff; margin:0; font-size:12px;">System Status</p>
+            </div>
+        ''', unsafe_allow_html=True)
+
+    st.subheader("📊 Live User Prompts Log")
+    if st.session_state.chat_history_db:
+        for idx, log in enumerate(reversed(st.session_state.chat_history_db)):
+            st.markdown(f"""
+                <div class="glass-card" style="padding: 12px 20px !important;">
+                    <p style="color: #ff0055; margin: 0; font-size: 13px;"><b>User Details:</b> {log['user']}</p>
+                    <p style="color: #00f0ff; margin: 6px 0 0 0; font-size: 14px;"><b>Prompt Requested:</b> {log['prompt']}</p>
+                </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info("இன்னும் எந்த பயனர் உரையாடல்களும் பதிவாகவில்லை.")
+
+# 7. MAIN APPLICATION
+if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
+    show_admin_dashboard()
+elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
     # Top-Right Transparent Circle Avatar
@@ -263,19 +320,18 @@ else:
                 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                     st.rerun()
 
-    # 3. ADMIN PANEL MODE
+    # 3. ADMIN LOGIN CHECK MODE
     elif st.session_state.active_mode == "admin":
-        st.subheader("👑 Master Admin Control Panel")
-        pwd = st.text_input("Master Password:", type="password")
-        if pwd == "RSTA02EHYDR6":
-            st.success("அனுமதி வழங்கப்பட்டது!")
-            if st.session_state.chat_history_db:
-                for log in reversed(st.session_state.chat_history_db):
-                    st.markdown(f"""
-                        <div class="glass-card" style="padding: 10px 15px !important;">
-                            <p style="color: #ff0055; margin: 0; font-size: 13px;"><b>User:</b> {log['user']}</p>
-                            <p style="color: #00f0ff; margin: 4px 0 0 0;"><b>Prompt:</b> {log['prompt']}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("இன்னும் எந்த உரையாடல்களும் பதிவாகவில்லை.")
+        st.subheader("👑 Master Admin Authentication")
+        col_a1, col_a2, col_a3 = st.columns([1, 2, 1])
+        with col_a2:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+            pwd = st.text_input("Enter Master Password:", type="password")
+            if st.button("Access Admin Console"):
+                if pwd == "RSTA02EHYDR6":
+                    st.session_state.admin_authenticated = True
+                    st.success("Access Granted! Loading Admin Dashboard...")
+                    st.rerun()
+                else:
+                    st.error("Incorrect Password!")
+            st.markdown('</div>', unsafe_allow_html=True)
