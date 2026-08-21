@@ -39,7 +39,7 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GEMINI SETUP (OLD API)
+# 2. GEMINI SETUP (OLD API KEY)
 HAS_GEMINI = False
 client = None
 
@@ -385,9 +385,9 @@ else:
             with st.spinner("⚡ RST Processing..."):
                 if HAS_GEMINI and client is not None:
                     try:
-                        # பிழை வராதபடி மாடல் பெயர் gemini-1.5-flash என மாற்றப்பட்டுள்ளது
+                        # சரியான gemini-2.5-flash மாடல் பெயர் பயன்படுத்தப்பட்டுள்ளது
                         response = client.models.generate_content(
-                            model="gemini-1.5-flash",
+                            model="gemini-2.5-flash",
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
                         )
                         reply = response.text
