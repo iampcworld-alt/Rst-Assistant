@@ -3,7 +3,6 @@ import edge_tts
 import asyncio
 import sqlite3
 from datetime import datetime
-from PIL import Image
 
 # 1. DATABASE SETUP
 def init_db():
@@ -249,19 +248,13 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # Navigation Tabs
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    # Cleaned Navigation Tabs (Only AI Chat, Voice Gen, Admin)
+    c1, c2, c3 = st.columns([1, 1, 1])
     with c1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
     with c2:
-        if st.button("🎨 Image Gen"): st.session_state.active_mode = "image"
-    with c3:
-        if st.button("🎬 Video Gen"): st.session_state.active_mode = "video"
-    with c4:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
-    with c5:
-        if st.button("🚀 Photo Edit"): st.session_state.active_mode = "edit"
-    with c6:
+    with c3:
         if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
@@ -309,25 +302,6 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # IMAGE GENERATION MODE
-    elif st.session_state.active_mode == "image":
-        st.subheader("🎨 RST AI Image Generator")
-        img_prompt = st.text_input("உருவாக்கப்பட வேண்டிய படத்தை விவரிக்கவும் (Prompt):")
-        if st.button("Generate Image"):
-            if img_prompt:
-                with st.spinner("🎨 Creating Image..."):
-                    encoded_prompt = img_prompt.replace(" ", "%20")
-                    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
-                    st.image(image_url, caption=f"Generated: {img_prompt}", use_container_width=True)
-
-    # VIDEO GENERATION MODE
-    elif st.session_state.active_mode == "video":
-        st.subheader("🎬 RST AI Video Prompt Generator")
-        video_prompt = st.text_area("வீடியோவுக்கான Prompt உள்ளிடவும்:")
-        if st.button("Generate Video Script & Concept"):
-            if video_prompt:
-                st.info("🎬 AI Video Generation Pipeline initialized. (Runway / Pika Labs Integration Ready)")
-
     # VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
@@ -342,23 +316,6 @@ else:
                     await comm.save("voice.mp3")
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
-
-    # PHOTO EDITING MODE
-    elif st.session_state.active_mode == "edit":
-        st.subheader("🚀 RST Photo Studio & Editor")
-        uploaded_file = st.file_uploader("புகைப்படத்தைப் பதிவேற்றவும் (JPG/PNG):", type=["jpg", "jpeg", "png"])
-        if uploaded_file is not None:
-            image = Image.open(uploaded_file)
-            st.image(image, caption="Original Image", use_container_width=True)
-            
-            filter_type = st.selectbox("Filter/Effect:", ["None", "Grayscale", "Rotate 90°"])
-            if st.button("Apply Effect"):
-                if filter_type == "Grayscale":
-                    edited_img = image.convert("L")
-                    st.image(edited_img, caption="Grayscale Image", use_container_width=True)
-                elif filter_type == "Rotate 90°":
-                    edited_img = image.rotate(-90)
-                    st.image(edited_img, caption="Rotated Image", use_container_width=True)
 
     # ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
