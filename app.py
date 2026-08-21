@@ -4,15 +4,19 @@ import asyncio
 import urllib.parse
 from PIL import Image
 
-# Dynamic AI Response Engine
-try:
-    from g4f.client import Client
-    client = Client()
-    HAS_G4F = True
-except Exception:
-    HAS_G4F = False
+# 1. Gemini API Setup using Streamlit Secrets
+HAS_GEMINI = False
+client = None
 
-# 1. Page Config & Theme Setup
+if "GEMINI_API_KEY" in st.secrets:
+    try:
+        from google import genai
+        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        HAS_GEMINI = True
+    except Exception as e:
+        HAS_GEMINI = False
+
+# 2. Page Config & Theme Setup
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
@@ -46,7 +50,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Master Login Protection System
+# 3. Master Login Protection System
 def check_password():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
@@ -64,11 +68,9 @@ def check_password():
     return True
 
 if check_password():
-    # Header Section
     st.title("⚡ RST ASSISTANT ⚡")
     st.markdown("<p style='text-align: center; color: #00f0ff;'>HIGH-LEVEL PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
 
-    # System Information Panel
     st.markdown("""
         <div class="owner-card">
             <h4 style="color: #ff0055; margin:0 0 4px 0;">SYSTEM INFORMATION</h4>
@@ -77,7 +79,6 @@ if check_password():
         </div>
     """, unsafe_allow_html=True)
 
-    # Active Tool Mode Selector
     if "active_mode" not in st.session_state:
         st.session_state.active_mode = "chat"
 
@@ -99,7 +100,7 @@ if check_password():
 
     # ---------------- 1. MODE: REAL AI CHATBOT ----------------
     if st.session_state.active_mode == "chat":
-        st.subheader("🤖 RST Interactive Chatbot")
+        st.subheader("🤖 RST Interactive Smart AI Chatbot")
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
@@ -116,42 +117,31 @@ if check_password():
 
             query = user_input.lower()
 
-            # Direct Owner Check
             if any(k in query for k in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "உருவாக்கியவர்"]):
                 reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
 📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
 📞 **Phone:** 0753967528"""
             else:
-                # Generates Natural Dynamic Answers using G4F AI Engine
                 with st.spinner("⚡ RST Thinking..."):
-                    try:
-                        if HAS_G4F:
-                            response = client.chat.completions.create(
-                                model="gpt-4o",
-                                messages=[
-                                    {"role": "system", "content": "You are RST ASSISTANT, a helpful, empathetic, and friendly AI developed by Mohammed Rasith. Reply warmly, naturally, and concisely in Tanglish or Tamil based on the user prompt."},
-                                    {"role": "user", "content": user_input}
-                                ]
+                    if HAS_GEMINI and client is not None:
+                        try:
+                            prompt_config = "You are RST ASSISTANT created by Mohammed Rasith. Be smart, intelligent, empathetic, and answer strictly in the language/style used by user (English, Tamil, or Tanglish)."
+                            full_prompt = f"{prompt_config}\nUser: {user_input}"
+                            
+                            response = client.models.generate_content(
+                                model="gemini-2.5-flash",
+                                contents=full_prompt,
                             )
-                            reply = response.choices[0].message.content
-                        else:
-                            raise Exception("Engine Offline")
-                    except Exception:
-                        # Fallback Rule-Based Smart Responses
-                        if any(k in query for k in ["pasikkithu", "pasikithu", "pasi", "பசி"]):
-                            reply = "ஐயோ! உடனே நல்லா ருசியா ஏதாவது சாப்பிடுங்க நண்பா. ஆரோக்கியமா இருக்கிறது தான் முதல்ல முக்கியம்!"
-                        elif any(k in query for k in ["enna panrathu", "enna seiyarathu", "what to do"]):
-                            reply = "கொஞ்சம் ரிலாக்ஸா இருங்க, நல்ல பாட்டு கேளுங்க அல்லது ஒரு சின்ன வாக்கிங் போயிட்டு வாங்க. உங்களுக்கு உதவ நான் இருக்கேன்!"
-                        elif any(k in query for k in ["hi", "hello", "வணக்கம்", "hey"]):
-                            reply = "வணக்கம்! நான் உங்கள் RST ASSISTANT. உங்களுக்கு நான் எப்படி உதவட்டும்?"
-                        else:
-                            reply = f"நான் உங்கள் கேள்வியைப் புரிந்து கொண்டேன். உங்களுக்காக உதவ தயாராக உள்ளேன்!"
+                            reply = response.text
+                        except Exception as e:
+                            reply = f"AI Error: {str(e)}"
+                    else:
+                        reply = "⚠️ Streamlit Secrets-இல் 'GEMINI_API_KEY' தவறாக உள்ளது அல்லது சேர்க்கப்படவில்லை. தயவுசெய்து Streamlit Settings ➔ Secrets பக்கத்தில் API Key-ஐ சேர்க்கவும்."
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
 
-            # Voice Generation
             async def speak():
                 clean_text = reply.replace("*", "").replace("#", "")
                 comm = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
@@ -169,23 +159,20 @@ if check_password():
                 with st.spinner("⚡ RST Processing Image..."):
                     encoded_prompt = urllib.parse.quote(img_prompt)
                     img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-                    
                     st.image(img_url, width=280)
                     st.markdown(f'<a href="{img_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">📥 Download HD Image</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
-    # ---------------- 3. MODE: VIDEO / MOTION GENERATOR ----------------
+    # ---------------- 3. MODE: VIDEO GENERATOR ----------------
     elif st.session_state.active_mode == "video":
         st.subheader("🎬 RST AI Video & Motion Generator")
         vid_prompt = st.text_input("Enter Video Prompt:")
-        
         if st.button("Generate Video Now"):
             if vid_prompt:
                 with st.spinner("⚡ RST Generating Cinematic AI Motion..."):
                     encoded_vprompt = urllib.parse.quote(f"cinematic animation, high quality video motion, {vid_prompt}")
                     motion_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&width=1280&height=720&nologo=true"
-                    
                     st.success("✅ RST Motion Frame Created!")
                     col1, col2 = st.columns([2, 1])
                     with col1:
@@ -198,12 +185,26 @@ if check_password():
     # ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
+        
+        voice_options = {
+            "Tamil - Valluvar (Male)": "ta-IN-ValluvarNeural",
+            "Tamil - Pallavi (Female)": "ta-IN-PallaviNeural",
+            "English (US) - Jenny (Female)": "en-US-JennyNeural",
+            "English (US) - Guy (Male)": "en-US-GuyNeural",
+            "English (UK) - Sonia (Female)": "en-GB-SoniaNeural",
+            "English (UK) - Ryan (Male)": "en-GB-RyanNeural"
+        }
+        
+        selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
+        selected_voice_id = voice_options[selected_voice_name]
+
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
+        
         if st.button("Generate Voice Now"):
             if v_text:
                 with st.spinner("⚡ RST Generating Voice..."):
                     async def make_custom_voice():
-                        comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
+                        comm = edge_tts.Communicate(v_text, selected_voice_id)
                         await comm.save("custom_voice.mp3")
                     asyncio.run(make_custom_voice())
                     st.audio("custom_voice.mp3")
@@ -213,19 +214,15 @@ if check_password():
     # ---------------- 5. MODE: PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
-        
         uploaded_file = st.file_uploader("Upload Your Image", type=["jpg", "jpeg", "png"])
-        edit_prompt = st.text_input("AI Prompt (எ.கா: Convert into cyberpunk style, add futuristic neon suit):")
-        
+        edit_prompt = st.text_input("AI Prompt:")
         if uploaded_file is not None and st.button("✨ Transform with AI"):
             if edit_prompt:
                 with st.spinner("⚡ RST AI Processing Your Image..."):
                     combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
                     encoded_prompt = urllib.parse.quote(combined_prompt)
                     ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-
                 st.success("✅ Image Generated!")
-                
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.image(ai_image_url, width=280)
