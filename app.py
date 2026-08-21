@@ -60,12 +60,11 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & HIGH-CONTRAST DYNAMIC THEME CSS
+# 4. STREAMLIT CONFIG & CLEAN FLEXBOX CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
 
-# Color Tokens for Dark & Light Themes
 bg_app = "#0d1117" if is_dark else "#f8fafc"
 text_primary = "#ffffff" if is_dark else "#0f172a"
 text_secondary = "#94a3b8" if is_dark else "#475569"
@@ -80,17 +79,16 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Global Reset with Custom Modern Font */
     html, body, [class*="css"], .stApp {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
-        font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
     }}
 
     .block-container {{
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1200px !important;
+        max-width: 1100px !important;
     }}
 
     /* Card Containers */
@@ -100,16 +98,15 @@ st.markdown(f"""
         border-radius: 16px !important;
         padding: 20px !important;
         margin-bottom: 16px !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
     }}
 
-    /* Title & Emblem Styles */
+    /* Emblem Logo */
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 8px;
-        margin-bottom: 8px;
+        margin-top: 15px;
+        margin-bottom: 10px;
     }}
 
     .rst-emblem-box {{
@@ -122,9 +119,9 @@ st.markdown(f"""
 
     .rst-emblem-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 44px;
+        font-size: 40px;
         font-weight: 900;
-        letter-spacing: 6px;
+        letter-spacing: 5px;
         color: {btn_text};
         margin: 0;
         line-height: 1;
@@ -141,35 +138,34 @@ st.markdown(f"""
     }}
 
     .owner-badge {{
-        font-family: 'Inter', sans-serif !important;
         background: {card_bg};
         border: 1px solid {card_border};
         border-radius: 20px;
         padding: 4px 16px;
         width: fit-content;
-        margin: 0 auto 18px auto;
+        margin: 0 auto 20px auto;
         font-size: 11px;
         letter-spacing: 1px;
         color: {text_secondary};
         font-weight: 600;
     }}
 
-    /* Header Profile Badge */
+    /* Profile Badge Alignment */
     .profile-box {{
         display: flex;
         align-items: center;
-        justify-content: flex-end;
-        gap: 10px;
+        justify-content: center;
+        gap: 8px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 5px 14px;
-        border-radius: 24px;
-        height: 42px;
+        padding: 4px 12px;
+        border-radius: 12px;
+        height: 38px;
     }}
 
     .circle-avatar {{
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -177,59 +173,37 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 11px;
     }}
 
-    /* Buttons Typography & Colors */
+    /* Button Styling */
     .stButton>button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
         color: {btn_text} !important;
         border: 1px solid {btn_border} !important;
-        border-radius: 12px !important;
-        font-weight: 700 !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
         font-size: 13px !important;
         width: 100% !important;
-        height: 42px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.2s ease !important;
+        height: 38px !important;
     }}
 
     .stButton>button:hover {{
         background: {btn_text} !important;
         color: #ffffff !important;
-        border-color: {btn_text} !important;
     }}
 
-    .admin-btn-col .stButton>button {{
-        color: #d97706 !important;
-        border: 1px solid rgba(217, 119, 6, 0.4) !important;
-    }}
-
-    .admin-btn-col .stButton>button:hover {{
-        background: #d97706 !important;
-        color: #ffffff !important;
-    }}
-
-    /* Form Control & Inputs Text Colors */
     .stTextInput input, .stTextArea textarea, .stSelectbox > div {{
         background-color: {input_bg} !important;
         color: {text_primary} !important;
         border: 1px solid {card_border} !important;
-        border-radius: 12px !important;
-        font-family: 'Inter', sans-serif !important;
-    }}
-
-    /* Headings and Titles Text Contrast */
-    h1, h2, h3, h4, h5, h6, .stMarkdown, p, span, label {{
-        color: {text_primary} !important;
+        border-radius: 10px !important;
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# 5. LOGIN SCREEN
+# 5. LOGIN PAGE
 def show_login_page():
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1.5, 1])
@@ -242,108 +216,75 @@ def show_login_page():
                     </div>
                 </div>
                 <div class="rst-title-text">LOGIN</div>
-                <p style="color:{text_secondary} !important; font-size:12px; margin-top:4px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+                <p style="color:{text_secondary}; font-size:12px;">தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
         with st.form("login_form"):
             name_in = st.text_input("👤 Enter Your Name:")
             email_in = st.text_input("📧 Enter Your Email:")
             submit = st.form_submit_button("🚀 Access AI Assistant")
-            if submit:
-                if name_in.strip() and "@" in email_in:
-                    st.session_state.user_name = name_in.strip()
-                    st.session_state.user_email = email_in.strip()
-                    st.success("✅ லாக் இன் வெற்றி!")
-                    st.rerun()
+            if submit and name_in.strip() and "@" in email_in:
+                st.session_state.user_name = name_in.strip()
+                st.session_state.user_email = email_in.strip()
+                st.rerun()
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown("""
-        <div class="rst-emblem-container">
-            <div class="rst-emblem-box">
-                <div class="rst-emblem-text">RST</div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<div class="rst-title-text">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
-    
+    st.markdown('<div class="rst-title-text" style="margin-top:20px;">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
         st.session_state.active_mode = "chat"
         st.rerun()
 
     logs = fetch_all_chats()
-    total_chats = len(logs)
-    unique_users = len(set([log[1] for log in logs])) if logs else 0
-
-    col_m1, col_m2 = st.columns(2)
-    with col_m1:
-        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text} !important; margin:0;">{total_chats}</h2><p style="color:{text_secondary} !important; margin:0; font-size:12px;">Total Searches Logged</p></div>', unsafe_allow_html=True)
-    with col_m2:
-        st.markdown(f'<div class="rst-card" style="text-align:center;"><h2 style="color:{btn_text} !important; margin:0;">{unique_users}</h2><p style="color:{text_secondary} !important; margin:0; font-size:12px;">Total Registered Users</p></div>', unsafe_allow_html=True)
-
-    st.subheader("🔍 Search User Activity")
-    search_query = st.text_input("🔎 Filter by Name, Email or Prompt Keyword:")
-
-    st.markdown("### 📜 Permanent Chat History")
+    st.markdown(f"### Total Searches: {len(logs)}")
+    search_query = st.text_input("🔎 Search Logs:")
     if logs:
         for name, email, prompt, time_stamp in logs:
-            if search_query.lower() in name.lower() or search_query.lower() in email.lower() or search_query.lower() in prompt.lower():
+            if search_query.lower() in name.lower() or search_query.lower() in prompt.lower():
                 st.markdown(f"""
                     <div class="rst-card">
-                        <p style="color: {btn_text} !important; margin:0; font-size:13px;"><b>User:</b> {name} ({email}) | <span style="color:{text_secondary} !important; font-size:11px;">{time_stamp}</span></p>
-                        <p style="color: {text_primary} !important; margin: 5px 0 0 0; font-size:14px;"><b>Prompt:</b> {prompt}</p>
+                        <p style="color:{btn_text}; margin:0;"><b>{name}</b> ({email}) - {time_stamp}</p>
+                        <p style="margin:5px 0 0 0;">{prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
-    else:
-        st.info("தரவுகள் எதுவும் இல்லை.")
 
-# 7. MAIN APP ROUTING
+# 7. MAIN APP
 if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
     show_admin_dashboard()
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # ALIGNED TOP HEADER BAR
-    top_col_admin, top_col_spacer, top_col_theme, top_col_user = st.columns([1.2, 3, 1.5, 2.3])
-    
-    with top_col_admin:
-        st.markdown('<div class="admin-btn-col">', unsafe_allow_html=True)
+    # Top Bar Layout: Exactly Balanced Grid
+    nav1, nav2, nav3, nav4 = st.columns([1, 1, 1.5, 2.5])
+
+    with nav1:
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
-        st.markdown('</div>', unsafe_allow_html=True)
 
-    with top_col_theme:
+    with nav2:
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
-        if st.button(f"{theme_icon} Mode"):
+        if st.button(f"{theme_icon}"):
             st.session_state.theme = "light" if is_dark else "dark"
             st.rerun()
 
-    with top_col_user:
+    with nav3:
         if st.session_state.user_email:
-            avatar_letter = st.session_state.user_name[0].upper()
             st.markdown(f"""
                 <div class="profile-box">
-                    <div class="circle-avatar">{avatar_letter}</div>
-                    <div style="text-align:right;">
-                        <div style="color:{text_primary} !important; font-weight:700; font-size:12px; line-height:1.1;">{st.session_state.user_name}</div>
-                        <div style="color:{btn_text} !important; font-size:10px;">{st.session_state.user_email}</div>
-                    </div>
+                    <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
+                    <span style="font-size:12px; font-weight:600;">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            left = 2 - st.session_state.usage_count
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <div style="text-align:right;">
-                        <div style="color:{text_primary} !important; font-weight:700; font-size:12px; line-height:1.1;">Guest User</div>
-                        <div style="color:#e11d48 !important; font-size:10px;">{left} Uses Left</div>
-                    </div>
+                    <span style="font-size:11px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
                 </div>
             """, unsafe_allow_html=True)
 
-    # Main Header Emblem Banner
+    # Main Branding
     st.markdown(f"""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
@@ -352,21 +293,20 @@ else:
         </div>
         <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
-            SYSTEM ARCHITECT: <span style="color:{btn_text} !important; font-weight:bold;">MOHAMMED RASITH</span>
+            SYSTEM ARCHITECT: <span style="color:{btn_text};">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # CENTERED NAVIGATION BUTTONS
-    c_space_l, c_btn1, c_btn2, c_space_r = st.columns([2.5, 1.5, 1.5, 2.5])
-    
-    with c_btn1:
+    # Mode Selector Buttons
+    m_left, m_btn1, m_btn2, m_right = st.columns([2, 1.2, 1.2, 2])
+    with m_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
-    with c_btn2:
+    with m_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 16px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border:0.5px solid {card_border}; margin:15px 0;'>", unsafe_allow_html=True)
 
-    # 1. AI CHAT MODE
+    # Chat Mode
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Smart AI Assistant")
 
@@ -409,11 +349,11 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # 2. VOICE GENERATION MODE
+    # Voice Mode
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
-        voice_opt = st.selectbox("குரலைத் தேர்ந்தெடுக்கவும்:", ["ta-IN-ValluvarNeural (Tamil Male)", "ta-IN-PallaviNeural (Tamil Female)"])
+        v_text = st.text_area("உரை:", "வணக்கம்! நான் RST AI Assistant.")
+        voice_opt = st.selectbox("குரல்:", ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"])
         voice_code = "ta-IN-ValluvarNeural" if "Valluvar" in voice_opt else "ta-IN-PallaviNeural"
         
         if st.button("Generate Voice"):
@@ -424,10 +364,10 @@ else:
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
-    # 3. ADMIN LOGIN MODE
+    # Admin Login
     elif st.session_state.active_mode == "admin":
         st.subheader("👑 Admin Authentication")
-        pwd = st.text_input("Enter Master Password:", type="password")
+        pwd = st.text_input("Master Password:", type="password")
         if st.button("Access Admin Console"):
             if pwd == "RSTA02EHYDR6":
                 st.session_state.admin_authenticated = True
