@@ -84,7 +84,6 @@ st.markdown(f"""
         font-family: 'Inter', sans-serif !important;
     }}
 
-    /* Fix Streamlit Markdown text colors based on theme */
     p, span, label, div[data-testid="stMarkdownContainer"] {{
         color: {text_primary} !important;
     }}
@@ -168,7 +167,6 @@ st.markdown(f"""
         font-weight: 600;
     }}
 
-    /* Compact User Profile Badge */
     .profile-box {{
         display: flex;
         align-items: center;
@@ -196,7 +194,6 @@ st.markdown(f"""
         font-size: 10px;
     }}
 
-    /* Universal Buttons */
     .stButton>button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
@@ -271,10 +268,10 @@ def show_admin_dashboard():
     search_query = st.text_input("🔎 Search Logs:")
     if logs:
         for name, email, prompt, time_stamp in logs:
-            if search_query.lower() in name.lower() or search_query.lower() in prompt.lower():
+            if search_query.lower() in name.lower() or search_query.lower() in prompt.lower() or search_query.lower() in email.lower():
                 st.markdown(f"""
                     <div class="rst-card">
-                        <p style="color:{btn_text}; margin:0;"><b>{name}</b> ({email}) - {time_stamp}</p>
+                        <p style="color:{btn_text}; margin:0;"><b>{name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
                         <p style="margin:5px 0 0 0;">{prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
@@ -285,7 +282,6 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # COMPACT TOP NAVIGATION BAR WITH CLOSELY PLACED ADMIN & LIGHT BUTTONS
     col_admin, col_theme, col_space, col_user = st.columns([0.8, 0.8, 1.4, 1.8])
 
     with col_admin:
@@ -318,7 +314,6 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # CENTER EMBLEM BRANDING
     st.markdown(f"""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
@@ -331,7 +326,6 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # MODE SWITCHERS
     c_left, btn_chat_col, btn_voice_col, c_right = st.columns([2.5, 1.5, 1.5, 2.5])
     with btn_chat_col:
         if st.button("🤖 AI Chat"): 
@@ -342,7 +336,6 @@ else:
 
     st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 20px 0 15px 0;'>", unsafe_allow_html=True)
 
-    # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -350,7 +343,6 @@ else:
 
         user_input = st.chat_input("Ask RST Assistant...")
 
-        # Subheader placed right above search bar area
         st.markdown('<div class="custom-subheader">🤖 RST Smart AI Assistant</div>', unsafe_allow_html=True)
 
         if user_input:
@@ -386,7 +378,6 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # 2. VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.markdown('<div class="custom-subheader">🎙️ RST Voice Generator</div>', unsafe_allow_html=True)
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
@@ -401,7 +392,6 @@ else:
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
-    # 3. ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
         st.markdown('<div class="custom-subheader">👑 Admin Authentication</div>', unsafe_allow_html=True)
         pwd = st.text_input("Enter Master Password:", type="password")
