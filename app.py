@@ -62,49 +62,56 @@ st.markdown("""
         color: #f8fafc !important;
     }
 
-    /* Animated Standalone RST Emblem Logo */
+    /* Next-Level 3D Holographic RST Emblem Logo */
     .rst-emblem-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 10px;
-        margin-bottom: 12px;
+        margin-top: 15px;
+        margin-bottom: 10px;
     }
 
-    .rst-emblem {
-        font-size: 50px;
+    .rst-emblem-box {
+        position: relative;
+        padding: 12px 36px;
+        background: rgba(15, 23, 42, 0.7);
+        border-radius: 20px;
+        border: 2px solid rgba(56, 189, 248, 0.4);
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.25), inset 0 0 15px rgba(56, 189, 248, 0.15);
+        backdrop-filter: blur(16px);
+        animation: holoPulse 3s ease-in-out infinite alternate;
+    }
+
+    .rst-emblem-text {
+        font-size: 56px;
         font-weight: 900;
-        letter-spacing: 6px;
-        color: #38bdf8;
-        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+        letter-spacing: 8px;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 30%, #00c6ff 70%, #0072ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
-        animation: pulseGlow 3s ease-in-out infinite alternate;
-        padding: 5px 20px;
-        border-radius: 20px;
-        border: 1px solid rgba(56, 189, 248, 0.2);
-        background-color: rgba(15, 23, 42, 0.6);
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        text-shadow: 0 0 35px rgba(0, 242, 254, 0.7);
+        margin: 0;
+        line-height: 1;
     }
 
-    @keyframes pulseGlow {
+    @keyframes holoPulse {
         0% {
-            transform: scale(1);
-            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+            transform: translateY(0px) scale(1);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
         }
         100% {
-            transform: scale(1.04);
-            filter: drop-shadow(0 0 22px rgba(129, 140, 248, 0.8));
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 45px rgba(56, 189, 248, 0.5), inset 0 0 20px rgba(56, 189, 248, 0.3);
+            border-color: rgba(56, 189, 248, 0.8);
         }
     }
 
-    /* Subtitle Title Text */
     .rst-title-text {
-        font-size: 28px !important;
+        font-size: 26px !important;
         font-weight: 800 !important;
         text-align: center !important;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
         color: #f8fafc;
         margin-bottom: 6px !important;
     }
@@ -156,7 +163,7 @@ st.markdown("""
         font-size: 15px;
     }
 
-    /* Navigation Buttons */
+    /* Navigation Buttons - Cleaned Alignment */
     .stButton>button {
         background: rgba(15, 23, 42, 0.7) !important;
         color: #38bdf8 !important;
@@ -192,7 +199,11 @@ def show_login_page():
     with col2:
         st.markdown("""
             <div class="glass-card" style="text-align:center;">
-                <div class="rst-emblem-container"><div class="rst-emblem">RST</div></div>
+                <div class="rst-emblem-container">
+                    <div class="rst-emblem-box">
+                        <div class="rst-emblem-text">RST</div>
+                    </div>
+                </div>
                 <div class="rst-title-text">LOGIN</div>
                 <p style="color:#94a3b8; font-size:13px; margin-top:8px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
             </div>
@@ -210,7 +221,13 @@ def show_login_page():
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="rst-emblem-container"><div class="rst-emblem">RST</div></div>', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="rst-emblem-container">
+            <div class="rst-emblem-box">
+                <div class="rst-emblem-text">RST</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     st.markdown('<div class="rst-title-text">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     
     if st.button("🚪 Exit Admin Panel"):
@@ -276,10 +293,12 @@ else:
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
-    # High Level Animated Header
+    # High-Level Animated Hologram Header
     st.markdown("""
         <div class="rst-emblem-container">
-            <div class="rst-emblem">RST</div>
+            <div class="rst-emblem-box">
+                <div class="rst-emblem-text">RST</div>
+            </div>
         </div>
         <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
@@ -287,13 +306,14 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # Navigation Bar (AI Chat, Voice Gen, Admin)
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c1:
+    # Perfectly Centered Navigation Bar
+    col_left, col_btn1, col_btn2, col_btn3, col_right = st.columns([1.5, 2, 2, 2, 1.5])
+    
+    with col_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
-    with c2:
+    with col_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
-    with c3:
+    with col_btn3:
         if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
