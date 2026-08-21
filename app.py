@@ -2,6 +2,7 @@ import streamlit as st
 import edge_tts
 import asyncio
 import urllib.parse
+from PIL import Image, ImageEnhance, ImageFilter
 
 # Page Config & Futuristic Dark UI
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
@@ -11,7 +12,16 @@ st.markdown("""
     .stApp { background-color: #05050a; color: #00ffcc; }
     h1 { color: #ff0055; text-shadow: 0 0 10px #ff0055; text-align: center; }
     .stButton>button { background-color: #ff0055; color: white; border-radius: 5px; font-weight: bold; width: 100%; }
-    .owner-card { background: #161b22; border: 1px solid #00ffcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    /* Compact System Info Card */
+    .owner-card { 
+        background: #161b22; 
+        border: 1px solid #00ffcc; 
+        padding: 10px 15px; 
+        border-radius: 8px; 
+        margin: 10px auto 20px auto; 
+        max-width: 500px;
+        text-align: center;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -37,20 +47,18 @@ if check_password():
     st.title("⚡ WELCOME TO RST ASSISTANT ⚡")
     st.markdown("<p style='text-align: center; color: #00ffcc;'>UNBREAKABLE PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
 
-    # Owner & System Details
+    # Compact Owner & System Details (Email & Phone Hidden)
     st.markdown("""
         <div class="owner-card">
-            <h3 style="color: #ff0055; margin:0;">SYSTEM INFORMATION</h3>
-            <p style="margin:5px 0;"><b>SYSTEM NAME:</b> RST ASSISTANT</p>
-            <p style="margin:5px 0;"><b>RST AI OWNER:</b> MOHAMMED RASITH</p>
-            <p style="margin:5px 0;"><b>EMAIL:</b> MOHAMMEDRASITH27@GMAIL.COM</p>
-            <p style="margin:5px 0;"><b>PHONE:</b> 0753967528</p>
+            <h4 style="color: #ff0055; margin:0 0 5px 0;">SYSTEM INFORMATION</h4>
+            <p style="margin:2px 0; font-size:14px;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
+            <p style="margin:2px 0; font-size:13px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED / HIDDEN] | <b>PHONE:</b> [PROTECTED / HIDDEN]</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar Options
+    # Sidebar Navigation Controls
     st.sidebar.title("⚡ RST Control Panel")
-    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", ["🤖 RST Chatbot", "🎨 Image Generator"])
+    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", ["🤖 RST Chatbot", "🎨 Image Generator", "🖼️ Photo Upload & Edit"])
 
     # 1. Chatbot Mode
     if mode == "🤖 RST Chatbot":
@@ -93,12 +101,12 @@ if check_password():
             asyncio.run(speak())
             st.audio("rst_response.mp3")
 
-    # 2. Image Generator Mode
+    # 2. AI Image Generator Mode
     elif mode == "🎨 Image Generator":
         st.subheader("🎨 RST AI Image Generator")
         st.write("உங்களுக்குத் தேவையான படத்தின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
         
-        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cybernetic lion):")
+        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cyberpunk city):")
         
         if st.button("Generate Image"):
             if prompt:
@@ -108,3 +116,44 @@ if check_password():
                     st.image(image_url, caption=f"Generated: {prompt}", use_column_width=True)
             else:
                 st.warning("தயவுசெய்து ஏதேனும் விவரத்தை டைப் செய்யவும்!")
+
+    # 3. Photo Upload & Edit Studio
+    elif mode == "🖼️ Photo Upload & Edit":
+        st.subheader("🖼️ RST Photo Editing Studio")
+        st.write("உங்கள் கணினி அல்லது மொபைலில் இருந்து படத்தை பதிவேற்றி எடிட் செய்யவும்:")
+
+        uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
+
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader("Original Image")
+                st.image(image, use_column_width=True)
+
+            # Image Editing Controls
+            st.sidebar.subheader("🎛️ Image Adjustments")
+            brightness = st.sidebar.slider("Brightness", 0.5, 2.0, 1.0)
+            contrast = st.sidebar.slider("Contrast", 0.5, 2.0, 1.0)
+            blur = st.sidebar.slider("Blur Effect", 0, 5, 0)
+            grayscale = st.sidebar.checkbox("Black & White (Grayscale)")
+
+            # Process Image
+            edited_img = image.copy()
+
+            if grayscale:
+                edited_img = edited_img.convert("L")
+
+            enhancer = ImageEnhance.Brightness(edited_img)
+            edited_img = enhancer.enhance(brightness)
+
+            enhancer = ImageEnhance.Contrast(edited_img)
+            edited_img = enhancer.enhance(contrast)
+
+            if blur > 0:
+                edited_img = edited_img.filter(ImageFilter.GaussianBlur(blur))
+
+            with col2:
+                st.subheader("Edited Image")
+                st.image(edited_img, use_column_width=True)
