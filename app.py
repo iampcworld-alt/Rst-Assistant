@@ -107,8 +107,8 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* EXACT SCREENSHOT 77 LAYOUT */
-    .top-header-container {{
+    /* PURE CSS LAYOUT TO FORCE LEFT & RIGHT ALIGNMENT WITHOUT GAP */
+    .top-header-wrapper {{
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -116,17 +116,18 @@ st.markdown(f"""
         margin-bottom: 2px;
     }}
 
-    .left-buttons-group {{
+    .left-stack {{
         display: flex;
         flex-direction: column;
         gap: 4px;
-        width: 100px;
+        width: 95px;
     }}
 
-    .right-profile-group {{
+    .right-stack {{
         display: flex;
         justify-content: flex-end;
         align-items: flex-start;
+        width: 110px;
     }}
 
     .rst-emblem-container {{
@@ -185,16 +186,16 @@ st.markdown(f"""
         gap: 4px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 2px 8px;
+        padding: 2px 6px;
         border-radius: 20px;
-        height: 30px;
-        width: 110px;
+        height: 28px;
+        width: 100%;
         box-sizing: border-box;
     }}
 
     .circle-avatar {{
-        width: 13px;
-        height: 13px;
+        width: 12px;
+        height: 12px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -296,11 +297,11 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # EXACT SCREENSHOT 77 PLACEMENT
-    st.markdown('<div class="top-header-container">', unsafe_allow_html=True)
+    # TOP HEADER WRAPPER CONTAINER
+    st.markdown('<div class="top-header-wrapper">', unsafe_allow_html=True)
     
-    # Left Side: Admin & Light stacked vertically
-    st.markdown('<div class="left-buttons-group">', unsafe_allow_html=True)
+    # 1. LEFT STACK (Admin & Light Buttons)
+    st.markdown('<div class="left-stack">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
         st.session_state.active_mode = "admin"
@@ -314,8 +315,8 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Right Side: User/Guest Profile Badge at top right corner
-    st.markdown('<div class="right-profile-group">', unsafe_allow_html=True)
+    # 2. RIGHT STACK (User / Guest Badge)
+    st.markdown('<div class="right-stack">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
             <div class="profile-box">
