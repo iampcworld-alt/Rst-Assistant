@@ -152,7 +152,7 @@ if check_password():
                 with st.spinner("🖼️ Image உருவாக்கப்படுகிறது..."):
                     encoded_prompt = urllib.parse.quote(img_prompt)
                     img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
-                    st.image(img_url, caption=f"Generated: {img_prompt}", use_column_width=True)
+                    st.image(img_url, caption=f"Generated: {img_prompt}", use_container_width=True)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
@@ -193,7 +193,7 @@ if check_password():
             col1, col2 = st.columns(2)
             with col1:
                 st.subheader("Original Image")
-                st.image(image, use_column_width=True)
+                st.image(image, use_container_width=True)
 
             b_val = st.slider("Brightness", 0.5, 2.0, 1.0)
             c_val = st.slider("Contrast", 0.5, 2.0, 1.0)
@@ -210,4 +210,4 @@ if check_password():
 
             with col2:
                 st.subheader("Edited Image")
-                st.image(edited_img, use_column_width=True)
+                st.image(edited_img, use_container_width=True)
