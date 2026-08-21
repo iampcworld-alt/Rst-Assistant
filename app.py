@@ -387,7 +387,7 @@ else:
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash",
+                            model="gemini-3.6-flash",
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}",
                         )
                         reply = response.text
