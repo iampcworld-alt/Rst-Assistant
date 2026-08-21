@@ -60,7 +60,7 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & FIXED THEME CSS
+# 4. STREAMLIT CONFIG & RESPONSIVE CSS TUNING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -89,7 +89,7 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 3rem !important;
+        padding-top: 2rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
     }}
@@ -122,12 +122,12 @@ st.markdown(f"""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
+        margin-top: 10px;
         margin-bottom: 6px;
     }}
 
     .rst-emblem-box {{
-        padding: 6px 32px;
+        padding: 6px 28px;
         background: {card_bg};
         border-radius: 14px;
         border: 2px solid {btn_text};
@@ -136,9 +136,9 @@ st.markdown(f"""
 
     .rst-emblem-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 38px;
+        font-size: 32px;
         font-weight: 900;
-        letter-spacing: 5px;
+        letter-spacing: 4px;
         color: {btn_text};
         margin: 0;
         line-height: 1;
@@ -146,7 +146,7 @@ st.markdown(f"""
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 18px !important;
+        font-size: 16px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 2px;
@@ -158,10 +158,10 @@ st.markdown(f"""
         background: {card_bg};
         border: 1px solid {card_border};
         border-radius: 20px;
-        padding: 3px 14px;
+        padding: 3px 12px;
         width: fit-content;
-        margin: 0 auto 20px auto;
-        font-size: 10px;
+        margin: 0 auto 15px auto;
+        font-size: 9px;
         letter-spacing: 1px;
         color: {text_secondary};
         font-weight: 600;
@@ -174,16 +174,16 @@ st.markdown(f"""
         gap: 6px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 2px 10px;
+        padding: 2px 8px;
         border-radius: 16px;
-        height: 32px;
+        height: 30px;
         width: fit-content;
         margin-left: auto;
     }}
 
     .circle-avatar {{
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -191,7 +191,7 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 10px;
+        font-size: 9px;
     }}
 
     .stButton>button {{
@@ -201,9 +201,9 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 8px !important;
         font-weight: 700 !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
         width: 100% !important;
-        height: 32px !important;
+        height: 30px !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -216,16 +216,16 @@ st.markdown(f"""
         background: {card_bg} !important;
         border: 1px solid {card_border} !important;
         border-radius: 14px !important;
-        padding: 16px !important;
-        margin-bottom: 14px !important;
+        padding: 14px !important;
+        margin-bottom: 12px !important;
     }}
 
     .custom-subheader {{
-        font-size: 14px !important;
+        font-size: 13px !important;
         font-weight: 700 !important;
         color: {btn_text} !important;
-        margin-bottom: 8px !important;
-        margin-top: 15px !important;
+        margin-bottom: 6px !important;
+        margin-top: 10px !important;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -233,7 +233,7 @@ st.markdown(f"""
 # 5. LOGIN SCREEN
 def show_login_page():
     st.markdown("<br><br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 1.5, 1])
+    col1, col2, col3 = st.columns([0.5, 3, 0.5])
     with col2:
         st.markdown(f"""
             <div class="rst-card" style="text-align:center;">
@@ -243,7 +243,7 @@ def show_login_page():
                     </div>
                 </div>
                 <div class="rst-title-text">LOGIN</div>
-                <p style="color:{text_secondary}; font-size:12px;">தொடர லாக் இன் செய்யவும்.</p>
+                <p style="color:{text_secondary}; font-size:11px;">தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
         with st.form("login_form"):
@@ -257,7 +257,7 @@ def show_login_page():
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="rst-title-text" style="margin-top:20px;">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
+    st.markdown('<div class="rst-title-text" style="margin-top:15px;">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
         st.session_state.active_mode = "chat"
@@ -271,8 +271,8 @@ def show_admin_dashboard():
             if search_query.lower() in name.lower() or search_query.lower() in prompt.lower() or search_query.lower() in email.lower():
                 st.markdown(f"""
                     <div class="rst-card">
-                        <p style="color:{btn_text}; margin:0;"><b>{name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
-                        <p style="margin:5px 0 0 0;">{prompt}</p>
+                        <p style="color:{btn_text}; margin:0; font-size:12px;"><b>{name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
+                        <p style="margin:5px 0 0 0; font-size:13px;">{prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -282,7 +282,8 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    col_admin, col_theme, col_space, col_user = st.columns([0.8, 0.8, 1.4, 1.8])
+    # RESPONSIVE TOP BAR COLUMNS
+    col_admin, col_theme, col_user = st.columns([1, 1, 2])
 
     with col_admin:
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
@@ -303,17 +304,18 @@ else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:11px; font-weight:600; color:{text_primary};">{st.session_state.user_name}</span>
+                    <span style="font-size:10px; font-weight:600; color:{text_primary};">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <span style="font-size:10px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
+                    <span style="font-size:9px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
                 </div>
             """, unsafe_allow_html=True)
 
+    # CENTER EMBLEM BRANDING
     st.markdown(f"""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
@@ -326,7 +328,8 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    c_left, btn_chat_col, btn_voice_col, c_right = st.columns([2.5, 1.5, 1.5, 2.5])
+    # MODE SWITCHERS
+    btn_chat_col, btn_voice_col = st.columns(2)
     with btn_chat_col:
         if st.button("🤖 AI Chat"): 
             st.session_state.active_mode = "chat"
@@ -334,8 +337,9 @@ else:
         if st.button("🎙️ Voice Gen"): 
             st.session_state.active_mode = "voice"
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 20px 0 15px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 15px 0 10px 0;'>", unsafe_allow_html=True)
 
+    # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -378,6 +382,7 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
+    # 2. VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.markdown('<div class="custom-subheader">🎙️ RST Voice Generator</div>', unsafe_allow_html=True)
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
@@ -392,6 +397,7 @@ else:
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
+    # 3. ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
         st.markdown('<div class="custom-subheader">👑 Admin Authentication</div>', unsafe_allow_html=True)
         pwd = st.text_input("Enter Master Password:", type="password")
