@@ -3,7 +3,6 @@ import edge_tts
 import asyncio
 import sqlite3
 from datetime import datetime
-import io
 from PIL import Image
 
 # 1. DATABASE SETUP
@@ -53,18 +52,16 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & EYE-FRIENDLY STABLE UI CSS
+# 3. STREAMLIT PAGE CONFIG & UI CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Eye-Friendly Dark Background */
     .stApp {
         background: radial-gradient(circle at 50% 10%, #0f172a 0%, #0b0f19 100%) !important;
         color: #f8fafc !important;
     }
 
-    /* Animated RST Logo Title */
     .rst-holo-logo {
         font-size: 42px !important;
         font-weight: 900 !important;
@@ -82,7 +79,6 @@ st.markdown("""
         to { background-position: 200% center; }
     }
 
-    /* Subtitle Tag */
     .owner-badge {
         background: rgba(15, 23, 42, 0.8);
         border: 1px solid rgba(56, 189, 248, 0.3);
@@ -94,7 +90,6 @@ st.markdown("""
         letter-spacing: 1px;
     }
 
-    /* Glassmorphism Card */
     .glass-card {
         background: rgba(30, 41, 59, 0.5) !important;
         backdrop-filter: blur(12px) !important;
@@ -105,7 +100,6 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* Profile Badge */
     .profile-box {
         float: right;
         display: flex;
@@ -130,7 +124,6 @@ st.markdown("""
         font-size: 15px;
     }
 
-    /* Custom Navigation Buttons */
     .stButton>button {
         background: rgba(15, 23, 42, 0.7) !important;
         color: #38bdf8 !important;
@@ -273,7 +266,7 @@ else:
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
 
-    # 1. CHAT MODE
+    # CHAT MODE
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Smart AI Assistant")
 
@@ -316,27 +309,26 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # 2. IMAGE GENERATION MODE
+    # IMAGE GENERATION MODE
     elif st.session_state.active_mode == "image":
         st.subheader("🎨 RST AI Image Generator")
-        img_prompt = st.text_input("உருவாக்கப்பட வேண்டிய படத்தின் விவரிக்கவும் (Prompt):")
+        img_prompt = st.text_input("உருவாக்கப்பட வேண்டிய படத்தை விவரிக்கவும் (Prompt):")
         if st.button("Generate Image"):
             if img_prompt:
                 with st.spinner("🎨 Creating Image..."):
-                    # Pollinations AI Free Image API
                     encoded_prompt = img_prompt.replace(" ", "%20")
                     image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
-                    st.image(image_url, caption=f"Generated: {img_prompt}", use_column_width=True)
+                    st.image(image_url, caption=f"Generated: {img_prompt}", use_container_width=True)
 
-    # 3. VIDEO GENERATION MODE
+    # VIDEO GENERATION MODE
     elif st.session_state.active_mode == "video":
         st.subheader("🎬 RST AI Video Prompt Generator")
-        video_prompt = st.text_area("வீடியோவுக்கானPrompt உள்ளிடவும்:")
+        video_prompt = st.text_area("வீடியோவுக்கான Prompt உள்ளிடவும்:")
         if st.button("Generate Video Script & Concept"):
             if video_prompt:
                 st.info("🎬 AI Video Generation Pipeline initialized. (Runway / Pika Labs Integration Ready)")
 
-    # 4. VOICE GENERATION MODE
+    # VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
@@ -351,24 +343,24 @@ else:
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
-    # 5. PHOTO EDITING MODE
+    # PHOTO EDITING MODE
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST Photo Studio & Editor")
         uploaded_file = st.file_uploader("புகைப்படத்தைப் பதிவேற்றவும் (JPG/PNG):", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption="Original Image", use_column_width=True)
+            st.image(image, caption="Original Image", use_container_width=True)
             
             filter_type = st.selectbox("Filter/Effect:", ["None", "Grayscale", "Rotate 90°"])
             if st.button("Apply Effect"):
                 if filter_type == "Grayscale":
                     edited_img = image.convert("L")
-                    st.image(edited_img, caption="Grayscale Image", use_column_width=True)
+                    st.image(edited_img, caption="Grayscale Image", use_container_width=True)
                 elif filter_type == "Rotate 90°":
                     edited_img = image.rotate(-90)
-                    st.image(edited_img, caption="Rotated Image", use_column_width=True)
+                    st.image(edited_img, caption="Rotated Image", use_container_width=True)
 
-    # 6. ADMIN LOGIN MODE
+    # ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
         st.subheader("👑 Admin Authentication")
         pwd = st.text_input("Enter Master Password:", type="password")
