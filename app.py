@@ -60,7 +60,7 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & PERFECT LAYOUT CSS
+# 4. STREAMLIT CONFIG & CSS TUNING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -85,33 +85,33 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 2.5rem !important;
+        padding-top: 3.5rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1000px !important;
+        max-width: 950px !important;
     }}
 
-    /* Emblem Logo Section */
+    /* Emblem Logo Centered */
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
+        margin-top: 20px;
         margin-bottom: 6px;
     }}
 
     .rst-emblem-box {{
-        padding: 6px 36px;
+        padding: 6px 32px;
         background: {card_bg};
-        border-radius: 16px;
+        border-radius: 14px;
         border: 2px solid {btn_text};
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
     }}
 
     .rst-emblem-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 42px;
+        font-size: 38px;
         font-weight: 900;
-        letter-spacing: 6px;
+        letter-spacing: 5px;
         color: {btn_text};
         margin: 0;
         line-height: 1;
@@ -119,10 +119,10 @@ st.markdown(f"""
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 20px !important;
+        font-size: 18px !important;
         font-weight: 800 !important;
         text-align: center !important;
-        letter-spacing: 3px;
+        letter-spacing: 2px;
         color: {text_primary} !important;
         margin-bottom: 4px !important;
     }}
@@ -131,31 +131,33 @@ st.markdown(f"""
         background: {card_bg};
         border: 1px solid {card_border};
         border-radius: 20px;
-        padding: 4px 16px;
+        padding: 3px 14px;
         width: fit-content;
         margin: 0 auto 20px auto;
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 1px;
         color: {text_secondary};
         font-weight: 600;
     }}
 
-    /* User Profile Badge */
+    /* Compact User Profile Badge */
     .profile-box {{
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        gap: 8px;
+        gap: 6px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 4px 14px;
-        border-radius: 20px;
-        height: 38px;
+        padding: 2px 10px;
+        border-radius: 16px;
+        height: 32px;
+        width: fit-content;
+        margin-left: auto;
     }}
 
     .circle-avatar {{
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -163,20 +165,20 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 11px;
+        font-size: 10px;
     }}
 
-    /* Universal Buttons */
+    /* Compact Top Buttons */
     .stButton>button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
         color: {btn_text} !important;
         border: 1px solid {btn_border} !important;
-        border-radius: 10px !important;
+        border-radius: 8px !important;
         font-weight: 700 !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
         width: 100% !important;
-        height: 38px !important;
+        height: 32px !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -188,17 +190,17 @@ st.markdown(f"""
     .rst-card {{
         background: {card_bg} !important;
         border: 1px solid {card_border} !important;
-        border-radius: 16px !important;
-        padding: 20px !important;
-        margin-bottom: 16px !important;
+        border-radius: 14px !important;
+        padding: 16px !important;
+        margin-bottom: 14px !important;
     }}
 
-    /* Custom Subheader Styling */
+    /* Custom Subheader Positioning */
     .custom-subheader {{
-        font-size: 15px !important;
+        font-size: 14px !important;
         font-weight: 700 !important;
         color: {btn_text} !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 8px !important;
         margin-top: 15px !important;
     }}
     </style>
@@ -256,8 +258,8 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # CORNER NAVIGATION BAR
-    col_left, col_mid_space, col_theme, col_user = st.columns([1.2, 3.5, 1.3, 2])
+    # BALANCED TOP NAVIGATION BAR
+    col_left, col_theme, col_user = st.columns([1, 1, 1.8])
 
     with col_left:
         if st.button("👑 Admin"): 
@@ -274,14 +276,14 @@ else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:12px; font-weight:600;">{st.session_state.user_name}</span>
+                    <span style="font-size:11px; font-weight:600;">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <span style="font-size:11px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
+                    <span style="font-size:10px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -299,7 +301,7 @@ else:
     """, unsafe_allow_html=True)
 
     # MODE SWITCHERS
-    c_left, btn_chat_col, btn_voice_col, c_right = st.columns([2, 2, 2, 2])
+    c_left, btn_chat_col, btn_voice_col, c_right = st.columns([2.5, 1.5, 1.5, 2.5])
     with btn_chat_col:
         if st.button("🤖 AI Chat"): 
             st.session_state.active_mode = "chat"
@@ -307,7 +309,7 @@ else:
         if st.button("🎙️ Voice Gen"): 
             st.session_state.active_mode = "voice"
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 25px 0 15px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 20px 0 15px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
@@ -317,7 +319,7 @@ else:
 
         user_input = st.chat_input("Ask RST Assistant...")
 
-        # Small Heading placed right above / near the chat input area
+        # Subheader placed right above search bar area
         st.markdown('<div class="custom-subheader">🤖 RST Smart AI Assistant</div>', unsafe_allow_html=True)
 
         if user_input:
