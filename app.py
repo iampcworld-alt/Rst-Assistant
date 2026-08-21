@@ -30,26 +30,28 @@ st.markdown("""
 
     /* Compact Owner Card */
     .owner-card { 
-        background: rgba(22, 27, 34, 0.7); 
+        background: rgba(22, 27, 34, 0.8); 
         border: 1px solid #00f0ff; 
-        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
         padding: 10px 15px; 
         border-radius: 12px; 
-        margin: 10px auto 25px auto; 
+        margin: 10px auto 20px auto; 
         max-width: 550px;
         text-align: center;
-        backdrop-filter: blur(10px);
     }
     
-    /* Glassmorphism Command Helper */
+    /* High-Contrast Clear Command Box */
     .cmd-box {
-        background: #0d1117;
-        border-left: 4px solid #ff0055;
-        padding: 10px 15px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-size: 13px;
-        color: #8b949e;
+        background: #161b22;
+        border: 1px solid #ff0055;
+        box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+        padding: 12px 18px;
+        border-radius: 10px;
+        margin: 15px auto 25px auto;
+        max-width: 700px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 1.6;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -80,19 +82,19 @@ if check_password():
     st.markdown("""
         <div class="owner-card">
             <h4 style="color: #ff0055; margin:0 0 4px 0; letter-spacing: 1px;">SYSTEM INFORMATION</h4>
-            <p style="margin:2px 0; font-size:14px;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
+            <p style="margin:2px 0; font-size:14px; color:#ffffff;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
             <p style="margin:2px 0; font-size:12px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED] | <b>PHONE:</b> [PROTECTED]</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Command Guide Banner
+    # Clear Command Guide Box
     st.markdown("""
         <div class="cmd-box">
-            <b>⚡ SMART COMMAND GUIDE:</b><br>
-            • <b>Image Generate:</b> <code>/image [Prompt]</code> (எ.கா: /image a futuristic lion)<br>
-            • <b>Video Generate:</b> <code>/video [Prompt]</code> (எ.கா: /video flying car in night city)<br>
-            • <b>Voice Generate:</b> <code>/voice [Text]</code> (எ.கா: /voice வணக்கம் நண்பா)<br>
-            • <b>Normal Chat:</b> எந்தக் கேள்வியையும் நேரடியாக டைப் செய்யவும்.
+            <b style="color: #ff0055; font-size: 15px;">⚡ SMART COMMAND GUIDE:</b><br>
+            • <b style="color: #00f0ff;">Image Generate:</b> <code style="color:#ff0055;">/image [Prompt]</code> (எ.கா: /image a futuristic lion)<br>
+            • <b style="color: #00f0ff;">Video Generate:</b> <code style="color:#ff0055;">/video [Prompt]</code> (எ.கா: /video flying car in night city)<br>
+            • <b style="color: #00f0ff;">Voice Generate:</b> <code style="color:#ff0055;">/voice [Text]</code> (எ.கா: /voice வணக்கம் நண்பா)<br>
+            • <b style="color: #00f0ff;">Normal Chat:</b> எந்தக் கேள்வியையும் நேரடியாக டைப் செய்யவும்.
         </div>
     """, unsafe_allow_html=True)
 
@@ -193,10 +195,9 @@ if check_password():
 
             asyncio.run(speak())
             st.audio("rst_response.mp3")
-            st.session_state.messages.append({"role": "assistant", "type": "audio", "content": "rst_response.mp3"})
 
     # ---------------- 5. PHOTO UPLOAD & EDIT STUDIO EXPANDABLE ----------------
-    with st.expander("🖼️ Photo Upload & Edit Studio (இங்கே படங்களைப் பதிவேற்றி எடிட் செய்யவும்)"):
+    with st.expander("🖼️ Photo Upload & Edit Studio (படங்களை எடிட் செய்ய கிளிக் செய்யவும்)"):
         uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
@@ -205,7 +206,6 @@ if check_password():
                 st.subheader("Original Image")
                 st.image(image, use_column_width=True)
 
-            # Controls inside expander
             b_val = st.slider("Brightness", 0.5, 2.0, 1.0)
             c_val = st.slider("Contrast", 0.5, 2.0, 1.0)
             blur_val = st.slider("Blur", 0, 5, 0)
