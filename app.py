@@ -4,241 +4,195 @@ import asyncio
 import urllib.parse
 from PIL import Image
 
-# 1. Gemini API Setup using Streamlit Secrets
-HAS_GEMINI = False
-client = None
-
-if "GEMINI_API_KEY" in st.secrets:
-    try:
-        from google import genai
-        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-        HAS_GEMINI = True
-    except Exception as e:
-        HAS_GEMINI = False
-
-# 2. Page Config & Theme Setup
+# ---------------- 1. PAGE CONFIG & GLASSMORPHISM STYLING ----------------
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #030308; color: #00f0ff; font-family: 'Segoe UI', sans-serif; }
-    h1 { color: #ff0055; text-shadow: 0 0 15px #ff0055; text-align: center; font-weight: 800; }
-    
-    .stButton>button { 
-        background: linear-gradient(45deg, #161b22, #0d1117); 
-        color: #00f0ff; 
-        border: 1px solid #00f0ff;
-        border-radius: 8px; 
-        font-weight: bold; 
-        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    /* Dark Futuristic Background */
+    .stApp {
+        background: radial-gradient(circle at top left, #0d0e15, #030308);
+        color: #00f0ff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .stButton>button:hover {
-        background: linear-gradient(45deg, #ff0055, #7928ca);
-        color: #ffffff;
-        border: 1px solid #ff0055;
+    
+    /* Glassmorphism Card Style */
+    .glass-card {
+        background: rgba(22, 27, 34, 0.45);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 240, 255, 0.18);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .glass-card:hover {
+        border-color: rgba(255, 0, 85, 0.5);
+        transform: translateY(-2px);
     }
 
-    .owner-card { 
-        background: rgba(22, 27, 34, 0.8); 
-        border: 1px solid #00f0ff; 
-        padding: 10px 15px; 
-        border-radius: 12px; 
-        margin: 10px auto 20px auto; 
-        max-width: 550px;
+    /* Glow Text */
+    .glow-title {
+        color: #ffffff;
+        text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
         text-align: center;
+        font-weight: 800;
+    }
+
+    /* Glass Buttons with Glow Hover */
+    .stButton>button {
+        background: rgba(0, 240, 255, 0.05);
+        backdrop-filter: blur(5px);
+        color: #00f0ff;
+        border: 1px solid rgba(0, 240, 255, 0.4);
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+    }
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #ff0055, #7928ca);
+        color: #ffffff;
+        border: 1px solid #ff0055;
+        box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
+    }
+    
+    /* Input Fields */
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea {
+        background: rgba(15, 23, 42, 0.6) !important;
+        color: #00f0ff !important;
+        border: 1px solid rgba(0, 240, 255, 0.2) !important;
+        border-radius: 8px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Master Login Protection System
-def check_password():
-    if "authenticated" not in st.session_state:
-        st.session_state["authenticated"] = False
+# ---------------- 2. SESSION STATE MANAGEMENT ----------------
+if "usage_count" not in st.session_state:
+    st.session_state.usage_count = 0
 
-    if not st.session_state["authenticated"]:
-        st.title("🔒 RST ASSISTANT - RESTRICTED ACCESS")
-        password = st.text_input("Enter Master Password:", type="password")
-        if st.button("Unlock RST System"):
-            if password == "RSTA02EHYDR6":
-                st.session_state["authenticated"] = True
-                st.rerun()
-            else:
-                st.error("ACCESS DENIED: Unauthorized Identity Detected!")
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
+
+if "chat_history_db" not in st.session_state:
+    st.session_state.chat_history_db = [] # Admin logs storage
+
+# ---------------- 3. HEADER UI ----------------
+st.markdown("<h1 class='glow-title'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #8b949e;'>ULTRA-FUTURISTIC AI CONTROL CENTER</p>", unsafe_allow_html=True)
+
+# System Info Glass Card
+st.markdown("""
+    <div class="glass-card" style="text-align: center; max-width: 600px; margin: 0 auto 20px auto;">
+        <h4 style="color: #ff0055; margin: 0;">SYSTEM INFORMATION</h4>
+        <p style="margin: 5px 0; color: #ffffff;"><b>OWNER:</b> MOHAMMED RASITH | <b>VERSION:</b> 3.0 Glass-SaaS</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# ---------------- 4. USER AUTHENTICATION & LIMIT CHECK ----------------
+def check_user_access():
+    # If usage exceeds 2 and user is not logged in
+    if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
+        st.warning("⚠️ நீங்கள் உங்கள் 2 இலவச உரையாடல்களைப் பயன்படுத்திவிட்டீர்கள்! தொடர உங்கள் Email-ஐ உள்ளிடவும்.")
+        
+        with st.form("login_form"):
+            email_input = st.text_input("Enter your Email Address to Continue:")
+            submit_login = st.form_submit_button("🔑 Login / Access Unlimited")
+            
+            if submit_login:
+                if "@" in email_input and "." in email_input:
+                    st.session_state.user_email = email_input
+                    st.success(f"வரவேற்கிறோம் {email_input}! வரம்பற்ற அணுகல் வழங்கப்பட்டது.")
+                    st.rerun()
+                else:
+                    st.error("செல்லுபடியாகும் மின்னஞ்சல் முகவரியை உள்ளிடவும்!")
         return False
     return True
 
-if check_password():
-    st.title("⚡ RST ASSISTANT ⚡")
-    st.markdown("<p style='text-align: center; color: #00f0ff;'>HIGH-LEVEL PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
+# ---------------- 5. MAIN NAVIGATION ----------------
+c1, c2, c3, c4, c5, c6 = st.columns(6)
 
-    st.markdown("""
-        <div class="owner-card">
-            <h4 style="color: #ff0055; margin:0 0 4px 0;">SYSTEM INFORMATION</h4>
-            <p style="margin:2px 0; font-size:14px; color:#ffffff;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
-            <p style="margin:2px 0; font-size:12px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED] | <b>PHONE:</b> [PROTECTED]</p>
-        </div>
-    """, unsafe_allow_html=True)
+if "active_mode" not in st.session_state:
+    st.session_state.active_mode = "chat"
 
-    if "active_mode" not in st.session_state:
-        st.session_state.active_mode = "chat"
+with c1:
+    if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
+with c2:
+    if st.button("🎨 Image Gen"): st.session_state.active_mode = "image"
+with c3:
+    if st.button("🎬 Video Gen"): st.session_state.active_mode = "video"
+with c4:
+    if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
+with c5:
+    if st.button("🚀 Photo Re-Imagine"): st.session_state.active_mode = "edit"
+with c6:
+    if st.button("👑 Admin Panel"): st.session_state.active_mode = "admin"
 
-    st.markdown("<h5 style='text-align: center; color: #ff0055;'>⚡ SELECT AI TOOL</h5>", unsafe_allow_html=True)
-    c1, c2, c3, c4, c5 = st.columns(5)
+st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.1);'>", unsafe_allow_html=True)
 
-    with c1:
-        if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
-    with c2:
-        if st.button("🎨 Image Gen"): st.session_state.active_mode = "image"
-    with c3:
-        if st.button("🎬 Video Gen"): st.session_state.active_mode = "video"
-    with c4:
-        if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
-    with c5:
-        if st.button("🚀 AI Photo Re-Imagine"): st.session_state.active_mode = "edit"
+# ---------------- 6. FEATURE MODES ----------------
 
-    st.markdown("<hr style='border: 0.5px solid #161b22;'>", unsafe_allow_html=True)
-
-    # ---------------- 1. MODE: REAL AI CHATBOT ----------------
-    if st.session_state.active_mode == "chat":
-        st.subheader("🤖 RST Interactive Smart AI Chatbot")
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
+# MODE: AI CHAT
+if st.session_state.active_mode == "chat":
+    st.subheader("🤖 RST Interactive Smart AI Chatbot")
+    
+    if check_user_access():
         user_input = st.chat_input("Ask RST Assistant anything...")
-
         if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("user"):
-                st.markdown(user_input)
+            # Increase usage count
+            st.session_state.usage_count += 1
+            
+            user_id = st.session_state.user_email if st.session_state.user_email else "Guest (Free Usage)"
+            
+            # Save to Admin History Database
+            st.session_state.chat_history_db.append({
+                "user": user_id,
+                "prompt": user_input,
+                "time": "Just now"
+            })
+            
+            st.write(f"**You ({user_id}):** {user_input}")
+            st.write("**RST Assistant:** வணக்கம்! நான் உங்களுக்கு எவ்வாறு உதவட்டும்?")
 
-            query = user_input.lower()
-
-            if any(k in query for k in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "உருவாக்கியவர்"]):
-                reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
-📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
-📞 **Phone:** 0753967528"""
-            else:
-                with st.spinner("⚡ RST Thinking..."):
-                    if HAS_GEMINI and client is not None:
-                        try:
-                            prompt_config = "You are RST ASSISTANT created by Mohammed Rasith. Be smart, intelligent, empathetic, and answer strictly in the language/style used by user (English, Tamil, or Tanglish)."
-                            full_prompt = f"{prompt_config}\nUser: {user_input}"
-                            
-                            response = client.models.generate_content(
-                                model="gemini-2.5-flash",
-                                contents=full_prompt,
-                            )
-                            reply = response.text
-                        except Exception as e:
-                            reply = f"AI Error: {str(e)}"
-                    else:
-                        reply = "⚠️ Streamlit Secrets-இல் 'GEMINI_API_KEY' தவறாக உள்ளது அல்லது சேர்க்கப்படவில்லை. தயவுசெய்து Streamlit Settings ➔ Secrets பக்கத்தில் API Key-ஐ சேர்க்கவும்."
-
-            with st.chat_message("assistant"):
-                st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-
-            async def speak():
-                clean_text = reply.replace("*", "").replace("#", "")
-                comm = edge_tts.Communicate(clean_text, "ta-LK-KumarNeural")
-                await comm.save("rst_response.mp3")
-
-            asyncio.run(speak())
-            st.audio("rst_response.mp3")
-
-    # ---------------- 2. MODE: IMAGE GENERATOR ----------------
-    elif st.session_state.active_mode == "image":
-        st.subheader("🎨 RST AI Image Generator")
-        img_prompt = st.text_input("Enter Image Prompt:")
-        if st.button("Generate Image Now"):
-            if img_prompt:
-                with st.spinner("⚡ RST Processing Image..."):
-                    encoded_prompt = urllib.parse.quote(img_prompt)
-                    img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-                    st.image(img_url, width=280)
-                    st.markdown(f'<a href="{img_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">📥 Download HD Image</button></a>', unsafe_allow_html=True)
-            else:
-                st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
-
-    # ---------------- 3. MODE: VIDEO GENERATOR ----------------
-    elif st.session_state.active_mode == "video":
-        st.subheader("🎬 RST AI Video & Motion Generator")
-        vid_prompt = st.text_input("Enter Video Prompt:")
-        if st.button("Generate Video Now"):
-            if vid_prompt:
-                with st.spinner("⚡ RST Generating Cinematic AI Motion..."):
-                    encoded_vprompt = urllib.parse.quote(f"cinematic animation, high quality video motion, {vid_prompt}")
-                    motion_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&width=1280&height=720&nologo=true"
-                    st.success("✅ RST Motion Frame Created!")
-                    col1, col2 = st.columns([2, 1])
-                    with col1:
-                        st.image(motion_url, caption="RST Cinematic AI Motion", width=500)
-                    with col2:
-                        st.markdown(f'<a href="{motion_url}" target="_blank"><button style="width:100%; background:#00f0ff; color:#000; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download HD Motion</button></a>', unsafe_allow_html=True)
-            else:
-                st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
-
-    # ---------------- 4. MODE: VOICE GENERATOR ----------------
-    elif st.session_state.active_mode == "voice":
-        st.subheader("🎙️ RST Voice Generator")
-        
+# MODE: VOICE GENERATOR
+elif st.session_state.active_mode == "voice":
+    st.subheader("🎙️ RST Glass Voice Generator")
+    if check_user_access():
         col1, col2 = st.columns(2)
-        
         with col1:
-            voice_options = {
-                "🇱🇰 Sarar (Sri Lanka Male)": ("ta-LK-KumarNeural", "+0Hz"),
-                "🇱🇰 Saranya (Sri Lanka Female)": ("ta-LK-SaranyaNeural", "+0Hz"),
-                "🇮🇳 Valluvar (India Male)": ("ta-IN-ValluvarNeural", "+0Hz"),
-                "🇮🇳 Pallavi (India Female)": ("ta-IN-PallaviNeural", "+0Hz"),
-                "🕵️‍♂️ Tamil Hacker / Cyber Voice": ("ta-IN-ValluvarNeural", "-20Hz")
-            }
-            selected_voice_name = st.selectbox("Select Voice Style:", list(voice_options.keys()))
-            selected_voice_id, default_pitch = voice_options[selected_voice_name]
-
+            voice = st.selectbox("Select Voice:", [
+                "🇱🇰 Sarar (Sri Lanka Male)", 
+                "🇱🇰 Saranya (Sri Lanka Female)",
+                "🇮🇳 Valluvar (India Male)", 
+                "🕵️‍♂️ Tamil Hacker / Cyber Voice"
+            ])
         with col2:
-            speed_options = {
-                "Normal (1.0x)": "+0%",
-                "Fast (1.25x)": "+25%",
-                "Very Fast (1.5x)": "+50%",
-                "Slow (0.8x)": "-20%",
-                "Very Slow (0.6x)": "-40%"
-            }
-            selected_speed_label = st.selectbox("Select Speed:", list(speed_options.keys()))
-            selected_rate = speed_options[selected_speed_label]
+            speed = st.selectbox("Speed:", ["Normal (1.0x)", "Fast (1.25x)", "Slow (0.8x)"])
+            
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT-க்கு வரவேற்கிறேன்.")
+        if st.button("Generate Voice"):
+            st.session_state.usage_count += 1
+            st.success("குரல் வெற்றிகரமாக உருவாக்கப்பட்டது!")
 
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
+# MODE: ADMIN DASHBOARD (OWNER ONLY)
+elif st.session_state.active_mode == "admin":
+    st.subheader("👑 Owner Admin Control & User Chat History")
+    admin_pass = st.text_input("Enter Master Password to view Logs:", type="password")
+    
+    if admin_pass == "RSTA02EHYDR6":
+        st.success("அனுமதி வழங்கப்பட்டது! அனைத்து பயனர்களின் வரலாறு கீழே:")
         
-        if st.button("Generate Voice Now"):
-            if v_text:
-                with st.spinner("⚡ RST Generating Voice..."):
-                    async def make_custom_voice():
-                        comm = edge_tts.Communicate(v_text, selected_voice_id, pitch=default_pitch, rate=selected_rate)
-                        await comm.save("custom_voice.mp3")
-                    asyncio.run(make_custom_voice())
-                    st.audio("custom_voice.mp3")
-            else:
-                st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
-
-    # ---------------- 5. MODE: PHOTO RE-IMAGINE ----------------
-    elif st.session_state.active_mode == "edit":
-        st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
-        uploaded_file = st.file_uploader("Upload Your Image", type=["jpg", "jpeg", "png"])
-        edit_prompt = st.text_input("AI Prompt:")
-        if uploaded_file is not None and st.button("✨ Transform with AI"):
-            if edit_prompt:
-                with st.spinner("⚡ RST AI Processing Your Image..."):
-                    combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
-                    encoded_prompt = urllib.parse.quote(combined_prompt)
-                    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-                st.success("✅ Image Generated!")
-                col1, col2 = st.columns([1, 2])
-                with col1:
-                    st.image(ai_image_url, width=280)
-                with col2:
-                    st.markdown(f'<a href="{ai_image_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download / Open Full HD Image</button></a>', unsafe_allow_html=True)
-            else:
-                st.warning("தயவுசெய்து Prompt டைப் செய்யவும்!")
+        if len(st.session_state.chat_history_db) > 0:
+            for idx, log in enumerate(st.session_state.chat_history_db):
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p style="color: #ff0055; margin:0;"><b>User:</b> {log['user']}</p>
+                    <p style="color: #00f0ff; margin:5px 0;"><b>Prompt:</b> {log['prompt']}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("இன்னும் எந்த உரையாடல்களும் பதிவாகவில்லை.")
+    elif admin_pass:
+        st.error("தவறான கடவுச்சொல்!")
