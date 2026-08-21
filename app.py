@@ -39,18 +39,17 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GROQ API SETUP (GEMINI FULLY REMOVED)
-HAS_GROQ = False
-groq_client = None
+# 2. GEMINI SETUP
+HAS_GEMINI = False
+client = None
 
-GROQ_API_KEY = "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"
-
-try:
-    from groq import Groq
-    groq_client = Groq(api_key=GROQ_API_KEY)
-    HAS_GROQ = True
-except Exception:
-    HAS_GROQ = False
+if "GEMINI_API_KEY" in st.secrets:
+    try:
+        from google import genai
+        client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        HAS_GEMINI = True
+    except Exception:
+        HAS_GEMINI = False
 
 # 3. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
@@ -384,20 +383,18 @@ else:
                 st.markdown(user_input)
 
             with st.spinner("⚡ RST Processing..."):
-                if HAS_GROQ and groq_client is not None:
+                if HAS_GEMINI and client is not None:
                     try:
-                        chat_completion = groq_client.chat.completions.create(
-                            model="llama-3.3-70b-versatile",
-                            messages=[
-                                {"role": "system", "content": "You are RST ASSISTANT built by Mohammed Rasith."},
-                                {"role": "user", "content": user_input}
-                            ]
+                        # 3.6-flash மாடலுக்கு மாற்றப்பட்டுள்ளது
+                        response = client.models.generate_content(
+                            model="gemini-3.6-flash",
+                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
                         )
-                        reply = chat_completion.choices[0].message.content
+                        reply = response.text
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "வணக்கம்! நான் Groq API-ஐ இணைக்கவில்லை."
+                    reply = "வணக்கம்! நான் RST AI Assistant."
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
