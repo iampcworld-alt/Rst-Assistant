@@ -163,15 +163,17 @@ st.markdown("""
         font-size: 15px;
     }
 
-    /* Standard Navigation Buttons styling */
+    /* Button Styling - Fixed Padding & Responsive Width */
     .stButton>button {
         background: rgba(15, 23, 42, 0.8) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.4) !important;
         border-radius: 12px !important;
         font-weight: 600 !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
         width: 100% !important;
-        padding: 8px 16px !important;
+        padding: 10px 20px !important;
         transition: all 0.3s ease !important;
     }
 
@@ -182,12 +184,13 @@ st.markdown("""
         box-shadow: 0 0 18px rgba(56, 189, 248, 0.6) !important;
     }
 
-    /* Unique Premium Gold Design for Admin Button */
+    /* Gold Design for Top Admin Button */
     div[data-testid="stColumn"]:first-child .stButton>button {
         background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)) !important;
         color: #fbbf24 !important;
         border: 1px solid rgba(251, 191, 36, 0.5) !important;
         box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
+        width: auto !important;
     }
 
     div[data-testid="stColumn"]:first-child .stButton>button:hover {
@@ -281,7 +284,7 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP HEADER ROW: Gold Admin button on Left, User Badge on Right
+    # TOP HEADER ROW
     top_col_left, top_col_right = st.columns([1, 1])
     
     with top_col_left:
@@ -325,8 +328,8 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # TIGHT CENTER NAVIGATION (AI Chat & Voice Gen placed closely in the center)
-    c_space_left, c_btn1, c_btn2, c_space_right = st.columns([3, 1.2, 1.2, 3])
+    # PERFECT CENTER NAVIGATION GRID (AI Chat & Voice Gen centered & spacious)
+    c_space_left, c_btn1, c_btn2, c_space_right = st.columns([2, 1.5, 1.5, 2])
     
     with c_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
