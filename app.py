@@ -22,7 +22,6 @@ st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 # 3. ULTRA GLASSMORPHISM CSS
 st.markdown("""
     <style>
-    /* Gradient Animated Background */
     .stApp {
         background: linear-gradient(-45deg, #05050d, #0d001a, #00121e, #05050d);
         background-size: 400% 400%;
@@ -36,7 +35,6 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
 
-    /* Glassmorphism Container */
     .glass-box {
         background: rgba(255, 255, 255, 0.05) !important;
         backdrop-filter: blur(16px) saturate(180%) !important;
@@ -48,7 +46,6 @@ st.markdown("""
         margin-bottom: 20px !important;
     }
 
-    /* Shiny Glass Buttons */
     .stButton>button {
         background: rgba(0, 240, 255, 0.08) !important;
         backdrop-filter: blur(10px) !important;
@@ -68,7 +65,6 @@ st.markdown("""
         transform: translateY(-3px) !important;
     }
 
-    /* Inputs Styling */
     .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div {
         background: rgba(0, 0, 0, 0.6) !important;
         color: #00f0ff !important;
@@ -91,13 +87,13 @@ if "chat_history_db" not in st.session_state:
 if "active_mode" not in st.session_state:
     st.session_state.active_mode = "chat"
 
-# ---------------- 5. SEPARATE LOGIN SCREEN ----------------
+# 5. SEPARATE LOGIN SCREEN
 def show_login_page():
     st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("""
         <div class="glass-box" style="max-width: 450px; margin: 0 auto; text-align: center;">
             <h1 style="color: #ff0055; margin-bottom: 5px;">⚡ RST LOGIN</h1>
-            <p style="color: #8b949e; font-size: 14px;">உங்கள் Free 2 Limits முடிந்துவிட்டது! தொடர லாக் இன் செய்யவும்.</p>
+            <p style="color: #8b949e; font-size: 14px;">உங்கள் 2 இலவச வாய்ப்புகள் முடிந்துவிட்டன! தொடர உங்கள் Email-ஐ அழுத்தவும்.</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -110,29 +106,31 @@ def show_login_page():
             if submit:
                 if "@" in email_in and "." in email_in:
                     st.session_state.user_email = email_in
-                    st.success("✅ லாக் இன் வெற்றி! சிஸ்டம் அன்லாக் செய்யப்பட்டது.")
+                    st.success("✅ லாக் இன் வெற்றி!")
                     st.rerun()
                 else:
-                    st.error("❌ சரியான Email முகவரியை டைப் செய்யவும்!")
+                    st.error("❌ சரியான Email முகவரியை உள்ளிடவும்!")
 
-# ---------------- 6. MAIN APP INTERFACE ----------------
-# Limit Exceeded Check
+# 6. MAIN APP INTERFACE
 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # Header Section
     st.markdown("<h1 style='text-align: center; color: #ff0055; text-shadow: 0 0 20px #ff0055;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
     
     user_status = st.session_state.user_email if st.session_state.user_email else f"Free User ({2 - st.session_state.usage_count} uses left)"
     
+    # OWNER DETAILS SERIYAAGAK KAATTA
     st.markdown(f"""
         <div class="glass-box" style="text-align: center; max-width: 650px; margin: 0 auto 20px auto; padding: 15px !important;">
             <h4 style="color: #00f0ff; margin:0;">SYSTEM INFORMATION</h4>
-            <p style="margin:5px 0; color:#ffffff; font-size:14px;"><b>OWNER:</b> MOHAMMED RASITH | <b>ACCOUNT:</b> <span style="color:#ff0055;">{user_status}</span></p>
+            <p style="margin:5px 0; color:#ffffff; font-size:14px;">
+                <b>OWNER:</b> <span style="color:#00f0ff;">MOHAMMED RASITH</span> | 
+                <b>USER:</b> <span style="color:#ff0055;">{user_status}</span>
+            </p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Tool Navigation Buttons
+    # Tool Navigation
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     with c1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
@@ -149,7 +147,7 @@ else:
 
     st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.1);'>", unsafe_allow_html=True)
 
-    # ---------------- 1. AI CHAT MODE ----------------
+    # 1. AI CHAT MODE (FIXED GEMINI MODEL)
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Interactive Smart AI Chatbot")
         
@@ -168,7 +166,6 @@ else:
                 
             current_user = st.session_state.user_email if st.session_state.user_email else "Guest (Free Trail)"
             
-            # Save to Admin History
             st.session_state.chat_history_db.append({
                 "user": current_user,
                 "prompt": user_input
@@ -182,8 +179,10 @@ else:
                 if HAS_GEMINI and client is not None:
                     try:
                         p_config = "You are RST ASSISTANT created by Mohammed Rasith. Be smart, intelligent, and respond in the same language as user."
+                        
+                        # GEMINI MODEL UPDATED TO 3.6-FLASH
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash",
+                            model="gemini-3.6-flash",
                             contents=f"{p_config}\nUser: {user_input}"
                         )
                         reply = response.text
@@ -199,7 +198,7 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # ---------------- 2. VOICE GEN MODE ----------------
+    # 2. VOICE GEN MODE
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
         
@@ -235,7 +234,7 @@ else:
                 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                     st.rerun()
 
-    # ---------------- 3. ADMIN PANEL MODE ----------------
+    # 3. ADMIN PANEL MODE
     elif st.session_state.active_mode == "admin":
         st.subheader("👑 Owner Admin Control Panel")
         admin_pass = st.text_input("Master Password:", type="password")
