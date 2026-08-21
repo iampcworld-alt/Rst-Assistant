@@ -95,18 +95,9 @@ st.markdown(f"""
     }}
 
     @keyframes goldGlow {{
-        0% {{
-            border-color: #ffd700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
-        }}
-        50% {{
-            border-color: #ffae00;
-            box-shadow: 0 0 12px rgba(255, 174, 0, 0.8);
-        }}
-        100% {{
-            border-color: #ffd700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
-        }}
+        0% {{ border-color: #ffd700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }}
+        50% {{ border-color: #ffae00; box-shadow: 0 0 12px rgba(255, 174, 0, 0.8); }}
+        100% {{ border-color: #ffd700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }}
     }}
 
     .gold-animated-btn button {{
@@ -114,6 +105,21 @@ st.markdown(f"""
         color: #ffd700 !important;
         font-weight: 800 !important;
         background: {card_bg} !important;
+    }}
+
+    /* FLEXBOX CONTAINER TO FORCE SINGLE ROW IN MOBILE & DESKTOP */
+    .top-flex-container {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        width: 100%;
+        margin-bottom: 4px;
+    }}
+
+    .top-flex-item {{
+        flex: 1;
+        min-width: 0;
     }}
 
     .rst-emblem-container {{
@@ -169,18 +175,19 @@ st.markdown(f"""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 4px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 2px 8px;
+        padding: 2px 6px;
         border-radius: 20px;
         height: 32px;
         width: 100%;
+        box-sizing: border-box;
     }}
 
     .circle-avatar {{
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -188,7 +195,7 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 8px;
+        font-size: 7px;
         flex-shrink: 0;
     }}
 
@@ -199,10 +206,10 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 10px !important;
+        font-size: 9px !important;
         width: 100% !important;
         height: 32px !important;
-        padding: 0px 4px !important;
+        padding: 0px 2px !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -281,7 +288,7 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # UNIFIED SINGLE ROW FOR ADMIN, LIGHT/DARK, AND USER/GUEST
+    # FORCED SINGLE ROW USING CUSTOM FLEXBOX CONTAINER FOR MOBILE & DESKTOP
     col_admin, col_light, col_user = st.columns(3)
 
     with col_admin:
@@ -303,14 +310,14 @@ else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:9px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
+                    <span style="font-size:8px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <span style="font-size:8px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest ({2 - st.session_state.usage_count})</span>
+                    <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
                 </div>
             """, unsafe_allow_html=True)
 
