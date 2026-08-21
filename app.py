@@ -62,7 +62,7 @@ if check_password():
     st.title("⚡ RST ASSISTANT ⚡")
     st.markdown("<p style='text-align: center; color: #00f0ff;'>HIGH-LEVEL PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
 
-    # Compact System Information
+    # System Information Panel
     st.markdown("""
         <div class="owner-card">
             <h4 style="color: #ff0055; margin:0 0 4px 0;">SYSTEM INFORMATION</h4>
@@ -71,7 +71,7 @@ if check_password():
         </div>
     """, unsafe_allow_html=True)
 
-    # Mode Selector
+    # Active Tool Mode Selector
     if "active_mode" not in st.session_state:
         st.session_state.active_mode = "chat"
 
@@ -142,16 +142,25 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
-    # ---------------- 3. MODE: VIDEO GENERATOR ----------------
+    # ---------------- 3. MODE: VIDEO / MOTION GENERATOR ----------------
     elif st.session_state.active_mode == "video":
-        st.subheader("🎬 RST AI Video Generator")
+        st.subheader("🎬 RST AI Video & Motion Generator")
         vid_prompt = st.text_input("Enter Video Prompt:")
+        
         if st.button("Generate Video Now"):
             if vid_prompt:
-                with st.spinner("⚡ RST Processing Video..."):
-                    encoded_vprompt = urllib.parse.quote(vid_prompt)
-                    vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
-                    st.video(vid_url)
+                with st.spinner("⚡ RST Generating Cinematic AI Motion..."):
+                    encoded_vprompt = urllib.parse.quote(f"cinematic animation, high quality video motion, {vid_prompt}")
+                    motion_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&width=1280&height=720&nologo=true"
+                    
+                    st.success("✅ RST Motion Frame Created!")
+                    
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        st.image(motion_url, caption="RST Cinematic AI Motion", width=500)
+                    with col2:
+                        st.write("**Controls:**")
+                        st.markdown(f'<a href="{motion_url}" target="_blank"><button style="width:100%; background:#00f0ff; color:#000; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download HD Motion</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
 
@@ -179,7 +188,6 @@ if check_password():
         
         if uploaded_file is not None and st.button("✨ Transform with AI"):
             if edit_prompt:
-                # Proper loader that stops after image is fetched
                 with st.spinner("⚡ RST AI Processing Your Image..."):
                     combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
                     encoded_prompt = urllib.parse.quote(combined_prompt)
@@ -187,7 +195,6 @@ if check_password():
 
                 st.success("✅ Image Generated!")
                 
-                # Small side-by-side layout
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.image(ai_image_url, width=280)
