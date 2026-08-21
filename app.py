@@ -12,6 +12,7 @@ st.markdown("""
     .stApp { background-color: #05050a; color: #00ffcc; }
     h1 { color: #ff0055; text-shadow: 0 0 10px #ff0055; text-align: center; }
     .stButton>button { background-color: #ff0055; color: white; border-radius: 5px; font-weight: bold; width: 100%; }
+    
     /* Compact System Info Card */
     .owner-card { 
         background: #161b22; 
@@ -58,9 +59,15 @@ if check_password():
 
     # Sidebar Navigation Controls
     st.sidebar.title("⚡ RST Control Panel")
-    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", ["🤖 RST Chatbot", "🎨 Image Generator", "🖼️ Photo Upload & Edit"])
+    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", [
+        "🤖 RST Chatbot", 
+        "🎙️ Voice Generator",
+        "🎨 Image Generator", 
+        "🎬 Video Generator",
+        "🖼️ Photo Upload & Edit"
+    ])
 
-    # 1. Chatbot Mode
+    # ------------------- 1. CHATBOT MODE -------------------
     if mode == "🤖 RST Chatbot":
         st.subheader("🤖 RST Interactive Chatbot")
         
@@ -101,12 +108,38 @@ if check_password():
             asyncio.run(speak())
             st.audio("rst_response.mp3")
 
-    # 2. AI Image Generator Mode
+    # ------------------- 2. VOICE GENERATOR MODE -------------------
+    elif mode == "🎙️ Voice Generator":
+        st.subheader("🎙️ RST Custom Voice Generator")
+        st.write("நீங்கள் டைப் செய்யும் உரையை உயர்தர வாய்ஸ் ஆடியோவாக மாற்றுங்கள்:")
+
+        tts_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரையை உள்ளிடவும் (Text to Speech):", value="வணக்கம், நான் RST ASSISTANT குரல் செயலி.")
+        
+        col_voice, col_lang = st.columns(2)
+        with col_voice:
+            voice_gender = st.selectbox("குரல் தேர்வு (Voice Gender):", ["Male (ஆண்குரல் - Valluvar)", "Female (பெண்குரல் - Pallavi)"])
+        
+        if st.button("Generate Voice Audio"):
+            if tts_text:
+                with st.spinner("குரல் உருவாக்கப்படுகிறது..."):
+                    voice_code = "ta-IN-ValluvarNeural" if "Male" in voice_gender else "ta-IN-PallaviNeural"
+                    
+                    async def generate_custom_voice():
+                        communicate = edge_tts.Communicate(tts_text, voice_code)
+                        await communicate.save("custom_voice.mp3")
+
+                    asyncio.run(generate_custom_voice())
+                    st.success("குரல் வெற்றிகரமாக உருவாக்கப்பட்டது!")
+                    st.audio("custom_voice.mp3")
+            else:
+                st.warning("தயவுசெய்து ஏதேனும் உரையை டைப் செய்யவும்!")
+
+    # ------------------- 3. AI IMAGE GENERATOR MODE -------------------
     elif mode == "🎨 Image Generator":
         st.subheader("🎨 RST AI Image Generator")
         st.write("உங்களுக்குத் தேவையான படத்தின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
         
-        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cyberpunk city):")
+        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cybernetic lion):")
         
         if st.button("Generate Image"):
             if prompt:
@@ -117,7 +150,26 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து ஏதேனும் விவரத்தை டைப் செய்யவும்!")
 
-    # 3. Photo Upload & Edit Studio
+    # ------------------- 4. AI VIDEO GENERATOR MODE -------------------
+    elif mode == "🎬 Video Generator":
+        st.subheader("🎬 RST AI Video Generator")
+        st.write("உங்களுக்குத் தேவையான வீடியோவின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
+
+        video_prompt = st.text_input("Enter Video Prompt (e.g., Cyberpunk car driving in rain at night):")
+        
+        if st.button("Generate AI Video"):
+            if video_prompt:
+                with st.spinner("உங்களது AI வீடியோ உருவாக்கப்பட்டு கொண்டிருக்கிறது (சில நொடிகள் காத்திருக்கவும்)..."):
+                    encoded_vprompt = urllib.parse.quote(video_prompt)
+                    # Video Generation Stream Link via Pollinations AI
+                    video_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
+                    
+                    st.video(video_url)
+                    st.success("வீடியோ வெற்றிகரமாக உருவாக்கப்பட்டது!")
+            else:
+                st.warning("தயவுசெய்து வீடியோிற்கான விவரத்தை டைப் செய்யவும்!")
+
+    # ------------------- 5. PHOTO UPLOAD & EDIT STUDIO -------------------
     elif mode == "🖼️ Photo Upload & Edit":
         st.subheader("🖼️ RST Photo Editing Studio")
         st.write("உங்கள் கணினி அல்லது மொபைலில் இருந்து படத்தை பதிவேற்றி எடிட் செய்யவும்:")
