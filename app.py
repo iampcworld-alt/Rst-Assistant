@@ -19,30 +19,46 @@ if "GEMINI_API_KEY" in st.secrets:
 # 2. Page Config
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
-# 3. ULTRA GLASSMORPHISM & CIRCLE AVATAR CSS
+# 3. ULTRA AI BACKGROUND ANIMATION & GLASSMORPHISM CSS
 st.markdown("""
     <style>
+    /* Animated Cyber AI Background */
     .stApp {
-        background: linear-gradient(-45deg, #05050d, #0d001a, #00121e, #05050d);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
+        background: radial-gradient(circle at 50% 50%, rgba(13, 16, 38, 0.9), #030308),
+                    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 240, 255, 0.03) 3px, transparent 4px);
+        background-size: 100% 100%, 100% 20px;
         color: #00f0ff;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        overflow-x: hidden;
     }
 
+    /* Floating AI Grid Glow Lines */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(255, 0, 85, 0.05) 40%, transparent 70%);
+        animation: rotateBg 20s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes rotateBg {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Glassmorphism Card Style */
     .glass-box {
-        background: rgba(255, 255, 255, 0.05) !important;
+        background: rgba(15, 23, 42, 0.55) !important;
         backdrop-filter: blur(16px) saturate(180%) !important;
         -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
         border: 1px solid rgba(0, 240, 255, 0.25) !important;
         border-radius: 20px !important;
         padding: 25px !important;
-        box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.2) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 15px rgba(0, 240, 255, 0.1) !important;
         margin-bottom: 20px !important;
     }
 
@@ -57,7 +73,7 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(0, 240, 255, 0.05);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(0, 240, 255, 0.3);
         border-radius: 30px;
@@ -94,11 +110,12 @@ st.markdown("""
         opacity: 0.8;
     }
 
+    /* Interactive Glass Buttons */
     .stButton>button {
-        background: rgba(0, 240, 255, 0.08) !important;
+        background: rgba(0, 240, 255, 0.05) !important;
         backdrop-filter: blur(10px) !important;
         color: #00f0ff !important;
-        border: 1px solid rgba(0, 240, 255, 0.5) !important;
+        border: 1px solid rgba(0, 240, 255, 0.4) !important;
         border-radius: 12px !important;
         padding: 10px 20px !important;
         font-weight: bold !important;
@@ -168,7 +185,7 @@ def show_login_page():
 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP-RIGHT CIRCLE PROFILE BADGE DISPLAY
+    # TOP-RIGHT CIRCLE PROFILE BADGE
     if st.session_state.user_email:
         first_char = st.session_state.user_name[0].upper() if st.session_state.user_name else "U"
         st.markdown(f"""
@@ -208,7 +225,7 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # Tool Navigation
+    # Tool Navigation Buttons
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     with c1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
