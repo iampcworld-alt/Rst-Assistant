@@ -88,7 +88,6 @@ st.markdown(f"""
         color: {text_primary} !important;
     }}
 
-    /* Remove Streamlit default top padding so buttons go to absolute top */
     .block-container {{
         padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
@@ -108,7 +107,6 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* --- ULTIMATE CORNER FIX USING CSS GRID --- */
     .absolute-header-grid {{
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -300,10 +298,9 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # GRID CONTAINER FOR CORNERS
     st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
     
-    # LEFT CORNER (Admin & Light Stacked closely)
+    # LEFT CORNER
     st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
@@ -318,7 +315,7 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # RIGHT CORNER (User / Guest Badge)
+    # RIGHT CORNER
     st.markdown('<div class="right-corner-box">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
@@ -388,21 +385,14 @@ else:
             with st.spinner("⚡ RST Processing..."):
                 if HAS_GEMINI and client is not None:
                     try:
+                        # 3.6-flash மாடலுக்கு மாற்றப்பட்டுள்ளது
                         response = client.models.generate_content(
-                            model="geminitoken", # fallback or normal model
+                            model="gemini-3.6-flash",
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
                         )
                         reply = response.text
                     except Exception as e:
-                        # Fallback try standard flash model
-                        try:
-                            response = client.models.generate_content(
-                                model="gemini-2.5-flash",
-                                contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
-                            )
-                            reply = response.text
-                        except Exception as inner_e:
-                            reply = f"Error: {str(inner_e)}"
+                        reply = f"Error: {str(e)}"
                 else:
                     reply = "வணக்கம்! நான் RST AI Assistant."
 
