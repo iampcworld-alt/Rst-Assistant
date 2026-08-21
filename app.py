@@ -60,7 +60,7 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & FIXED TOP UI CSS
+# 4. STREAMLIT CONFIG & CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -88,26 +88,24 @@ st.markdown(f"""
         color: {text_primary} !important;
     }}
 
-    /* Lifted container up to prevent hiding behind stream header */
     .block-container {{
         padding-top: 1rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
     }}
 
-    /* Gold Glowing Animation for Admin & Light Buttons */
     @keyframes goldGlow {{
         0% {{
             border-color: #ffd700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4), inset 0 0 5px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
         }}
         50% {{
             border-color: #ffae00;
-            box-shadow: 0 0 15px rgba(255, 174, 0, 0.8), inset 0 0 10px rgba(255, 174, 0, 0.4);
+            box-shadow: 0 0 12px rgba(255, 174, 0, 0.8);
         }}
         100% {{
             border-color: #ffd700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4), inset 0 0 5px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
         }}
     }}
 
@@ -118,7 +116,6 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* Emblem Logo Centered */
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
@@ -200,11 +197,11 @@ st.markdown(f"""
         background: {btn_bg} !important;
         color: {btn_text} !important;
         border: 1px solid {btn_border} !important;
-        border-radius: 8px !important;
+        border-radius: 20px !important;
         font-weight: 700 !important;
         font-size: 11px !important;
         width: 100% !important;
-        height: 28px !important;
+        height: 32px !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -283,16 +280,16 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP NAVIGATION BAR
-    col_admin, col_theme, col_user = st.columns([1, 1, 2])
+    # PILL CONTAINER ROW FOR ADMIN, THEME & USER PROFILE
+    c1, c2, c3 = st.columns([1, 1, 1.2])
 
-    with col_admin:
+    with c1:
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with col_theme:
+    with c2:
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
@@ -300,7 +297,7 @@ else:
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with col_user:
+    with c3:
         if st.session_state.user_email:
             st.markdown(f"""
                 <div class="profile-box">
@@ -312,7 +309,7 @@ else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <span style="font-size:9px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count} left)</span>
+                    <span style="font-size:9px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count})</span>
                 </div>
             """, unsafe_allow_html=True)
 
