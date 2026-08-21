@@ -107,8 +107,8 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* PURE CSS LAYOUT TO FORCE LEFT & RIGHT ALIGNMENT WITHOUT GAP */
-    .top-header-wrapper {{
+    /* ULTIMATE FLEXBOX HEADER FIX */
+    .header-flex-container {{
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -116,14 +116,14 @@ st.markdown(f"""
         margin-bottom: 2px;
     }}
 
-    .left-stack {{
+    .left-side-buttons {{
         display: flex;
         flex-direction: column;
         gap: 4px;
         width: 95px;
     }}
 
-    .right-stack {{
+    .right-side-badge {{
         display: flex;
         justify-content: flex-end;
         align-items: flex-start;
@@ -297,11 +297,11 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # TOP HEADER WRAPPER CONTAINER
-    st.markdown('<div class="top-header-wrapper">', unsafe_allow_html=True)
+    # START FLEX HEADER
+    st.markdown('<div class="header-flex-container">', unsafe_allow_html=True)
     
-    # 1. LEFT STACK (Admin & Light Buttons)
-    st.markdown('<div class="left-stack">', unsafe_allow_html=True)
+    # Left Side Stack (Admin & Light)
+    st.markdown('<div class="left-side-buttons">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
         st.session_state.active_mode = "admin"
@@ -315,8 +315,8 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2. RIGHT STACK (User / Guest Badge)
-    st.markdown('<div class="right-stack">', unsafe_allow_html=True)
+    # Right Side Profile/Guest Badge
+    st.markdown('<div class="right-side-badge">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
             <div class="profile-box">
@@ -334,6 +334,7 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
+    # END FLEX HEADER
 
     # CENTER EMBLEM BRANDING
     st.markdown(f"""
