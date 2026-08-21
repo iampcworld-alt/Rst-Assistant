@@ -39,7 +39,7 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GEMINI SETUP (USING GOOGLE-GENAI SDK & GEMINI-2.5-FLASH)
+# 2. GEMINI SETUP (USING GOOGLE-GENAI SDK & GEMINI-3.6-FLASH)
 HAS_GEMINI = False
 client = None
 
@@ -387,7 +387,7 @@ else:
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash",
+                            model="gemini-3.6-flash",
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}",
                         )
                         reply = response.text
