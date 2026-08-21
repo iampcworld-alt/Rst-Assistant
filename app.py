@@ -51,80 +51,72 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & EYE-FRIENDLY DARK CSS
+# 3. STREAMLIT PAGE CONFIG & STABLE EYE-FRIENDLY CSS
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Eye-Friendly Deep Charcoal Background */
+    /* Eye-Friendly Slate Dark Background */
     .stApp {
-        background: #0d1117 !important;
-        color: #c9d1d9 !important;
+        background-color: #0b0f19 !important;
+        color: #e2e8f0 !important;
     }
 
-    /* Soft Glass Card with Low Glow */
+    /* Soft Glass Card */
     .glass-card {
-        background: rgba(22, 27, 34, 0.8) !important;
-        backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(56, 139, 253, 0.25) !important;
-        border-radius: 16px !important;
-        padding: 20px !important;
-        margin-bottom: 20px !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        background: rgba(30, 41, 59, 0.7) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        border-radius: 14px !important;
+        padding: 16px 20px !important;
+        margin-bottom: 15px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* Top Right Profile Badge - Soothing Colors */
+    /* Profile Box Badge */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
-        gap: 12px;
-        background: #161b22;
-        border: 1px solid rgba(56, 139, 253, 0.3);
-        padding: 6px 18px 6px 8px;
+        gap: 10px;
+        background: #1e293b;
+        border: 1px solid #38bdf8;
+        padding: 6px 16px;
         border-radius: 30px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     .circle-avatar {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #a855f7, #3b82f6);
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, #6366f1, #3b82f6);
         color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 15px;
     }
 
-    /* Elegant Soft Contrast Buttons */
+    /* Styled Buttons */
     .stButton>button {
-        background: #21262d !important;
-        color: #58a6ff !important;
-        border: 1px solid rgba(240, 246, 252, 0.1) !important;
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
-        padding: 8px 18px !important;
-        transition: all 0.2s ease-in-out !important;
+        width: 100% !important;
+        padding: 8px 12px !important;
+        transition: 0.2s !important;
     }
 
     .stButton>button:hover {
-        background: #388bfd !important;
-        color: #ffffff !important;
-        border-color: #388bfd !important;
-        box-shadow: 0 0 12px rgba(56, 139, 253, 0.4) !important;
+        background: #38bdf8 !important;
+        color: #0f172a !important;
+        border-color: #38bdf8 !important;
     }
 
-    /* Soft Text Styling */
     h1, h2, h3 {
-        color: #58a6ff !important;
-        font-weight: 700 !important;
-    }
-
-    .sub-text {
-        color: #8b949e !important;
+        color: #38bdf8 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -142,11 +134,11 @@ def show_login_page():
     st.markdown("<br><br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown('<div class="glass-card" style="text-align:center;"><h1>⚡ RST LOGIN</h1><p class="sub-text">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass-card" style="text-align:center;"><h2>⚡ RST LOGIN</h2><p style="color:#94a3b8;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p></div>', unsafe_allow_html=True)
         with st.form("login_form"):
             name_in = st.text_input("👤 Enter Your Name:")
             email_in = st.text_input("📧 Enter Your Email:")
-            submit = st.form_submit_button("🚀 Unlock Access")
+            submit = st.form_submit_button("🚀 Unlock Unlimited Access")
             if submit:
                 if name_in.strip() and "@" in email_in:
                     st.session_state.user_name = name_in.strip()
@@ -169,9 +161,9 @@ def show_admin_dashboard():
 
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.markdown(f'<div class="glass-card" style="text-align:center;"><h2>{total_chats}</h2><p class="sub-text">Total Searches Logged</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="glass-card" style="text-align:center;"><h3>{total_chats}</h3><p style="color:#94a3b8; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
     with col_m2:
-        st.markdown(f'<div class="glass-card" style="text-align:center;"><h2>{unique_users}</h2><p class="sub-text">Total Registered Users</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="glass-card" style="text-align:center;"><h3>{unique_users}</h3><p style="color:#94a3b8; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
 
     st.subheader("🔍 Search User Activity")
     search_query = st.text_input("🔎 Filter by Name, Email or Prompt Keyword:")
@@ -181,9 +173,9 @@ def show_admin_dashboard():
         for name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in email.lower() or search_query.lower() in prompt.lower():
                 st.markdown(f"""
-                    <div class="glass-card" style="padding: 12px 20px !important;">
-                        <p style="color: #a855f7; margin:0;"><b>User:</b> {name} ({email}) | <span class="sub-text" style="font-size:11px;">{time_stamp}</span></p>
-                        <p style="color: #58a6ff; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
+                    <div class="glass-card">
+                        <p style="color: #818cf8; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:#94a3b8; font-size:11px;">{time_stamp}</span></p>
+                        <p style="color: #38bdf8; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
     else:
@@ -203,7 +195,7 @@ else:
                 <div class="circle-avatar">{avatar_letter}</div>
                 <div>
                     <div style="color:#ffffff; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
-                    <div style="color:#58a6ff; font-size:10px;">{st.session_state.user_email}</div>
+                    <div style="color:#38bdf8; font-size:10px;">{st.session_state.user_email}</div>
                 </div>
             </div>
             <div style="clear:both;"></div>
@@ -215,17 +207,17 @@ else:
                 <div class="circle-avatar">G</div>
                 <div>
                     <div style="color:#ffffff; font-weight:bold; font-size:13px;">Guest User</div>
-                    <div style="color:#a855f7; font-size:10px;">{left} Uses Left</div>
+                    <div style="color:#f43f5e; font-size:10px;">{left} Uses Left</div>
                 </div>
             </div>
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
     # Header
-    st.markdown("<h1 style='text-align: center;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-size:36px;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
     st.markdown("""
-        <div class="glass-card" style="text-align: center; padding: 10px !important; max-width: 600px; margin: 0 auto 20px auto;">
-            <b>SYSTEM OWNER:</b> <span style="color:#58a6ff;">MOHAMMED RASITH</span>
+        <div class="glass-card" style="text-align: center; padding: 10px !important; max-width: 500px; margin: 0 auto 15px auto;">
+            <b>SYSTEM OWNER:</b> <span style="color:#38bdf8;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
@@ -244,7 +236,7 @@ else:
     with c6:
         if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
-    st.markdown("<hr style='border: 0.5px solid rgba(240,246,252,0.1); margin: 15px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.2); margin: 15px 0;'>", unsafe_allow_html=True)
 
     # Chat Mode
     if st.session_state.active_mode == "chat":
