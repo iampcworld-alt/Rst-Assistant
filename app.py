@@ -19,7 +19,7 @@ if "GEMINI_API_KEY" in st.secrets:
 # 2. Page Config
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
-# 3. ULTRA GLASSMORPHISM CSS
+# 3. ULTRA GLASSMORPHISM & CIRCLE AVATAR CSS
 st.markdown("""
     <style>
     .stApp {
@@ -44,6 +44,54 @@ st.markdown("""
         padding: 25px !important;
         box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.2) !important;
         margin-bottom: 20px !important;
+    }
+
+    /* TOP-RIGHT CIRCLE PROFILE BADGE */
+    .profile-badge-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .profile-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 30px;
+        padding: 6px 16px 6px 8px;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+    .avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff0055, #7928ca);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+    }
+    .profile-details {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    .profile-name {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.1;
+    }
+    .profile-email {
+        color: #00f0ff;
+        font-size: 11px;
+        opacity: 0.8;
     }
 
     .stButton>button {
@@ -78,6 +126,9 @@ st.markdown("""
 if "usage_count" not in st.session_state:
     st.session_state.usage_count = 0
 
+if "user_name" not in st.session_state:
+    st.session_state.user_name = None
+
 if "user_email" not in st.session_state:
     st.session_state.user_email = None
 
@@ -93,39 +144,66 @@ def show_login_page():
     st.markdown("""
         <div class="glass-box" style="max-width: 450px; margin: 0 auto; text-align: center;">
             <h1 style="color: #ff0055; margin-bottom: 5px;">⚡ RST LOGIN</h1>
-            <p style="color: #8b949e; font-size: 14px;">உங்கள் 2 இலவச வாய்ப்புகள் முடிந்துவிட்டன! தொடர உங்கள் Email-ஐ அழுத்தவும்.</p>
+            <p style="color: #8b949e; font-size: 14px;">உங்கள் 2 இலவச வாய்ப்புகள் முடிந்துவிட்டன! தொடர உங்கள் விவரங்களை உள்ளிடவும்.</p>
         </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("login_screen_form"):
+            name_in = st.text_input("👤 Enter Your Name:")
             email_in = st.text_input("📧 Enter Your Email Address:")
             submit = st.form_submit_button("🚀 Unlock Unlimited Access")
             
             if submit:
-                if "@" in email_in and "." in email_in:
-                    st.session_state.user_email = email_in
+                if name_in.strip() and "@" in email_in and "." in email_in:
+                    st.session_state.user_name = name_in.strip()
+                    st.session_state.user_email = email_in.strip()
                     st.success("✅ லாக் இன் வெற்றி!")
                     st.rerun()
                 else:
-                    st.error("❌ சரியான Email முகவரியை உள்ளிடவும்!")
+                    st.error("❌ உங்கள் பெயர் மற்றும் சரியான Email-ஐ உள்ளிடவும்!")
 
 # 6. MAIN APP INTERFACE
 if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    st.markdown("<h1 style='text-align: center; color: #ff0055; text-shadow: 0 0 20px #ff0055;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
+    # TOP-RIGHT CIRCLE PROFILE BADGE DISPLAY
+    if st.session_state.user_email:
+        first_char = st.session_state.user_name[0].upper() if st.session_state.user_name else "U"
+        st.markdown(f"""
+            <div class="profile-badge-container">
+                <div class="profile-badge">
+                    <div class="avatar-circle">{first_char}</div>
+                    <div class="profile-details">
+                        <span class="profile-name">{st.session_state.user_name}</span>
+                        <span class="profile-email">{st.session_state.user_email}</span>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        left_uses = 2 - st.session_state.usage_count
+        st.markdown(f"""
+            <div class="profile-badge-container">
+                <div class="profile-badge">
+                    <div class="avatar-circle">G</div>
+                    <div class="profile-details">
+                        <span class="profile-name">Guest User</span>
+                        <span class="profile-email">{left_uses} Free Uses Left</span>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # Header Section
+    st.markdown("<h1 style='text-align: center; color: #ff0055; text-shadow: 0 0 20px #ff0055; margin-top: -20px;'>⚡ RST ASSISTANT ⚡</h1>", unsafe_allow_html=True)
     
-    user_status = st.session_state.user_email if st.session_state.user_email else f"Free User ({2 - st.session_state.usage_count} uses left)"
-    
-    # OWNER DETAILS SERIYAAGAK KAATTA
-    st.markdown(f"""
+    st.markdown("""
         <div class="glass-box" style="text-align: center; max-width: 650px; margin: 0 auto 20px auto; padding: 15px !important;">
             <h4 style="color: #00f0ff; margin:0;">SYSTEM INFORMATION</h4>
             <p style="margin:5px 0; color:#ffffff; font-size:14px;">
-                <b>OWNER:</b> <span style="color:#00f0ff;">MOHAMMED RASITH</span> | 
-                <b>USER:</b> <span style="color:#ff0055;">{user_status}</span>
+                <b>OWNER:</b> <span style="color:#00f0ff;">MOHAMMED RASITH</span>
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -147,7 +225,7 @@ else:
 
     st.markdown("<hr style='border: 0.5px solid rgba(0,240,255,0.1);'>", unsafe_allow_html=True)
 
-    # 1. AI CHAT MODE (FIXED GEMINI MODEL)
+    # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Interactive Smart AI Chatbot")
         
@@ -164,10 +242,10 @@ else:
             if st.session_state.user_email is None:
                 st.session_state.usage_count += 1
                 
-            current_user = st.session_state.user_email if st.session_state.user_email else "Guest (Free Trail)"
+            display_user = f"{st.session_state.user_name} ({st.session_state.user_email})" if st.session_state.user_email else "Guest User"
             
             st.session_state.chat_history_db.append({
-                "user": current_user,
+                "user": display_user,
                 "prompt": user_input
             })
 
@@ -179,8 +257,6 @@ else:
                 if HAS_GEMINI and client is not None:
                     try:
                         p_config = "You are RST ASSISTANT created by Mohammed Rasith. Be smart, intelligent, and respond in the same language as user."
-                        
-                        # GEMINI MODEL UPDATED TO 3.6-FLASH
                         response = client.models.generate_content(
                             model="gemini-3.6-flash",
                             contents=f"{p_config}\nUser: {user_input}"
@@ -245,7 +321,7 @@ else:
                 for idx, log in enumerate(reversed(st.session_state.chat_history_db)):
                     st.markdown(f"""
                         <div class="glass-box" style="padding: 10px 20px !important;">
-                            <p style="color: #ff0055; margin: 0;"><b>User Email/ID:</b> {log['user']}</p>
+                            <p style="color: #ff0055; margin: 0;"><b>User:</b> {log['user']}</p>
                             <p style="color: #00f0ff; margin: 5px 0 0 0;"><b>Prompt:</b> {log['prompt']}</p>
                         </div>
                     """, unsafe_allow_html=True)
