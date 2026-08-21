@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as str_lit
 import edge_tts
 import asyncio
 import sqlite3
@@ -45,26 +45,26 @@ client = None
 
 try:
     from google import genai
-    if "GEMINI_API_KEY" in st.secrets:
-        api_key = st.secrets["GEMINI_API_KEY"]
+    if "GEMINI_API_KEY" in str_lit.secrets:
+        api_key = str_lit.secrets["GEMINI_API_KEY"]
         client = genai.Client(api_key=api_key)
         HAS_GEMINI = True
 except Exception as e:
     HAS_GEMINI = False
 
 # 3. SESSION STATES
-if "theme" not in st.session_state: st.session_state.theme = "dark"
-if "usage_count" not in st.session_state: st.session_state.usage_count = 0
-if "user_name" not in st.session_state: st.session_state.user_name = None
-if "user_email" not in st.session_state: st.session_state.user_email = None
-if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
-if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
-if "messages" not in st.session_state: st.session_state.messages = []
+if "theme" not in str_lit.session_state: str_lit.session_state.theme = "dark"
+if "usage_count" not in str_lit.session_state: str_lit.session_state.usage_count = 0
+if "user_name" not in str_lit.session_state: str_lit.session_state.user_name = None
+if "user_email" not in str_lit.session_state: str_lit.session_state.user_email = None
+if "active_mode" not in str_lit.session_state: str_lit.session_state.active_mode = "chat"
+if "admin_authenticated" not in str_lit.session_state: str_lit.session_state.admin_authenticated = False
+if "messages" not in str_lit.session_state: str_lit.session_state.messages = []
 
 # 4. STREAMLIT CONFIG & CSS
-st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
+str_lit.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
-is_dark = st.session_state.theme == "dark"
+is_dark = str_lit.session_state.theme == "dark"
 
 bg_app = "#0b0f19" if is_dark else "#f8fafc"
 text_primary = "#ffffff" if is_dark else "#0f172a"
@@ -75,7 +75,7 @@ btn_bg = "#1e293b" if is_dark else "#ffffff"
 btn_text = "#38bdf8" if is_dark else "#0284c7"
 btn_border = "#38bdf8" if is_dark else "#0284c7"
 
-st.markdown(f"""
+str_lit.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
@@ -164,12 +164,13 @@ st.markdown(f"""
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 13px !important;
+        font-size: 14px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 2px;
         color: {text_primary} !important;
-        margin-bottom: 2px !important;
+        margin-top: 15px !important;
+        margin-bottom: 10px !important;
     }}
 
     .owner-badge {{
@@ -213,7 +214,6 @@ st.markdown(f"""
         flex-shrink: 0;
     }}
 
-    /* Specific styling only for Top/Mode buttons to keep them compact */
     .custom-top-btn button {{
         font-family: 'Poppins', sans-serif !important;
         background: {btn_bg} !important;
@@ -253,10 +253,10 @@ st.markdown(f"""
 
 # 5. LOGIN SCREEN
 def show_login_page():
-    st.markdown("<br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([0.5, 3, 0.5])
+    str_lit.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = str_lit.columns([0.5, 3, 0.5])
     with col2:
-        st.markdown(f"""
+        str_lit.markdown(f"""
             <div class="rst-card" style="text-align:center;">
                 <div class="rst-emblem-container">
                     <div class="rst-emblem-box">
@@ -267,30 +267,31 @@ def show_login_page():
                 <p style="color:{text_secondary}; font-size:11px;">தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
-        with st.form("login_form"):
-            name_in = st.text_input("👤 Enter Your Name:")
-            email_in = st.text_input("📧 Enter Your Email:")
-            submit = st.form_submit_button("🚀 Access AI Assistant")
+        with str_lit.form("login_form"):
+            name_in = str_lit.text_input("👤 Enter Your Name:")
+            email_in = str_lit.text_input("📧 Enter Your Email:")
+            submit = str_lit.form_submit_button("🚀 Access AI Assistant")
             if submit and name_in.strip() and "@" in email_in:
-                st.session_state.user_name = name_in.strip()
-                st.session_state.user_email = email_in.strip()
-                st.rerun()
+                str_lit.session_state.user_name = name_in.strip()
+                str_lit.session_state.user_email = email_in.strip()
+                str_lit.rerun()
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="rst-title-text" style="margin-top:10px;">OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
-    if st.button("🚪 Exit Admin Panel"):
-        st.session_state.admin_authenticated = False
-        st.session_state.active_mode = "chat"
-        st.rerun()
+    str_lit.markdown("<br>", unsafe_allow_html=True)
+    str_lit.markdown('<div class="rst-title-text">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
+    if str_lit.button("🚪 Exit Admin Panel"):
+        str_lit.session_state.admin_authenticated = False
+        str_lit.session_state.active_mode = "chat"
+        str_lit.rerun()
 
     logs = fetch_all_chats()
-    st.markdown(f"### Total Searches: {len(logs)}")
-    search_query = st.text_input("🔎 Search Logs:")
+    str_lit.markdown(f"### Total Searches: {len(logs)}")
+    search_query = str_lit.text_input("🔎 Search Logs:")
     if logs:
         for name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in prompt.lower() or search_query.lower() in email.lower():
-                st.markdown(f"""
+                str_lit.markdown(f"""
                     <div class="rst-card">
                         <p style="color:{btn_text}; margin:0; font-size:11px;"><b>{name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
                         <p style="margin:4px 0 0 0; font-size:12px;">{prompt}</p>
@@ -298,50 +299,50 @@ def show_admin_dashboard():
                 """, unsafe_allow_html=True)
 
 # 7. MAIN APP ROUTING
-if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
+if str_lit.session_state.active_mode == "admin" and str_lit.session_state.admin_authenticated:
     show_admin_dashboard()
-elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
+elif str_lit.session_state.usage_count >= 2 and str_lit.session_state.user_email is None:
     show_login_page()
 else:
-    st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
+    str_lit.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
     
     # LEFT CORNER
-    st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
-    st.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
-    if st.button("👑 Admin"): 
-        st.session_state.active_mode = "admin"
-    st.markdown('</div>', unsafe_allow_html=True)
+    str_lit.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
+    str_lit.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
+    if str_lit.button("👑 Admin"): 
+        str_lit.session_state.active_mode = "admin"
+    str_lit.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
+    str_lit.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
     theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
-    if st.button(f"{theme_icon}"):
-        st.session_state.theme = "light" if is_dark else "dark"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    if str_lit.button(f"{theme_icon}"):
+        str_lit.session_state.theme = "light" if is_dark else "dark"
+        str_lit.rerun()
+    str_lit.markdown('</div>', unsafe_allow_html=True)
+    str_lit.markdown('</div>', unsafe_allow_html=True)
 
     # RIGHT CORNER
-    st.markdown('<div class="right-corner-box">', unsafe_allow_html=True)
-    if st.session_state.user_email:
-        st.markdown(f"""
+    str_lit.markdown('<div class="right-corner-box">', unsafe_allow_html=True)
+    if str_lit.session_state.user_email:
+        str_lit.markdown(f"""
             <div class="profile-box" style="margin-left: auto;">
-                <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                <span style="font-size:7px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
+                <div class="circle-avatar">{str_lit.session_state.user_name[0].upper()}</div>
+                <span style="font-size:7px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{str_lit.session_state.user_name}</span>
             </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown(f"""
+        str_lit.markdown(f"""
             <div class="profile-box" style="margin-left: auto;">
                 <div class="circle-avatar">G</div>
-                <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
+                <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - str_lit.session_state.usage_count})</span>
             </div>
         """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    str_lit.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    str_lit.markdown('</div>', unsafe_allow_html=True)
 
     # CENTER EMBLEM BRANDING
-    st.markdown(f"""
+    str_lit.markdown(f"""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
                 <div class="rst-emblem-text">RST</div>
@@ -354,44 +355,44 @@ else:
     """, unsafe_allow_html=True)
 
     # MODE SWITCHERS
-    btn_chat_col, btn_voice_col = st.columns(2)
+    btn_chat_col, btn_voice_col = str_lit.columns(2)
     with btn_chat_col:
-        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
-        if st.button("🤖 AI Chat"): 
-            st.session_state.active_mode = "chat"
-        st.markdown('</div>', unsafe_allow_html=True)
+        str_lit.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
+        if str_lit.button("🤖 AI Chat"): 
+            str_lit.session_state.active_mode = "chat"
+        str_lit.markdown('</div>', unsafe_allow_html=True)
     with btn_voice_col:
-        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
-        if st.button("🎙️ Voice Gen"): 
-            st.session_state.active_mode = "voice"
-        st.markdown('</div>', unsafe_allow_html=True)
+        str_lit.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
+        if str_lit.button("🎙️ Voice Gen"): 
+            str_lit.session_state.active_mode = "voice"
+        str_lit.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 8px 0 6px 0;'>", unsafe_allow_html=True)
+    str_lit.markdown(f"<hr style='border: 0.5px solid {card_border}; margin: 8px 0 6px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
-    if st.session_state.active_mode == "chat":
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+    if str_lit.session_state.active_mode == "chat":
+        for message in str_lit.session_state.messages:
+            with str_lit.chat_message(message["role"]):
+                str_lit.markdown(message["content"])
 
-        user_input = st.chat_input("Ask RST Assistant...")
+        user_input = str_lit.chat_input("Ask RST Assistant...")
 
-        st.markdown('<div class="custom-subheader">🤖 RST Smart AI Assistant</div>', unsafe_allow_html=True)
+        str_lit.markdown('<div class="custom-subheader">🤖 RST Smart AI Assistant</div>', unsafe_allow_html=True)
 
         if user_input:
-            if st.session_state.user_email is None:
-                st.session_state.usage_count += 1
+            if str_lit.session_state.user_email is None:
+                str_lit.session_state.usage_count += 1
 
-            name = st.session_state.user_name if st.session_state.user_name else "Guest User"
-            email = st.session_state.user_email if st.session_state.user_email else "Guest"
+            name = str_lit.session_state.user_name if str_lit.session_state.user_name else "Guest User"
+            email = str_lit.session_state.user_email if str_lit.session_state.user_email else "Guest"
 
             save_chat_to_db(name, email, user_input)
 
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("user"):
-                st.markdown(user_input)
+            str_lit.session_state.messages.append({"role": "user", "content": user_input})
+            with str_lit.chat_message("user"):
+                str_lit.markdown(user_input)
 
-            with st.spinner("⚡ RST Processing..."):
+            with str_lit.spinner("⚡ RST Processing..."):
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
@@ -400,39 +401,39 @@ else:
                         )
                         reply = response.text
                     except Exception as e:
-                        reply = f"Error: {str(e)}"
+                        reply = f"Error: {str_e}"
                 else:
                     reply = "⚠️ Gemini API Key not configured or connection failed."
 
-            with st.chat_message("assistant"):
-                st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
+            with str_lit.chat_message("assistant"):
+                str_lit.markdown(reply)
+            str_lit.session_state.messages.append({"role": "assistant", "content": reply})
 
-            if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
-                st.rerun()
+            if str_lit.session_state.usage_count >= 2 and str_lit.session_state.user_email is None:
+                str_lit.rerun()
 
     # 2. VOICE GENERATION MODE
-    elif st.session_state.active_mode == "voice":
-        st.markdown('<div class="custom-subheader">🎙️ RST Voice Generator</div>', unsafe_allow_html=True)
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
-        voice_opt = st.selectbox("குரலைத் தேர்ந்தெடுக்கவும்:", ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"])
+    elif str_lit.session_state.active_mode == "voice":
+        str_lit.markdown('<div class="custom-subheader">🎙️ RST Voice Generator</div>', unsafe_allow_html=True)
+        v_text = str_lit.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
+        voice_opt = str_lit.selectbox("குரலைத் தேர்ந்தெடுக்கவும்:", ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"])
         voice_code = "ta-IN-ValluvarNeural" if "Valluvar" in voice_opt else "ta-IN-PallaviNeural"
         
-        if st.button("Generate Voice"):
+        if str_lit.button("Generate Voice"):
             if v_text:
                 async def make_voice():
                     comm = edge_tts.Communicate(v_text, voice_code)
                     await comm.save("voice.mp3")
                 asyncio.run(make_voice())
-                st.audio("voice.mp3")
+                str_lit.audio("voice.mp3")
 
     # 3. ADMIN LOGIN MODE
-    elif st.session_state.active_mode == "admin":
-        st.markdown('<div class="custom-subheader">👑 Admin Authentication</div>', unsafe_allow_html=True)
-        pwd = st.text_input("Enter Master Password:", type="password")
-        if st.button("Access Admin Console"):
+    elif str_lit.session_state.active_mode == "admin":
+        str_lit.markdown('<div class="custom-subheader">👑 Admin Authentication</div>', unsafe_allow_html=True)
+        pwd = str_lit.text_input("Enter Master Password:", type="password")
+        if str_lit.button("Access Admin Console"):
             if pwd == "RSTA02EHYDR6":
-                st.session_state.admin_authenticated = True
-                st.rerun()
+                str_lit.session_state.admin_authenticated = True
+                str_lit.rerun()
             else:
-                st.error("Incorrect Password!")
+                str_lit.error("Incorrect Password!")
