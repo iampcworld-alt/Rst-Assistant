@@ -39,16 +39,15 @@ def fetch_all_chats():
 
 init_db()
 
-# 2. GEMINI SETUP (FIXED & CORRECTED)
+# 2. GEMINI SETUP (UPDATED FOR GOOGLE-GENAI SDK & AQ... KEYS)
 HAS_GEMINI = False
-model = None
+client = None
 
 try:
-    import google.generativeai as genai
+    from google import genai
     if "GEMINI_API_KEY" in st.secrets:
         api_key = st.secrets["GEMINI_API_KEY"]
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        client = genai.Client(api_key=api_key)
         HAS_GEMINI = True
 except Exception as e:
     HAS_GEMINI = False
@@ -385,9 +384,12 @@ else:
                 st.markdown(user_input)
 
             with st.spinner("⚡ RST Processing..."):
-                if HAS_GEMINI and model is not None:
+                if HAS_GEMINI and client is not None:
                     try:
-                        response = model.generate_content(f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}")
+                        response = client.models.generate_content(
+                            model="gemini-1.5-flash",
+                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}",
+                        )
                         reply = response.text
                     except Exception as e:
                         reply = f"Error: {str(e)}"
