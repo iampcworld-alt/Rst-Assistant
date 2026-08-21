@@ -88,8 +88,9 @@ st.markdown(f"""
         color: {text_primary} !important;
     }}
 
+    /* Remove Streamlit default top padding so buttons go to absolute top */
     .block-container {{
-        padding-top: 0.2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
     }}
@@ -107,38 +108,36 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* TOP CORNERS EXACT PLACEMENT */
-    .top-absolute-container {{
-        position: relative;
+    /* --- ULTIMATE CORNER FIX USING CSS GRID --- */
+    .absolute-header-grid {{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         width: 100%;
-        height: 45px;
         margin-bottom: 5px;
     }}
 
-    .top-left-group {{
-        position: absolute;
-        left: 0px;
-        top: 0px;
+    .left-corner-box {{
         display: flex;
         flex-direction: column;
-        gap: 2px;
-        width: 85px;
+        gap: 3px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 90px;
     }}
 
-    .top-right-group {{
-        position: absolute;
-        right: 0px;
-        top: 0px;
+    .right-corner-box {{
         display: flex;
-        justify-content: flex-end;
-        width: 100px;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-start;
+        width: 100%;
     }}
 
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 0px;
+        margin-top: 5px;
         margin-bottom: 2px;
     }}
 
@@ -190,10 +189,10 @@ st.markdown(f"""
         gap: 4px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 2px 6px;
+        padding: 2px 8px;
         border-radius: 20px;
         height: 26px;
-        width: 100%;
+        width: 105px;
         box-sizing: border-box;
     }}
 
@@ -219,7 +218,7 @@ st.markdown(f"""
         border-radius: 20px !important;
         font-weight: 700 !important;
         font-size: 8px !important;
-        width: 100% !important;
+        width: 90px !important;
         height: 26px !important;
         padding: 0px !important;
         white-space: nowrap !important;
@@ -301,11 +300,11 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # ABSOLUTE CONTAINER FOR TOP CORNERS
-    st.markdown('<div class="top-absolute-container">', unsafe_allow_html=True)
+    # GRID CONTAINER FOR CORNERS
+    st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
     
-    # 1. TOP-LEFT: Admin & Light (Stacked tightly)
-    st.markdown('<div class="top-left-group">', unsafe_allow_html=True)
+    # LEFT CORNER (Admin & Light Stacked closely)
+    st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
         st.session_state.active_mode = "admin"
@@ -319,18 +318,18 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2. TOP-RIGHT: User / Guest Badge
-    st.markdown('<div class="top-right-group">', unsafe_allow_html=True)
+    # RIGHT CORNER (User / Guest Badge)
+    st.markdown('<div class="right-corner-box">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
-            <div class="profile-box">
+            <div class="profile-box" style="margin-left: auto;">
                 <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
                 <span style="font-size:7px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
             </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-            <div class="profile-box">
+            <div class="profile-box" style="margin-left: auto;">
                 <div class="circle-avatar">G</div>
                 <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
             </div>
@@ -338,7 +337,6 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
-    # END TOP CONTAINER
 
     # CENTER EMBLEM BRANDING
     st.markdown(f"""
@@ -391,12 +389,20 @@ else:
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
-                            model="gemini-3.6-flash",
+                            model="geminitoken", # fallback or normal model
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
                         )
                         reply = response.text
                     except Exception as e:
-                        reply = f"Error: {str(e)}"
+                        # Fallback try standard flash model
+                        try:
+                            response = client.models.generate_content(
+                                model="gemini-2.5-flash",
+                                contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}"
+                            )
+                            reply = response.text
+                        except Exception as inner_e:
+                            reply = f"Error: {str(inner_e)}"
                 else:
                     reply = "வணக்கம்! நான் RST AI Assistant."
 
