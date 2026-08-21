@@ -4,29 +4,57 @@ import asyncio
 import urllib.parse
 from PIL import Image, ImageEnhance, ImageFilter
 
-# Page Config & Futuristic Dark UI
+# 1. Page Config & High-Level Futuristic UI Setup
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #05050a; color: #00ffcc; }
-    h1 { color: #ff0055; text-shadow: 0 0 10px #ff0055; text-align: center; }
-    .stButton>button { background-color: #ff0055; color: white; border-radius: 5px; font-weight: bold; width: 100%; }
+    /* Dark Futuristic Theme */
+    .stApp { background-color: #030308; color: #00f0ff; font-family: 'Segoe UI', sans-serif; }
+    h1 { color: #ff0055; text-shadow: 0 0 15px #ff0055, 0 0 25px #ff0055; text-align: center; font-weight: 800; }
     
-    /* Compact System Info Card */
-    .owner-card { 
-        background: #161b22; 
-        border: 1px solid #00ffcc; 
-        padding: 10px 15px; 
+    /* Neon Glow Buttons */
+    .stButton>button { 
+        background: linear-gradient(45deg, #ff0055, #7928ca); 
+        color: white; 
+        border: none;
         border-radius: 8px; 
-        margin: 10px auto 20px auto; 
-        max-width: 500px;
+        font-weight: bold; 
+        box-shadow: 0 0 10px #ff0055;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        box-shadow: 0 0 20px #ff0055, 0 0 30px #00f0ff;
+        transform: scale(1.02);
+    }
+
+    /* Compact Owner Card */
+    .owner-card { 
+        background: rgba(22, 27, 34, 0.7); 
+        border: 1px solid #00f0ff; 
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        padding: 10px 15px; 
+        border-radius: 12px; 
+        margin: 10px auto 25px auto; 
+        max-width: 550px;
         text-align: center;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Glassmorphism Command Helper */
+    .cmd-box {
+        background: #0d1117;
+        border-left: 4px solid #ff0055;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #8b949e;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Master Login Protection System
+# 2. Master Login Protection System
 def check_password():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
@@ -44,51 +72,109 @@ def check_password():
     return True
 
 if check_password():
-    # Welcome Greeting
-    st.title("⚡ WELCOME TO RST ASSISTANT ⚡")
-    st.markdown("<p style='text-align: center; color: #00ffcc;'>UNBREAKABLE PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
+    # Header Section
+    st.title("⚡ RST ASSISTANT ⚡")
+    st.markdown("<p style='text-align: center; color: #00f0ff; letter-spacing: 2px;'>HIGH-LEVEL PRIVATE AI COMMAND CENTER</p>", unsafe_allow_html=True)
 
-    # Compact Owner & System Details (Email & Phone Hidden)
+    # Compact System Information
     st.markdown("""
         <div class="owner-card">
-            <h4 style="color: #ff0055; margin:0 0 5px 0;">SYSTEM INFORMATION</h4>
+            <h4 style="color: #ff0055; margin:0 0 4px 0; letter-spacing: 1px;">SYSTEM INFORMATION</h4>
             <p style="margin:2px 0; font-size:14px;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
-            <p style="margin:2px 0; font-size:13px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED / HIDDEN] | <b>PHONE:</b> [PROTECTED / HIDDEN]</p>
+            <p style="margin:2px 0; font-size:12px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED] | <b>PHONE:</b> [PROTECTED]</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar Navigation Controls
-    st.sidebar.title("⚡ RST Control Panel")
-    mode = st.sidebar.radio("தேர்வு செய்க (Select Mode):", [
-        "🤖 RST Chatbot", 
-        "🎙️ Voice Generator",
-        "🎨 Image Generator", 
-        "🎬 Video Generator",
-        "🖼️ Photo Upload & Edit"
-    ])
+    # Command Guide Banner
+    st.markdown("""
+        <div class="cmd-box">
+            <b>⚡ SMART COMMAND GUIDE:</b><br>
+            • <b>Image Generate:</b> <code>/image [Prompt]</code> (எ.கா: /image a futuristic lion)<br>
+            • <b>Video Generate:</b> <code>/video [Prompt]</code> (எ.கா: /video flying car in night city)<br>
+            • <b>Voice Generate:</b> <code>/voice [Text]</code> (எ.கா: /voice வணக்கம் நண்பா)<br>
+            • <b>Normal Chat:</b> எந்தக் கேள்வியையும் நேரடியாக டைப் செய்யவும்.
+        </div>
+    """, unsafe_allow_html=True)
 
-    # ------------------- 1. CHATBOT MODE -------------------
-    if mode == "🤖 RST Chatbot":
-        st.subheader("🤖 RST Interactive Chatbot")
-        
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+    # Main Chat & History Manager
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            if message["type"] == "text":
                 st.markdown(message["content"])
+            elif message["type"] == "image":
+                st.image(message["content"], caption=message.get("caption", ""))
+            elif message["type"] == "video":
+                st.video(message["content"])
+            elif message["type"] == "audio":
+                st.audio(message["content"])
 
-        user_input = st.chat_input("Ask RST Assistant something...")
+    # Unified Search Input Bar
+    user_input = st.chat_input("Enter command (/image, /video, /voice) or ask anything...")
 
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("user"):
-                st.markdown(user_input)
+    if user_input:
+        # Display User Input
+        st.session_state.messages.append({"role": "user", "type": "text", "content": user_input})
+        with st.chat_message("user"):
+            st.markdown(user_input)
 
+        # ---------------- 1. COMMAND: IMAGE GENERATION ----------------
+        if user_input.startswith("/image"):
+            prompt = user_input.replace("/image", "").strip()
+            if prompt:
+                with st.chat_message("assistant"):
+                    with st.spinner("🖼️ AI Image உருவாக்குகிறது..."):
+                        encoded_prompt = urllib.parse.quote(prompt)
+                        img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+                        st.image(img_url, caption=f"Generated Image: {prompt}")
+                        st.session_state.messages.append({"role": "assistant", "type": "image", "content": img_url, "caption": f"Generated: {prompt}"})
+            else:
+                reply = "⚠️ படத்தின் விவரத்தைக் குறிப்பிடுங்கள்! எ.கா: `/image a glowing cyber lion`"
+                with st.chat_message("assistant"):
+                    st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "type": "text", "content": reply})
+
+        # ---------------- 2. COMMAND: VIDEO GENERATION ----------------
+        elif user_input.startswith("/video"):
+            v_prompt = user_input.replace("/video", "").strip()
+            if v_prompt:
+                with st.chat_message("assistant"):
+                    with st.spinner("🎬 AI Video உருவாக்குகிறது (சில நொடிகள் காத்திருக்கவும்)..."):
+                        encoded_vprompt = urllib.parse.quote(v_prompt)
+                        vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
+                        st.video(vid_url)
+                        st.session_state.messages.append({"role": "assistant", "type": "video", "content": vid_url})
+            else:
+                reply = "⚠️ வீடியோவின் விவரத்தைக் குறிப்பிடுங்கள்! எ.கா: `/video cyberpunk car driving`"
+                with st.chat_message("assistant"):
+                    st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "type": "text", "content": reply})
+
+        # ---------------- 3. COMMAND: CUSTOM VOICE GENERATION ----------------
+        elif user_input.startswith("/voice"):
+            v_text = user_input.replace("/voice", "").strip()
+            if v_text:
+                with st.chat_message("assistant"):
+                    with st.spinner("🎙️ Voice Audio உருவாக்குகிறது..."):
+                        async def make_custom_voice():
+                            comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
+                            await comm.save("custom_voice.mp3")
+                        asyncio.run(make_custom_voice())
+                        st.audio("custom_voice.mp3")
+                        st.session_state.messages.append({"role": "assistant", "type": "audio", "content": "custom_voice.mp3"})
+            else:
+                reply = "⚠️ பேச்சாக மாற்ற வேண்டிய உரையைத் தட்டச்சு செய்யுங்கள்! எ.கா: `/voice வணக்கம்`"
+                with st.chat_message("assistant"):
+                    st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "type": "text", "content": reply})
+
+        # ---------------- 4. NORMAL CHATBOT RESPONSE ----------------
+        else:
             query = user_input.lower()
             if any(keyword in query for keyword in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "யார் உருவாக்கினா", "விவரம்"]):
                 reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
-                
 📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
 📞 **Phone:** 0753967528  
 ⚡ **System:** RST ASSISTANT Engine"""
@@ -97,9 +183,9 @@ if check_password():
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
+            st.session_state.messages.append({"role": "assistant", "type": "text", "content": reply})
 
-            # Male Voice Output Engine (ValluvarVoice)
+            # Auto Voice Response for Chat
             async def speak():
                 clean_text = reply.replace("*", "")
                 communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
@@ -107,104 +193,31 @@ if check_password():
 
             asyncio.run(speak())
             st.audio("rst_response.mp3")
+            st.session_state.messages.append({"role": "assistant", "type": "audio", "content": "rst_response.mp3"})
 
-    # ------------------- 2. VOICE GENERATOR MODE -------------------
-    elif mode == "🎙️ Voice Generator":
-        st.subheader("🎙️ RST Custom Voice Generator")
-        st.write("நீங்கள் டைப் செய்யும் உரையை உயர்தர வாய்ஸ் ஆடியோவாக மாற்றுங்கள்:")
-
-        tts_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரையை உள்ளிடவும் (Text to Speech):", value="வணக்கம், நான் RST ASSISTANT குரல் செயலி.")
-        
-        col_voice, col_lang = st.columns(2)
-        with col_voice:
-            voice_gender = st.selectbox("குரல் தேர்வு (Voice Gender):", ["Male (ஆண்குரல் - Valluvar)", "Female (பெண்குரல் - Pallavi)"])
-        
-        if st.button("Generate Voice Audio"):
-            if tts_text:
-                with st.spinner("குரல் உருவாக்கப்படுகிறது..."):
-                    voice_code = "ta-IN-ValluvarNeural" if "Male" in voice_gender else "ta-IN-PallaviNeural"
-                    
-                    async def generate_custom_voice():
-                        communicate = edge_tts.Communicate(tts_text, voice_code)
-                        await communicate.save("custom_voice.mp3")
-
-                    asyncio.run(generate_custom_voice())
-                    st.success("குரல் வெற்றிகரமாக உருவாக்கப்பட்டது!")
-                    st.audio("custom_voice.mp3")
-            else:
-                st.warning("தயவுசெய்து ஏதேனும் உரையை டைப் செய்யவும்!")
-
-    # ------------------- 3. AI IMAGE GENERATOR MODE -------------------
-    elif mode == "🎨 Image Generator":
-        st.subheader("🎨 RST AI Image Generator")
-        st.write("உங்களுக்குத் தேவையான படத்தின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
-        
-        prompt = st.text_input("Enter Image Prompt (e.g., A futuristic cybernetic lion):")
-        
-        if st.button("Generate Image"):
-            if prompt:
-                with st.spinner("உங்களது புகைப்படம் உருவாக்கப்பட்டு கொண்டிருக்கிறது..."):
-                    encoded_prompt = urllib.parse.quote(prompt)
-                    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}"
-                    st.image(image_url, caption=f"Generated: {prompt}", use_column_width=True)
-            else:
-                st.warning("தயவுசெய்து ஏதேனும் விவரத்தை டைப் செய்யவும்!")
-
-    # ------------------- 4. AI VIDEO GENERATOR MODE -------------------
-    elif mode == "🎬 Video Generator":
-        st.subheader("🎬 RST AI Video Generator")
-        st.write("உங்களுக்குத் தேவையான வீடியோவின் விவரத்தை ஆங்கிலத்தில் டைப் செய்யவும்:")
-
-        video_prompt = st.text_input("Enter Video Prompt (e.g., Cyberpunk car driving in rain at night):")
-        
-        if st.button("Generate AI Video"):
-            if video_prompt:
-                with st.spinner("உங்களது AI வீடியோ உருவாக்கப்பட்டு கொண்டிருக்கிறது (சில நொடிகள் காத்திருக்கவும்)..."):
-                    encoded_vprompt = urllib.parse.quote(video_prompt)
-                    # Video Generation Stream Link via Pollinations AI
-                    video_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
-                    
-                    st.video(video_url)
-                    st.success("வீடியோ வெற்றிகரமாக உருவாக்கப்பட்டது!")
-            else:
-                st.warning("தயவுசெய்து வீடியோிற்கான விவரத்தை டைப் செய்யவும்!")
-
-    # ------------------- 5. PHOTO UPLOAD & EDIT STUDIO -------------------
-    elif mode == "🖼️ Photo Upload & Edit":
-        st.subheader("🖼️ RST Photo Editing Studio")
-        st.write("உங்கள் கணினி அல்லது மொபைலில் இருந்து படத்தை பதிவேற்றி எடிட் செய்யவும்:")
-
+    # ---------------- 5. PHOTO UPLOAD & EDIT STUDIO EXPANDABLE ----------------
+    with st.expander("🖼️ Photo Upload & Edit Studio (இங்கே படங்களைப் பதிவேற்றி எடிட் செய்யவும்)"):
         uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
-
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
             col1, col2 = st.columns(2)
-
             with col1:
                 st.subheader("Original Image")
                 st.image(image, use_column_width=True)
 
-            # Image Editing Controls
-            st.sidebar.subheader("🎛️ Image Adjustments")
-            brightness = st.sidebar.slider("Brightness", 0.5, 2.0, 1.0)
-            contrast = st.sidebar.slider("Contrast", 0.5, 2.0, 1.0)
-            blur = st.sidebar.slider("Blur Effect", 0, 5, 0)
-            grayscale = st.sidebar.checkbox("Black & White (Grayscale)")
+            # Controls inside expander
+            b_val = st.slider("Brightness", 0.5, 2.0, 1.0)
+            c_val = st.slider("Contrast", 0.5, 2.0, 1.0)
+            blur_val = st.slider("Blur", 0, 5, 0)
+            bw = st.checkbox("Grayscale (Black & White)")
 
-            # Process Image
             edited_img = image.copy()
-
-            if grayscale:
+            if bw:
                 edited_img = edited_img.convert("L")
-
-            enhancer = ImageEnhance.Brightness(edited_img)
-            edited_img = enhancer.enhance(brightness)
-
-            enhancer = ImageEnhance.Contrast(edited_img)
-            edited_img = enhancer.enhance(contrast)
-
-            if blur > 0:
-                edited_img = edited_img.filter(ImageFilter.GaussianBlur(blur))
+            edited_img = ImageEnhance.Brightness(edited_img).enhance(b_val)
+            edited_img = ImageEnhance.Contrast(edited_img).enhance(c_val)
+            if blur_val > 0:
+                edited_img = edited_img.filter(ImageFilter.GaussianBlur(blur_val))
 
             with col2:
                 st.subheader("Edited Image")
