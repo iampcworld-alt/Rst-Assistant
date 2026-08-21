@@ -51,152 +51,141 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & ADVANCED ANIMATED UI CSS
+# 3. STREAMLIT PAGE CONFIG & DARK MATTE DASHBOARD UI CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Dark Eye-Friendly Background */
+    /* Dark Matte Background matching the UI design */
     .stApp {
-        background: radial-gradient(circle at 50% 10%, #0f172a 0%, #0b0f19 100%) !important;
-        color: #f8fafc !important;
+        background-color: #0b0e14 !important;
+        color: #e2e8f0 !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
     }
 
-    /* Next-Level 3D Holographic RST Emblem Logo */
+    /* Matte UI Card Styling */
+    .matte-card {
+        background: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 18px !important;
+        padding: 20px !important;
+        margin-bottom: 16px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Logo Emblem with Emerald/Mint Accent */
     .rst-emblem-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 12px;
     }
 
     .rst-emblem-box {
-        position: relative;
-        padding: 12px 36px;
-        background: rgba(15, 23, 42, 0.7);
+        padding: 10px 32px;
+        background: #161b22;
         border-radius: 20px;
-        border: 2px solid rgba(56, 189, 248, 0.4);
-        box-shadow: 0 0 30px rgba(56, 189, 248, 0.25), inset 0 0 15px rgba(56, 189, 248, 0.15);
-        backdrop-filter: blur(16px);
-        animation: holoPulse 3s ease-in-out infinite alternate;
+        border: 1px solid #00bfa5;
+        box-shadow: 0 0 20px rgba(0, 191, 165, 0.2);
     }
 
     .rst-emblem-text {
-        font-size: 56px;
+        font-size: 48px;
         font-weight: 900;
-        letter-spacing: 8px;
-        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 30%, #00c6ff 70%, #0072ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 35px rgba(0, 242, 254, 0.7);
+        letter-spacing: 6px;
+        color: #00e676;
+        text-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
         margin: 0;
         line-height: 1;
     }
 
-    @keyframes holoPulse {
-        0% {
-            transform: translateY(0px) scale(1);
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
-            border-color: rgba(56, 189, 248, 0.4);
-        }
-        100% {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 0 45px rgba(56, 189, 248, 0.5), inset 0 0 20px rgba(56, 189, 248, 0.3);
-            border-color: rgba(56, 189, 248, 0.8);
-        }
-    }
-
     .rst-title-text {
-        font-size: 26px !important;
-        font-weight: 800 !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
         text-align: center !important;
-        letter-spacing: 4px;
-        color: #f8fafc;
+        letter-spacing: 3px;
+        color: #ffffff;
         margin-bottom: 6px !important;
     }
 
     .owner-badge {
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(56, 189, 248, 0.3);
+        background: #161b22;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 20px;
-        padding: 4px 18px;
+        padding: 6px 16px;
         width: fit-content;
-        margin: 0 auto 20px auto;
+        margin: 0 auto 24px auto;
         font-size: 11px;
-        letter-spacing: 1.5px;
+        letter-spacing: 1px;
+        color: #94a3b8;
     }
 
-    /* Glassmorphic UI Cards */
-    .glass-card {
-        background: rgba(30, 41, 59, 0.5) !important;
-        backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(56, 189, 248, 0.2) !important;
-        border-radius: 16px !important;
-        padding: 18px !important;
-        margin-bottom: 15px !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    }
-
-    /* User Profile Badge */
+    /* Minimalist Profile Chip */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
-        gap: 10px;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(56, 189, 248, 0.4);
+        gap: 12px;
+        background: #161b22;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         padding: 6px 16px;
-        border-radius: 30px;
+        border-radius: 24px;
     }
 
     .circle-avatar {
-        width: 34px;
-        height: 34px;
-        background: linear-gradient(135deg, #6366f1, #38bdf8);
-        color: #ffffff;
+        width: 32px;
+        height: 32px;
+        background: #00bfa5;
+        color: #0b0e14;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 15px;
+        font-size: 14px;
     }
 
-    /* Button Styling - Fixed Padding & Responsive Width */
+    /* Dark Matte Buttons with Teal Accent */
     .stButton>button {
-        background: rgba(15, 23, 42, 0.8) !important;
-        color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.4) !important;
-        border-radius: 12px !important;
+        background: #161b22 !important;
+        color: #e2e8f0 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 14px !important;
         font-weight: 600 !important;
         font-size: 14px !important;
-        white-space: nowrap !important;
         width: 100% !important;
         padding: 10px 20px !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.2s ease-in-out !important;
     }
 
     .stButton>button:hover {
-        background: #38bdf8 !important;
-        color: #0f172a !important;
-        border-color: #38bdf8 !important;
-        box-shadow: 0 0 18px rgba(56, 189, 248, 0.6) !important;
+        background: #00bfa5 !important;
+        color: #0b0e14 !important;
+        border-color: #00bfa5 !important;
+        box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3) !important;
     }
 
-    /* Gold Design for Top Admin Button */
+    /* Admin Button Distinct Gold-Amber Style */
     div[data-testid="stColumn"]:first-child .stButton>button {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)) !important;
-        color: #fbbf24 !important;
-        border: 1px solid rgba(251, 191, 36, 0.5) !important;
-        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
-        width: auto !important;
+        background: #1c1917 !important;
+        color: #f59e0b !important;
+        border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        border-radius: 14px !important;
     }
 
     div[data-testid="stColumn"]:first-child .stButton>button:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-        color: #0f172a !important;
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
+        background: #f59e0b !important;
+        color: #0b0e14 !important;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4) !important;
+    }
+
+    /* Inputs Styling */
+    .stTextInput input, .stTextArea textarea, .stSelectbox > div {
+        background-color: #161b22 !important;
+        color: #f8fafc !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -215,7 +204,7 @@ def show_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("""
-            <div class="glass-card" style="text-align:center;">
+            <div class="matte-card" style="text-align:center;">
                 <div class="rst-emblem-container">
                     <div class="rst-emblem-box">
                         <div class="rst-emblem-text">RST</div>
@@ -258,9 +247,9 @@ def show_admin_dashboard():
 
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.markdown(f'<div class="glass-card" style="text-align:center;"><h2 style="color:#38bdf8; margin:0;">{total_chats}</h2><p style="color:#94a3b8; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="matte-card" style="text-align:center;"><h2 style="color:#00e676; margin:0;">{total_chats}</h2><p style="color:#94a3b8; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
     with col_m2:
-        st.markdown(f'<div class="glass-card" style="text-align:center;"><h2 style="color:#818cf8; margin:0;">{unique_users}</h2><p style="color:#94a3b8; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="matte-card" style="text-align:center;"><h2 style="color:#00bfa5; margin:0;">{unique_users}</h2><p style="color:#94a3b8; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
 
     st.subheader("🔍 Search User Activity")
     search_query = st.text_input("🔎 Filter by Name, Email or Prompt Keyword:")
@@ -270,9 +259,9 @@ def show_admin_dashboard():
         for name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in email.lower() or search_query.lower() in prompt.lower():
                 st.markdown(f"""
-                    <div class="glass-card">
-                        <p style="color: #818cf8; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:#94a3b8; font-size:11px;">{time_stamp}</span></p>
-                        <p style="color: #38bdf8; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
+                    <div class="matte-card">
+                        <p style="color: #00bfa5; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:#94a3b8; font-size:11px;">{time_stamp}</span></p>
+                        <p style="color: #e2e8f0; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
     else:
@@ -299,7 +288,7 @@ else:
                     <div class="circle-avatar">{avatar_letter}</div>
                     <div>
                         <div style="color:#ffffff; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
-                        <div style="color:#38bdf8; font-size:10px;">{st.session_state.user_email}</div>
+                        <div style="color:#00bfa5; font-size:10px;">{st.session_state.user_email}</div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -315,7 +304,7 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # High-Level Animated Hologram Header
+    # Header Emblem Banner
     st.markdown("""
         <div class="rst-emblem-container">
             <div class="rst-emblem-box">
@@ -324,11 +313,11 @@ else:
         </div>
         <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
-            SYSTEM ARCHITECT: <span style="color:#38bdf8; font-weight:bold;">MOHAMMED RASITH</span>
+            SYSTEM ARCHITECT: <span style="color:#00e676; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # PERFECT CENTER NAVIGATION GRID (AI Chat & Voice Gen centered & spacious)
+    # MATTE NAVIGATION BUTTONS
     c_space_left, c_btn1, c_btn2, c_space_right = st.columns([2, 1.5, 1.5, 2])
     
     with c_btn1:
@@ -336,7 +325,7 @@ else:
     with c_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
 
-    st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 0.5px solid rgba(255,255,255,0.05); margin: 20px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
