@@ -107,28 +107,26 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* EXACT LAYOUT AS SHOWN IN SCREENSHOT 76 */
+    /* EXACT SCREENSHOT 77 LAYOUT */
     .top-header-container {{
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         width: 100%;
-        margin-bottom: 4px;
-        gap: 10px;
+        margin-bottom: 2px;
     }}
 
     .left-buttons-group {{
         display: flex;
         flex-direction: column;
         gap: 4px;
-        width: 110px;
-        flex-shrink: 0;
+        width: 100px;
     }}
 
     .right-profile-group {{
-        flex-grow: 1;
         display: flex;
         justify-content: flex-end;
+        align-items: flex-start;
     }}
 
     .rst-emblem-container {{
@@ -189,14 +187,14 @@ st.markdown(f"""
         border: 1px solid {card_border};
         padding: 2px 8px;
         border-radius: 20px;
-        height: 32px;
-        width: 130px;
+        height: 30px;
+        width: 110px;
         box-sizing: border-box;
     }}
 
     .circle-avatar {{
-        width: 14px;
-        height: 14px;
+        width: 13px;
+        height: 13px;
         background: {btn_text};
         color: #ffffff;
         border-radius: 50%;
@@ -204,7 +202,7 @@ st.markdown(f"""
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 7px;
+        font-size: 6px;
         flex-shrink: 0;
     }}
 
@@ -215,9 +213,9 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 9px !important;
+        font-size: 8px !important;
         width: 100% !important;
-        height: 30px !important;
+        height: 28px !important;
         padding: 0px !important;
         white-space: nowrap !important;
         transition: all 0.2s ease !important;
@@ -298,10 +296,10 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # EXACT SCREENSHOT 76 LAYOUT: ADMIN & LIGHT ON LEFT, USER/GUEST ON RIGHT
+    # EXACT SCREENSHOT 77 PLACEMENT
     st.markdown('<div class="top-header-container">', unsafe_allow_html=True)
     
-    # Left Side Group (Admin & Light Stacked Vertically)
+    # Left Side: Admin & Light stacked vertically
     st.markdown('<div class="left-buttons-group">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
@@ -316,20 +314,20 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Right Side Group (User / Guest Badge aligned to top-right)
+    # Right Side: User/Guest Profile Badge at top right corner
     st.markdown('<div class="right-profile-group">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
             <div class="profile-box">
                 <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                <span style="font-size:8px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
+                <span style="font-size:7px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
             </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
             <div class="profile-box">
                 <div class="circle-avatar">G</div>
-                <span style="font-size:8px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
+                <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
             </div>
         """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
