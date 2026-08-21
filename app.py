@@ -67,7 +67,7 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
+        margin-top: 5px;
         margin-bottom: 10px;
     }
 
@@ -163,7 +163,7 @@ st.markdown("""
         font-size: 15px;
     }
 
-    /* Navigation Buttons - Cleaned Alignment */
+    /* Buttons Styling */
     .stButton>button {
         background: rgba(15, 23, 42, 0.7) !important;
         color: #38bdf8 !important;
@@ -267,31 +267,36 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # Profile Badge
-    if st.session_state.user_email:
-        avatar_letter = st.session_state.user_name[0].upper()
-        st.markdown(f"""
-            <div class="profile-box">
-                <div class="circle-avatar">{avatar_letter}</div>
-                <div>
-                    <div style="color:#ffffff; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
-                    <div style="color:#38bdf8; font-size:10px;">{st.session_state.user_email}</div>
+    # TOP HEADER ROW: Admin button on Left Corner, User Badge on Right Corner
+    top_col_left, top_col_right = st.columns([1, 1])
+    
+    with top_col_left:
+        if st.button("👑 Admin"): 
+            st.session_state.active_mode = "admin"
+
+    with top_col_right:
+        if st.session_state.user_email:
+            avatar_letter = st.session_state.user_name[0].upper()
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">{avatar_letter}</div>
+                    <div>
+                        <div style="color:#ffffff; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
+                        <div style="color:#38bdf8; font-size:10px;">{st.session_state.user_email}</div>
+                    </div>
                 </div>
-            </div>
-            <div style="clear:both;"></div>
-        """, unsafe_allow_html=True)
-    else:
-        left = 2 - st.session_state.usage_count
-        st.markdown(f"""
-            <div class="profile-box">
-                <div class="circle-avatar">G</div>
-                <div>
-                    <div style="color:#ffffff; font-weight:bold; font-size:13px;">Guest User</div>
-                    <div style="color:#f43f5e; font-size:10px;">{left} Uses Left</div>
+            """, unsafe_allow_html=True)
+        else:
+            left = 2 - st.session_state.usage_count
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">G</div>
+                    <div>
+                        <div style="color:#ffffff; font-weight:bold; font-size:13px;">Guest User</div>
+                        <div style="color:#f43f5e; font-size:10px;">{left} Uses Left</div>
+                    </div>
                 </div>
-            </div>
-            <div style="clear:both;"></div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
     # High-Level Animated Hologram Header
     st.markdown("""
@@ -306,15 +311,13 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # Perfectly Centered Navigation Bar
-    col_left, col_btn1, col_btn2, col_btn3, col_right = st.columns([1.5, 2, 2, 2, 1.5])
+    # MAIN CENTERED NAVIGATION (AI Chat & Voice Gen only)
+    c_left, c_btn1, c_btn2, c_right = st.columns([2, 2, 2, 2])
     
-    with col_btn1:
+    with c_btn1:
         if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
-    with col_btn2:
+    with c_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
-    with col_btn3:
-        if st.button("👑 Admin"): st.session_state.active_mode = "admin"
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
 
