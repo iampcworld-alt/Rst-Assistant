@@ -89,7 +89,7 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 0.5rem !important;
+        padding-top: 0.2rem !important;
         padding-bottom: 2rem !important;
         max-width: 950px !important;
     }}
@@ -107,34 +107,38 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* ULTIMATE FLEXBOX HEADER FIX */
-    .header-flex-container {{
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+    /* TOP CORNERS EXACT PLACEMENT */
+    .top-absolute-container {{
+        position: relative;
         width: 100%;
-        margin-bottom: 2px;
+        height: 45px;
+        margin-bottom: 5px;
     }}
 
-    .left-side-buttons {{
+    .top-left-group {{
+        position: absolute;
+        left: 0px;
+        top: 0px;
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        width: 95px;
+        gap: 2px;
+        width: 85px;
     }}
 
-    .right-side-badge {{
+    .top-right-group {{
+        position: absolute;
+        right: 0px;
+        top: 0px;
         display: flex;
         justify-content: flex-end;
-        align-items: flex-start;
-        width: 110px;
+        width: 100px;
     }}
 
     .rst-emblem-container {{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 2px;
+        margin-top: 0px;
         margin-bottom: 2px;
     }}
 
@@ -188,7 +192,7 @@ st.markdown(f"""
         border: 1px solid {card_border};
         padding: 2px 6px;
         border-radius: 20px;
-        height: 28px;
+        height: 26px;
         width: 100%;
         box-sizing: border-box;
     }}
@@ -216,7 +220,7 @@ st.markdown(f"""
         font-weight: 700 !important;
         font-size: 8px !important;
         width: 100% !important;
-        height: 28px !important;
+        height: 26px !important;
         padding: 0px !important;
         white-space: nowrap !important;
         transition: all 0.2s ease !important;
@@ -297,11 +301,11 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # START FLEX HEADER
-    st.markdown('<div class="header-flex-container">', unsafe_allow_html=True)
+    # ABSOLUTE CONTAINER FOR TOP CORNERS
+    st.markdown('<div class="top-absolute-container">', unsafe_allow_html=True)
     
-    # Left Side Stack (Admin & Light)
-    st.markdown('<div class="left-side-buttons">', unsafe_allow_html=True)
+    # 1. TOP-LEFT: Admin & Light (Stacked tightly)
+    st.markdown('<div class="top-left-group">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
     if st.button("👑 Admin"): 
         st.session_state.active_mode = "admin"
@@ -315,8 +319,8 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Right Side Profile/Guest Badge
-    st.markdown('<div class="right-side-badge">', unsafe_allow_html=True)
+    # 2. TOP-RIGHT: User / Guest Badge
+    st.markdown('<div class="top-right-group">', unsafe_allow_html=True)
     if st.session_state.user_email:
         st.markdown(f"""
             <div class="profile-box">
@@ -334,7 +338,7 @@ else:
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
-    # END FLEX HEADER
+    # END TOP CONTAINER
 
     # CENTER EMBLEM BRANDING
     st.markdown(f"""
