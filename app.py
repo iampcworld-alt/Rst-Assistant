@@ -107,17 +107,17 @@ st.markdown(f"""
         background: {card_bg} !important;
     }}
 
-    /* FLEXBOX CONTAINER TO FORCE SINGLE ROW IN MOBILE & DESKTOP */
-    .top-flex-container {{
+    /* STRICT FLEXBOX CONTAINER TO AVOID ANY CLIPPING ON MOBILE */
+    .custom-flex-row {{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 6px;
+        gap: 4px;
         width: 100%;
         margin-bottom: 4px;
     }}
 
-    .top-flex-item {{
+    .custom-flex-item {{
         flex: 1;
         min-width: 0;
     }}
@@ -175,10 +175,10 @@ st.markdown(f"""
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 4px;
+        gap: 3px;
         background: {card_bg};
         border: 1px solid {card_border};
-        padding: 2px 6px;
+        padding: 2px 4px;
         border-radius: 20px;
         height: 32px;
         width: 100%;
@@ -206,10 +206,11 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 9px !important;
+        font-size: 8px !important;
         width: 100% !important;
         height: 32px !important;
         padding: 0px 2px !important;
+        white-space: nowrap !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -288,29 +289,32 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # FORCED SINGLE ROW USING CUSTOM FLEXBOX CONTAINER FOR MOBILE & DESKTOP
-    col_admin, col_light, col_user = st.columns(3)
-
-    with col_admin:
-        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
+    # CUSTOM HTML FLEX CONTAINER TO FIX MOBILE CLIPPING ISSUES COMPLETELY
+    st.markdown('<div class="custom-flex-row">', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown('<div class="custom-flex-item gold-animated-btn">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with col_light:
-        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="custom-flex-item gold-animated-btn">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
             st.session_state.theme = "light" if is_dark else "dark"
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with col_user:
+    with col3:
+        st.markdown('<div class="custom-flex-item">', unsafe_allow_html=True)
         if st.session_state.user_email:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:8px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
+                    <span style="font-size:7px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
@@ -320,6 +324,9 @@ else:
                     <span style="font-size:7px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest({2 - st.session_state.usage_count})</span>
                 </div>
             """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # CENTER EMBLEM BRANDING
     st.markdown(f"""
