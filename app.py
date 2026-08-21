@@ -80,10 +80,11 @@ if check_password():
         st.session_state.messages.append({"role": "assistant", "content": reply})
 
         # Voice Output Engine
-        async def speak():
-            clean_text = reply.replace("*", "")
-            communicate = edge_tts.Communicate(clean_text, "ta-IN-PallaviNeural")
-            await communicate.save("rst_response.mp3")
+async def speak():
+    clean_text = reply.replace("*", "")
+    # ta-IN-ValluvarNeural என மாற்றுவதன் மூலம் ஆண்குரல் இயங்கும்
+    communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
+    await communicate.save("rst_response.mp3")
 
         asyncio.run(speak())
         st.audio("rst_response.mp3")
