@@ -4,14 +4,13 @@ import asyncio
 import urllib.parse
 from PIL import Image
 
-# 1. Page Config & High-Level Futuristic UI Setup
+# 1. Page Config & Theme Setup
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Dark Futuristic Theme */
     .stApp { background-color: #030308; color: #00f0ff; font-family: 'Segoe UI', sans-serif; }
-    h1 { color: #ff0055; text-shadow: 0 0 15px #ff0055, 0 0 25px #ff0055; text-align: center; font-weight: 800; }
+    h1 { color: #ff0055; text-shadow: 0 0 15px #ff0055; text-align: center; font-weight: 800; }
     
     /* Neon Glow Quick Action Buttons */
     .stButton>button { 
@@ -21,56 +20,22 @@ st.markdown("""
         border-radius: 8px; 
         font-weight: bold; 
         box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        transition: 0.3s;
     }
     .stButton>button:hover {
         background: linear-gradient(45deg, #ff0055, #7928ca);
         color: #ffffff;
         border: 1px solid #ff0055;
-        box-shadow: 0 0 20px #ff0055;
-        transform: scale(1.02);
     }
 
-    /* Compact Owner Card */
+    /* Owner Card */
     .owner-card { 
         background: rgba(22, 27, 34, 0.8); 
         border: 1px solid #00f0ff; 
-        box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
         padding: 10px 15px; 
         border-radius: 12px; 
         margin: 10px auto 20px auto; 
         max-width: 550px;
         text-align: center;
-    }
-
-    /* RST Loader */
-    .rst-loader-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 15px 0;
-    }
-    .rst-circle {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #161b22;
-        border-top: 3px solid #ff0055;
-        border-right: 3px solid #00f0ff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    .rst-text-pulse {
-        margin-top: 8px;
-        font-weight: bold;
-        font-size: 13px;
-        color: #00f0ff;
-        letter-spacing: 1px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -95,40 +60,34 @@ def check_password():
 if check_password():
     # Header Section
     st.title("⚡ RST ASSISTANT ⚡")
-    st.markdown("<p style='text-align: center; color: #00f0ff; letter-spacing: 2px;'>HIGH-LEVEL PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #00f0ff;'>HIGH-LEVEL PRIVATE AI CONTROL CENTER</p>", unsafe_allow_html=True)
 
     # Compact System Information
     st.markdown("""
         <div class="owner-card">
-            <h4 style="color: #ff0055; margin:0 0 4px 0; letter-spacing: 1px;">SYSTEM INFORMATION</h4>
+            <h4 style="color: #ff0055; margin:0 0 4px 0;">SYSTEM INFORMATION</h4>
             <p style="margin:2px 0; font-size:14px; color:#ffffff;"><b>SYSTEM:</b> RST ASSISTANT | <b>OWNER:</b> MOHAMMED RASITH</p>
             <p style="margin:2px 0; font-size:12px; color: #8b949e;"><b>EMAIL:</b> [PROTECTED] | <b>PHONE:</b> [PROTECTED]</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Active Mode State Manager
+    # Mode Selector
     if "active_mode" not in st.session_state:
         st.session_state.active_mode = "chat"
 
-    # Clickable Quick Action Menu
     st.markdown("<h5 style='text-align: center; color: #ff0055;'>⚡ SELECT AI TOOL</h5>", unsafe_allow_html=True)
     c1, c2, c3, c4, c5 = st.columns(5)
 
     with c1:
-        if st.button("🤖 AI Chat"):
-            st.session_state.active_mode = "chat"
+        if st.button("🤖 AI Chat"): st.session_state.active_mode = "chat"
     with c2:
-        if st.button("🎨 Image Gen"):
-            st.session_state.active_mode = "image"
+        if st.button("🎨 Image Gen"): st.session_state.active_mode = "image"
     with c3:
-        if st.button("🎬 Video Gen"):
-            st.session_state.active_mode = "video"
+        if st.button("🎬 Video Gen"): st.session_state.active_mode = "video"
     with c4:
-        if st.button("🎙️ Voice Gen"):
-            st.session_state.active_mode = "voice"
+        if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
     with c5:
-        if st.button("🚀 AI Photo Re-Imagine"):
-            st.session_state.active_mode = "edit"
+        if st.button("🚀 AI Photo Re-Imagine"): st.session_state.active_mode = "edit"
 
     st.markdown("<hr style='border: 0.5px solid #161b22;'>", unsafe_allow_html=True)
 
@@ -150,22 +109,20 @@ if check_password():
                 st.markdown(user_input)
 
             query = user_input.lower()
-            if any(keyword in query for keyword in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "யார் உருவாக்கினா", "விவரம்"]):
+            if any(k in query for k in ["owner", "who made", "details", "contact", "created", "rasith", "developer"]):
                 reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
 📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
-📞 **Phone:** 0753967528  
-⚡ **System:** RST ASSISTANT Engine"""
+📞 **Phone:** 0753967528"""
             else:
-                reply = f"வணக்கம்! நான் உங்கள் RST ASSISTANT. நீங்கள் கேட்ட செய்தி: '{user_input}'. உங்களுக்கு உதவ நான் தயாராக உள்ளேன்!"
+                reply = f"வணக்கம்! நான் உங்கள் RST ASSISTANT. நீங்கள் கேட்டது: '{user_input}'."
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
 
             async def speak():
-                clean_text = reply.replace("*", "")
-                communicate = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
-                await communicate.save("rst_response.mp3")
+                comm = edge_tts.Communicate(reply.replace("*", ""), "ta-IN-ValluvarNeural")
+                await comm.save("rst_response.mp3")
 
             asyncio.run(speak())
             st.audio("rst_response.mp3")
@@ -176,18 +133,12 @@ if check_password():
         img_prompt = st.text_input("Enter Image Prompt:")
         if st.button("Generate Image Now"):
             if img_prompt:
-                st.markdown("""
-                    <div class="rst-loader-container">
-                        <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST GENERATING IMAGE...</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                encoded_prompt = urllib.parse.quote(img_prompt)
-                img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-                
-                col1, col2, col3 = st.columns([1, 1, 1])
-                with col1:
-                    st.image(img_url, width=300)
+                with st.spinner("⚡ RST Processing Image..."):
+                    encoded_prompt = urllib.parse.quote(img_prompt)
+                    img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
+                    
+                    st.image(img_url, width=280)
+                    st.markdown(f'<a href="{img_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">📥 Download HD Image</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
@@ -197,17 +148,9 @@ if check_password():
         vid_prompt = st.text_input("Enter Video Prompt:")
         if st.button("Generate Video Now"):
             if vid_prompt:
-                st.markdown("""
-                    <div class="rst-loader-container">
-                        <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST GENERATING VIDEO...</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                encoded_vprompt = urllib.parse.quote(vid_prompt)
-                vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
-                
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
+                with st.spinner("⚡ RST Processing Video..."):
+                    encoded_vprompt = urllib.parse.quote(vid_prompt)
+                    vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
                     st.video(vid_url)
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
@@ -215,24 +158,19 @@ if check_password():
     # ---------------- 4. MODE: VOICE GENERATOR ----------------
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம் நண்பா, RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம், RST ASSISTANT தளத்திற்கு வரவேற்கிறேன்.")
         if st.button("Generate Voice Now"):
             if v_text:
-                st.markdown("""
-                    <div class="rst-loader-container">
-                        <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST GENERATING VOICE...</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                async def make_custom_voice():
-                    comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
-                    await comm.save("custom_voice.mp3")
-                asyncio.run(make_custom_voice())
-                st.audio("custom_voice.mp3")
+                with st.spinner("⚡ RST Generating Voice..."):
+                    async def make_custom_voice():
+                        comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
+                        await comm.save("custom_voice.mp3")
+                    asyncio.run(make_custom_voice())
+                    st.audio("custom_voice.mp3")
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
-    # ---------------- 5. MODE: ULTRA-COMPACT SMALL PREVIEW PHOTO RE-IMAGINE ----------------
+    # ---------------- 5. MODE: PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
         
@@ -241,28 +179,19 @@ if check_password():
         
         if uploaded_file is not None and st.button("✨ Transform with AI"):
             if edit_prompt:
-                st.markdown("""
-                    <div class="rst-loader-container">
-                        <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST AI PROCESSING IMAGE...</div>
-                    </div>
-                """, unsafe_allow_html=True)
+                # Proper loader that stops after image is fetched
+                with st.spinner("⚡ RST AI Processing Your Image..."):
+                    combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
+                    encoded_prompt = urllib.parse.quote(combined_prompt)
+                    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
 
-                combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
-                encoded_prompt = urllib.parse.quote(combined_prompt)
-                ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
-
-                st.success("✅ RST AI Image Created!")
-
-                # Small Preview Column Layout
-                col_left, col_right = st.columns([1, 2])
+                st.success("✅ Image Generated!")
                 
-                with col_left:
-                    st.write("**Small Preview (சிறிய பார்வை):**")
-                    st.image(ai_image_url, width=280)  # Fixed small width!
-
-                with col_right:
-                    st.write("**Actions (செயல்கள்):**")
-                    st.markdown(f'<a href="{ai_image_url}" target="_blank" style="text-decoration:none;"><button style="width:250px; height:45px; background:#00f0ff; color:#000; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📥 Download / View Full Image</button></a>', unsafe_allow_html=True)
+                # Small side-by-side layout
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.image(ai_image_url, width=280)
+                with col2:
+                    st.markdown(f'<a href="{ai_image_url}" target="_blank"><button style="background:#00f0ff; color:#000; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download / Open Full HD Image</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து Prompt டைப் செய்யவும்!")
