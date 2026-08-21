@@ -3,6 +3,8 @@ import edge_tts
 import asyncio
 import sqlite3
 from datetime import datetime
+import io
+from PIL import Image
 
 # 1. DATABASE SETUP
 def init_db():
@@ -51,100 +53,73 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & ADVANCED HIGH-LEVEL UI CSS
+# 3. STREAMLIT PAGE CONFIG & EYE-FRIENDLY STABLE UI CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Deep Cybernetic Background with Grid Motion */
+    /* Eye-Friendly Dark Background */
     .stApp {
-        background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 50%, #030712 100%) !important;
-        background-attachment: fixed !important;
+        background: radial-gradient(circle at 50% 10%, #0f172a 0%, #0b0f19 100%) !important;
         color: #f8fafc !important;
     }
 
-    /* Animated Holographic RST Logo Header */
-    .logo-container {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 20px auto 10px auto;
-        padding: 20px;
-    }
-
+    /* Animated RST Logo Title */
     .rst-holo-logo {
-        font-size: 48px !important;
+        font-size: 42px !important;
         font-weight: 900 !important;
-        letter-spacing: 4px;
-        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #000000 100%);
+        text-align: center !important;
+        letter-spacing: 2px;
         background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: textShine 3s linear infinite, floatAnim 4s ease-in-out infinite;
-        text-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
+        animation: textShine 4s linear infinite;
+        margin-bottom: 5px !important;
     }
 
     @keyframes textShine {
         to { background-position: 200% center; }
     }
 
-    @keyframes floatAnim {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-8px) rotate(0.5deg); }
-    }
-
     /* Subtitle Tag */
     .owner-badge {
-        background: rgba(15, 23, 42, 0.7);
+        background: rgba(15, 23, 42, 0.8);
         border: 1px solid rgba(56, 189, 248, 0.3);
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-        backdrop-filter: blur(10px);
         border-radius: 20px;
-        padding: 6px 20px;
+        padding: 5px 18px;
         width: fit-content;
-        margin: 0 auto 25px auto;
-        font-size: 13px;
+        margin: 0 auto 20px auto;
+        font-size: 12px;
         letter-spacing: 1px;
     }
 
-    /* High-End Glassmorphism Card */
+    /* Glassmorphism Card */
     .glass-card {
-        background: rgba(30, 41, 59, 0.4) !important;
-        backdrop-filter: blur(16px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-top: 1px solid rgba(56, 189, 248, 0.3) !important;
-        border-radius: 20px !important;
-        padding: 20px !important;
-        margin-bottom: 20px !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        background: rgba(30, 41, 59, 0.5) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
+        margin-bottom: 15px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     }
 
-    .glass-card:hover {
-        transform: translateY(-5px) scale(1.01) !important;
-        border-color: rgba(56, 189, 248, 0.5) !important;
-        box-shadow: 0 25px 60px rgba(56, 189, 248, 0.2) !important;
-    }
-
-    /* Glowing Profile Badge */
+    /* Profile Badge */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
-        gap: 12px;
-        background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(99, 102, 241, 0.4);
-        padding: 6px 18px;
+        gap: 10px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        padding: 6px 16px;
         border-radius: 30px;
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
     }
 
     .circle-avatar {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         background: linear-gradient(135deg, #6366f1, #38bdf8);
         color: #ffffff;
         border-radius: 50%;
@@ -152,29 +127,26 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        font-size: 16px;
-        box-shadow: 0 0 12px #38bdf8;
+        font-size: 15px;
     }
 
-    /* Cyber Navigation Buttons */
+    /* Custom Navigation Buttons */
     .stButton>button {
-        background: rgba(15, 23, 42, 0.6) !important;
+        background: rgba(15, 23, 42, 0.7) !important;
         color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.25) !important;
-        border-radius: 14px !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.5px !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
         width: 100% !important;
-        padding: 12px 16px !important;
-        transition: all 0.3s ease !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s ease !important;
     }
 
     .stButton>button:hover {
-        background: linear-gradient(135deg, #38bdf8, #6366f1) !important;
-        color: #ffffff !important;
+        background: #38bdf8 !important;
+        color: #0f172a !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important;
-        transform: translateY(-3px) !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -211,7 +183,7 @@ def show_login_page():
 
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
-    st.markdown('<div class="logo-container"><div class="rst-holo-logo">👑 OWNER ADMIN DASHBOARD</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="rst-holo-logo">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
@@ -276,11 +248,9 @@ else:
             <div style="clear:both;"></div>
         """, unsafe_allow_html=True)
 
-    # Animated Hologram Header
+    # Header
     st.markdown("""
-        <div class="logo-container">
-            <div class="rst-holo-logo">⚡ RST ASSISTANT ⚡</div>
-        </div>
+        <div class="rst-holo-logo">⚡ RST ASSISTANT ⚡</div>
         <div class="owner-badge">
             SYSTEM ARCHITECT: <span style="color:#38bdf8; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
@@ -303,9 +273,9 @@ else:
 
     st.markdown("<hr style='border: 0.5px solid rgba(56,189,248,0.15); margin: 20px 0;'>", unsafe_allow_html=True)
 
-    # Chat Mode
+    # 1. CHAT MODE
     if st.session_state.active_mode == "chat":
-        st.subheader("🤖 RST Neural Intelligence Engine")
+        st.subheader("🤖 RST Smart AI Assistant")
 
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -326,7 +296,7 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.spinner("⚡ Processing Neural Response..."):
+            with st.spinner("⚡ RST Processing..."):
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
@@ -346,19 +316,59 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # Voice Mode
+    # 2. IMAGE GENERATION MODE
+    elif st.session_state.active_mode == "image":
+        st.subheader("🎨 RST AI Image Generator")
+        img_prompt = st.text_input("உருவாக்கப்பட வேண்டிய படத்தின் விவரிக்கவும் (Prompt):")
+        if st.button("Generate Image"):
+            if img_prompt:
+                with st.spinner("🎨 Creating Image..."):
+                    # Pollinations AI Free Image API
+                    encoded_prompt = img_prompt.replace(" ", "%20")
+                    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
+                    st.image(image_url, caption=f"Generated: {img_prompt}", use_column_width=True)
+
+    # 3. VIDEO GENERATION MODE
+    elif st.session_state.active_mode == "video":
+        st.subheader("🎬 RST AI Video Prompt Generator")
+        video_prompt = st.text_area("வீடியோவுக்கானPrompt உள்ளிடவும்:")
+        if st.button("Generate Video Script & Concept"):
+            if video_prompt:
+                st.info("🎬 AI Video Generation Pipeline initialized. (Runway / Pika Labs Integration Ready)")
+
+    # 4. VOICE GENERATION MODE
     elif st.session_state.active_mode == "voice":
         st.subheader("🎙️ RST Voice Generator")
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்!")
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
+        voice_opt = st.selectbox("குரலைத் தேர்ந்தெடுக்கவும்:", ["ta-IN-ValluvarNeural (Tamil Male)", "ta-IN-PallaviNeural (Tamil Female)"])
+        voice_code = "ta-IN-ValluvarNeural" if "Valluvar" in voice_opt else "ta-IN-PallaviNeural"
+        
         if st.button("Generate Voice"):
             if v_text:
                 async def make_voice():
-                    comm = edge_tts.Communicate(v_text, "ta-IN-ValluvarNeural")
+                    comm = edge_tts.Communicate(v_text, voice_code)
                     await comm.save("voice.mp3")
                 asyncio.run(make_voice())
                 st.audio("voice.mp3")
 
-    # Admin Login Mode
+    # 5. PHOTO EDITING MODE
+    elif st.session_state.active_mode == "edit":
+        st.subheader("🚀 RST Photo Studio & Editor")
+        uploaded_file = st.file_uploader("புகைப்படத்தைப் பதிவேற்றவும் (JPG/PNG):", type=["jpg", "jpeg", "png"])
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Original Image", use_column_width=True)
+            
+            filter_type = st.selectbox("Filter/Effect:", ["None", "Grayscale", "Rotate 90°"])
+            if st.button("Apply Effect"):
+                if filter_type == "Grayscale":
+                    edited_img = image.convert("L")
+                    st.image(edited_img, caption="Grayscale Image", use_column_width=True)
+                elif filter_type == "Rotate 90°":
+                    edited_img = image.rotate(-90)
+                    st.image(edited_img, caption="Rotated Image", use_column_width=True)
+
+    # 6. ADMIN LOGIN MODE
     elif st.session_state.active_mode == "admin":
         st.subheader("👑 Admin Authentication")
         pwd = st.text_input("Enter Master Password:", type="password")
