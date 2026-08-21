@@ -51,29 +51,28 @@ if "GEMINI_API_KEY" in st.secrets:
     except Exception:
         HAS_GEMINI = False
 
-# 3. STREAMLIT PAGE CONFIG & DARK MATTE DASHBOARD UI CSS
+# 3. STREAMLIT PAGE CONFIG & NEUMORPHISM LIGHT THEME CSS
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    /* Dark Matte Background matching the UI design */
+    /* Neumorphic Soft Light Background */
     .stApp {
-        background-color: #0b0e14 !important;
-        color: #e2e8f0 !important;
+        background-color: #e0e5ec !important;
+        color: #2d3748 !important;
         font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
     }
 
-    /* Matte UI Card Styling */
-    .matte-card {
-        background: #161b22 !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-radius: 18px !important;
-        padding: 20px !important;
-        margin-bottom: 16px !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+    /* Soft Neumorphic Card Styling */
+    .neu-card {
+        background: #e0e5ec !important;
+        border-radius: 20px !important;
+        padding: 22px !important;
+        margin-bottom: 18px !important;
+        box-shadow: 9px 9px 16px #be2aa, -9px -9px 16px #ffffff !important;
     }
 
-    /* Logo Emblem with Emerald/Mint Accent */
+    /* Logo Emblem with Neumorphism & Blue Gradient */
     .rst-emblem-container {
         display: flex;
         justify-content: center;
@@ -83,109 +82,110 @@ st.markdown("""
     }
 
     .rst-emblem-box {
-        padding: 10px 32px;
-        background: #161b22;
-        border-radius: 20px;
-        border: 1px solid #00bfa5;
-        box-shadow: 0 0 20px rgba(0, 191, 165, 0.2);
+        padding: 12px 38px;
+        background: #e0e5ec;
+        border-radius: 24px;
+        box-shadow: 8px 8px 16px #a3b1c6, -8px -8px 16px #ffffff;
     }
 
     .rst-emblem-text {
         font-size: 48px;
         font-weight: 900;
         letter-spacing: 6px;
-        color: #00e676;
-        text-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin: 0;
         line-height: 1;
     }
 
     .rst-title-text {
         font-size: 22px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 3px;
-        color: #ffffff;
+        color: #1e293b;
         margin-bottom: 6px !important;
     }
 
     .owner-badge {
-        background: #161b22;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #e0e5ec;
+        box-shadow: 4px 4px 8px #a3b1c6, -4px -4px 8px #ffffff;
         border-radius: 20px;
-        padding: 6px 16px;
+        padding: 6px 18px;
         width: fit-content;
         margin: 0 auto 24px auto;
         font-size: 11px;
         letter-spacing: 1px;
-        color: #94a3b8;
+        color: #64748b;
+        font-weight: 600;
     }
 
-    /* Minimalist Profile Chip */
+    /* Profile Box Neumorphic Style */
     .profile-box {
         float: right;
         display: flex;
         align-items: center;
         gap: 12px;
-        background: #161b22;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 6px 16px;
-        border-radius: 24px;
+        background: #e0e5ec;
+        box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+        padding: 6px 18px;
+        border-radius: 30px;
     }
 
     .circle-avatar {
-        width: 32px;
-        height: 32px;
-        background: #00bfa5;
-        color: #0b0e14;
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
         font-size: 14px;
+        box-shadow: 2px 2px 5px rgba(37, 99, 235, 0.4);
     }
 
-    /* Dark Matte Buttons with Teal Accent */
+    /* Neumorphic Interactive Buttons */
     .stButton>button {
-        background: #161b22 !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 14px !important;
-        font-weight: 600 !important;
+        background: #e0e5ec !important;
+        color: #1e293b !important;
+        border: none !important;
+        border-radius: 16px !important;
+        font-weight: 700 !important;
         font-size: 14px !important;
         width: 100% !important;
-        padding: 10px 20px !important;
+        padding: 12px 24px !important;
+        box-shadow: 6px 6px 12px #a3b1c6, -6px -6px 12px #ffffff !important;
         transition: all 0.2s ease-in-out !important;
     }
 
     .stButton>button:hover {
-        background: #00bfa5 !important;
-        color: #0b0e14 !important;
-        border-color: #00bfa5 !important;
-        box-shadow: 0 4px 15px rgba(0, 191, 165, 0.3) !important;
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+        color: #ffffff !important;
+        box-shadow: 2px 2px 8px #a3b1c6, -2px -2px 8px #ffffff !important;
     }
 
-    /* Admin Button Distinct Gold-Amber Style */
+    /* Gold Design for Admin Button with Soft Shadow */
     div[data-testid="stColumn"]:first-child .stButton>button {
-        background: #1c1917 !important;
-        color: #f59e0b !important;
-        border: 1px solid rgba(245, 158, 11, 0.3) !important;
-        border-radius: 14px !important;
+        background: #e0e5ec !important;
+        color: #d97706 !important;
+        box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff !important;
     }
 
     div[data-testid="stColumn"]:first-child .stButton>button:hover {
-        background: #f59e0b !important;
-        color: #0b0e14 !important;
-        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4) !important;
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #ffffff !important;
     }
 
-    /* Inputs Styling */
+    /* Neumorphic Inputs (Inset Shadows) */
     .stTextInput input, .stTextArea textarea, .stSelectbox > div {
-        background-color: #161b22 !important;
-        color: #f8fafc !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 12px !important;
+        background-color: #e0e5ec !important;
+        color: #1e293b !important;
+        border: none !important;
+        border-radius: 14px !important;
+        box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -204,14 +204,14 @@ def show_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("""
-            <div class="matte-card" style="text-align:center;">
+            <div class="neu-card" style="text-align:center;">
                 <div class="rst-emblem-container">
                     <div class="rst-emblem-box">
                         <div class="rst-emblem-text">RST</div>
                     </div>
                 </div>
                 <div class="rst-title-text">LOGIN</div>
-                <p style="color:#94a3b8; font-size:13px; margin-top:8px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
+                <p style="color:#64748b; font-size:13px; margin-top:8px;">இலவச பயன்பாடு முடிந்தது! தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
         with st.form("login_form"):
@@ -247,9 +247,9 @@ def show_admin_dashboard():
 
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.markdown(f'<div class="matte-card" style="text-align:center;"><h2 style="color:#00e676; margin:0;">{total_chats}</h2><p style="color:#94a3b8; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="neu-card" style="text-align:center;"><h2 style="color:#2563eb; margin:0;">{total_chats}</h2><p style="color:#64748b; margin:0;">Total Searches Logged</p></div>', unsafe_allow_html=True)
     with col_m2:
-        st.markdown(f'<div class="matte-card" style="text-align:center;"><h2 style="color:#00bfa5; margin:0;">{unique_users}</h2><p style="color:#94a3b8; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="neu-card" style="text-align:center;"><h2 style="color:#3b82f6; margin:0;">{unique_users}</h2><p style="color:#64748b; margin:0;">Total Registered Users</p></div>', unsafe_allow_html=True)
 
     st.subheader("🔍 Search User Activity")
     search_query = st.text_input("🔎 Filter by Name, Email or Prompt Keyword:")
@@ -259,9 +259,9 @@ def show_admin_dashboard():
         for name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in email.lower() or search_query.lower() in prompt.lower():
                 st.markdown(f"""
-                    <div class="matte-card">
-                        <p style="color: #00bfa5; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:#94a3b8; font-size:11px;">{time_stamp}</span></p>
-                        <p style="color: #e2e8f0; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
+                    <div class="neu-card">
+                        <p style="color: #2563eb; margin:0;"><b>User:</b> {name} ({email}) | <span style="color:#64748b; font-size:11px;">{time_stamp}</span></p>
+                        <p style="color: #1e293b; margin: 5px 0 0 0;"><b>Prompt:</b> {prompt}</p>
                     </div>
                 """, unsafe_allow_html=True)
     else:
@@ -287,8 +287,8 @@ else:
                 <div class="profile-box">
                     <div class="circle-avatar">{avatar_letter}</div>
                     <div>
-                        <div style="color:#ffffff; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
-                        <div style="color:#00bfa5; font-size:10px;">{st.session_state.user_email}</div>
+                        <div style="color:#1e293b; font-weight:bold; font-size:13px;">{st.session_state.user_name}</div>
+                        <div style="color:#2563eb; font-size:10px;">{st.session_state.user_email}</div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -298,8 +298,8 @@ else:
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
                     <div>
-                        <div style="color:#ffffff; font-weight:bold; font-size:13px;">Guest User</div>
-                        <div style="color:#f43f5e; font-size:10px;">{left} Uses Left</div>
+                        <div style="color:#1e293b; font-weight:bold; font-size:13px;">Guest User</div>
+                        <div style="color:#e11d48; font-size:10px;">{left} Uses Left</div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -313,11 +313,11 @@ else:
         </div>
         <div class="rst-title-text">⚡ ASSISTANT ⚡</div>
         <div class="owner-badge">
-            SYSTEM ARCHITECT: <span style="color:#00e676; font-weight:bold;">MOHAMMED RASITH</span>
+            SYSTEM ARCHITECT: <span style="color:#2563eb; font-weight:bold;">MOHAMMED RASITH</span>
         </div>
     """, unsafe_allow_html=True)
 
-    # MATTE NAVIGATION BUTTONS
+    # NEUMORPHIC NAVIGATION BUTTONS
     c_space_left, c_btn1, c_btn2, c_space_right = st.columns([2, 1.5, 1.5, 2])
     
     with c_btn1:
@@ -325,7 +325,7 @@ else:
     with c_btn2:
         if st.button("🎙️ Voice Gen"): st.session_state.active_mode = "voice"
 
-    st.markdown("<hr style='border: 0.5px solid rgba(255,255,255,0.05); margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 0.5px solid #a3b1c6; margin: 20px 0;'>", unsafe_allow_html=True)
 
     # 1. AI CHAT MODE
     if st.session_state.active_mode == "chat":
