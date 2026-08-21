@@ -4,6 +4,14 @@ import asyncio
 import urllib.parse
 from PIL import Image
 
+# Dynamic AI Response Engine
+try:
+    from g4f.client import Client
+    client = Client()
+    HAS_G4F = True
+except Exception:
+    HAS_G4F = False
+
 # 1. Page Config & Theme Setup
 st.set_page_config(page_title="RST ASSISTANT", page_icon="⚡", layout="wide")
 
@@ -12,7 +20,6 @@ st.markdown("""
     .stApp { background-color: #030308; color: #00f0ff; font-family: 'Segoe UI', sans-serif; }
     h1 { color: #ff0055; text-shadow: 0 0 15px #ff0055; text-align: center; font-weight: 800; }
     
-    /* Neon Glow Quick Action Buttons */
     .stButton>button { 
         background: linear-gradient(45deg, #161b22, #0d1117); 
         color: #00f0ff; 
@@ -27,7 +34,6 @@ st.markdown("""
         border: 1px solid #ff0055;
     }
 
-    /* Owner Card */
     .owner-card { 
         background: rgba(22, 27, 34, 0.8); 
         border: 1px solid #00f0ff; 
@@ -91,7 +97,7 @@ if check_password():
 
     st.markdown("<hr style='border: 0.5px solid #161b22;'>", unsafe_allow_html=True)
 
-    # ---------------- 1. MODE: CHATBOT ----------------
+    # ---------------- 1. MODE: REAL AI CHATBOT ----------------
     if st.session_state.active_mode == "chat":
         st.subheader("🤖 RST Interactive Chatbot")
         if "messages" not in st.session_state:
@@ -109,19 +115,46 @@ if check_password():
                 st.markdown(user_input)
 
             query = user_input.lower()
-            if any(k in query for k in ["owner", "who made", "details", "contact", "created", "rasith", "developer"]):
+
+            # Direct Owner Check
+            if any(k in query for k in ["owner", "who made", "details", "contact", "created", "rasith", "developer", "உருவாக்கியவர்"]):
                 reply = """இதை உருவாக்கியவர் **MOHAMMED RASITH** (RST AI OWNER).
 📧 **Email:** MOHAMMEDRASITH27@GMAIL.COM  
 📞 **Phone:** 0753967528"""
             else:
-                reply = f"வணக்கம்! நான் உங்கள் RST ASSISTANT. நீங்கள் கேட்டது: '{user_input}'."
+                # Generates Natural Dynamic Answers using G4F AI Engine
+                with st.spinner("⚡ RST Thinking..."):
+                    try:
+                        if HAS_G4F:
+                            response = client.chat.completions.create(
+                                model="gpt-4o",
+                                messages=[
+                                    {"role": "system", "content": "You are RST ASSISTANT, a helpful, empathetic, and friendly AI developed by Mohammed Rasith. Reply warmly, naturally, and concisely in Tanglish or Tamil based on the user prompt."},
+                                    {"role": "user", "content": user_input}
+                                ]
+                            )
+                            reply = response.choices[0].message.content
+                        else:
+                            raise Exception("Engine Offline")
+                    except Exception:
+                        # Fallback Rule-Based Smart Responses
+                        if any(k in query for k in ["pasikkithu", "pasikithu", "pasi", "பசி"]):
+                            reply = "ஐயோ! உடனே நல்லா ருசியா ஏதாவது சாப்பிடுங்க நண்பா. ஆரோக்கியமா இருக்கிறது தான் முதல்ல முக்கியம்!"
+                        elif any(k in query for k in ["enna panrathu", "enna seiyarathu", "what to do"]):
+                            reply = "கொஞ்சம் ரிலாக்ஸா இருங்க, நல்ல பாட்டு கேளுங்க அல்லது ஒரு சின்ன வாக்கிங் போயிட்டு வாங்க. உங்களுக்கு உதவ நான் இருக்கேன்!"
+                        elif any(k in query for k in ["hi", "hello", "வணக்கம்", "hey"]):
+                            reply = "வணக்கம்! நான் உங்கள் RST ASSISTANT. உங்களுக்கு நான் எப்படி உதவட்டும்?"
+                        else:
+                            reply = f"நான் உங்கள் கேள்வியைப் புரிந்து கொண்டேன். உங்களுக்காக உதவ தயாராக உள்ளேன்!"
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
 
+            # Voice Generation
             async def speak():
-                comm = edge_tts.Communicate(reply.replace("*", ""), "ta-IN-ValluvarNeural")
+                clean_text = reply.replace("*", "").replace("#", "")
+                comm = edge_tts.Communicate(clean_text, "ta-IN-ValluvarNeural")
                 await comm.save("rst_response.mp3")
 
             asyncio.run(speak())
@@ -154,12 +187,10 @@ if check_password():
                     motion_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&width=1280&height=720&nologo=true"
                     
                     st.success("✅ RST Motion Frame Created!")
-                    
                     col1, col2 = st.columns([2, 1])
                     with col1:
                         st.image(motion_url, caption="RST Cinematic AI Motion", width=500)
                     with col2:
-                        st.write("**Controls:**")
                         st.markdown(f'<a href="{motion_url}" target="_blank"><button style="width:100%; background:#00f0ff; color:#000; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download HD Motion</button></a>', unsafe_allow_html=True)
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
