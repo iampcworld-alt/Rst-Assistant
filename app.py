@@ -2,6 +2,7 @@ import streamlit as st
 import edge_tts
 import asyncio
 import urllib.parse
+import requests
 from PIL import Image
 
 # 1. Page Config & High-Level Futuristic UI Setup
@@ -20,7 +21,6 @@ st.markdown("""
         border: 1px solid #00f0ff;
         border-radius: 8px; 
         font-weight: bold; 
-        height: 50px;
         box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         transition: 0.3s;
     }
@@ -44,43 +44,34 @@ st.markdown("""
         text-align: center;
     }
 
-    /* RST Custom Processing Pulse Ring */
+    /* RST Loader */
     .rst-loader-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 20px 0;
+        margin: 15px 0;
     }
     .rst-circle {
-        width: 70px;
-        height: 70px;
-        border: 4px solid #161b22;
-        border-top: 4px solid #ff0055;
-        border-right: 4px solid #00f0ff;
+        width: 50px;
+        height: 50px;
+        border: 3px solid #161b22;
+        border-top: 3px solid #ff0055;
+        border-right: 3px solid #00f0ff;
         border-radius: 50%;
-        animation: spin 1s linear infinite, glow 1.5s ease-in-out infinite alternate;
+        animation: spin 1s linear infinite;
     }
     .rst-text-pulse {
-        margin-top: 12px;
+        margin-top: 10px;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 14px;
         color: #00f0ff;
-        letter-spacing: 2px;
-        animation: pulseText 1.2s infinite alternate;
+        letter-spacing: 1px;
     }
 
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
-    }
-    @keyframes glow {
-        from { box-shadow: 0 0 5px #ff0055; }
-        to { box-shadow: 0 0 20px #00f0ff; }
-    }
-    @keyframes pulseText {
-        from { opacity: 0.4; color: #ff0055; }
-        to { opacity: 1; color: #00f0ff; }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -189,15 +180,14 @@ if check_password():
                 st.markdown("""
                     <div class="rst-loader-container">
                         <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST PROCESSING IMAGE...</div>
+                        <div class="rst-text-pulse">⚡ RST GENERATING IMAGE...</div>
                     </div>
                 """, unsafe_allow_html=True)
                 encoded_prompt = urllib.parse.quote(img_prompt)
                 img_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
                 
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    st.image(img_url, caption=f"Generated: {img_prompt}", use_container_width=True)
+                with st.expander("👁️ Click to View & Download Image", expanded=True):
+                    st.image(img_url, use_container_width=True)
             else:
                 st.warning("தயவுசெய்து விவரத்தை டைப் செய்யவும்!")
 
@@ -210,14 +200,13 @@ if check_password():
                 st.markdown("""
                     <div class="rst-loader-container">
                         <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST PROCESSING VIDEO...</div>
+                        <div class="rst-text-pulse">⚡ RST GENERATING VIDEO...</div>
                     </div>
                 """, unsafe_allow_html=True)
                 encoded_vprompt = urllib.parse.quote(vid_prompt)
                 vid_url = f"https://image.pollinations.ai/prompt/{encoded_vprompt}?model=flux&nologo=true"
                 
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
+                with st.expander("👁️ Click to Play Video", expanded=True):
                     st.video(vid_url)
             else:
                 st.warning("தயவுசெய்து வீடியோ விவரத்தை டைப் செய்யவும்!")
@@ -242,7 +231,7 @@ if check_password():
             else:
                 st.warning("தயவுசெய்து உரையை டைப் செய்யவும்!")
 
-    # ---------------- 5. MODE: COMPACT HIGH-LEVEL AI PHOTO RE-IMAGINE ----------------
+    # ---------------- 5. MODE: CLEAN POPUP AI PHOTO RE-IMAGINE ----------------
     elif st.session_state.active_mode == "edit":
         st.subheader("🚀 RST High-Level AI Photo Re-Imagine")
         
@@ -251,22 +240,28 @@ if check_password():
         
         if uploaded_file is not None and st.button("✨ Transform with AI"):
             if edit_prompt:
-                # Custom RST Loader Display
                 st.markdown("""
                     <div class="rst-loader-container">
                         <div class="rst-circle"></div>
-                        <div class="rst-text-pulse">⚡ RST AI PROCESSING YOUR IMAGE...</div>
+                        <div class="rst-text-pulse">⚡ RST AI PROCESSING IMAGE...</div>
                     </div>
                 """, unsafe_allow_html=True)
 
-                # Process Image Output Compactly
-                combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution, realistic lighting"
+                combined_prompt = f"portrait of the person in uploaded image, {edit_prompt}, hyperrealistic, ultra detailed, 8k resolution"
                 encoded_prompt = urllib.parse.quote(combined_prompt)
                 ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?model=flux&width=1080&height=1080&nologo=true"
 
-                # Center Column Compact View
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    st.image(ai_image_url, caption="RST AI Transformed Output", use_container_width=True)
+                # Compact Expandable Result Card
+                st.success("✅ RST AI Image Created Successfully!")
+                with st.expander("👁️ Click Here to Preview, Re-Edit & Download", expanded=True):
+                    st.image(ai_image_url, use_container_width=True)
+                    
+                    # Direct Action Buttons Box
+                    col_a, col_b = st.columns(2)
+                    with col_a:
+                        st.markdown(f'<a href="{ai_image_url}" target="_blank" style="text-decoration:none;"><button style="width:100%; height:45px; background:#00f0ff; color:#000; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📥 Open / Download Full HD Image</button></a>', unsafe_allow_html=True)
+                    with col_b:
+                        if st.button("🔄 Re-Edit Image Prompt"):
+                            st.session_state.active_mode = "edit"
             else:
                 st.warning("தயவுசெய்து Prompt டைப் செய்யவும்!")
