@@ -168,15 +168,14 @@ st.markdown(f"""
     .profile-box {{
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         gap: 6px;
         background: {card_bg};
         border: 1px solid {card_border};
         padding: 2px 8px;
-        border-radius: 16px;
-        height: 28px;
-        width: fit-content;
-        margin-left: auto;
+        border-radius: 20px;
+        height: 32px;
+        width: 100%;
     }}
 
     .circle-avatar {{
@@ -190,6 +189,7 @@ st.markdown(f"""
         justify-content: center;
         font-weight: 700;
         font-size: 8px;
+        flex-shrink: 0;
     }}
 
     .stButton>button {{
@@ -199,9 +199,10 @@ st.markdown(f"""
         border: 1px solid {btn_border} !important;
         border-radius: 20px !important;
         font-weight: 700 !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         width: 100% !important;
         height: 32px !important;
+        padding: 0px 4px !important;
         transition: all 0.2s ease !important;
     }}
 
@@ -280,36 +281,38 @@ if st.session_state.active_mode == "admin" and st.session_state.admin_authentica
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_login_page()
 else:
-    # PILL CONTAINER ROW FOR ADMIN, THEME & USER PROFILE
-    c1, c2, c3 = st.columns([1, 1, 1.2])
+    # TOP HEADER LAYOUT: [Admin | User Name] in row 1, [Light/Dark] right under Admin
+    top_col1, top_col2 = st.columns(2)
 
-    with c1:
+    with top_col1:
+        # Admin button and Light button stacked closely together vertically
         st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
         if st.button("👑 Admin"): 
             st.session_state.active_mode = "admin"
         st.markdown('</div>', unsafe_allow_html=True)
-
-    with c2:
-        st.markdown('<div class="gold-animated-btn">', unsafe_allow_html=True)
+        
+        st.markdown('<div class="gold-animated-btn" style="margin-top: 4px;">', unsafe_allow_html=True)
         theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
         if st.button(f"{theme_icon}"):
             st.session_state.theme = "light" if is_dark else "dark"
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    with c3:
+    with top_col2:
+        # User Name placed directly to the right of Admin button
+        st.markdown("<div style='height: 2px;'></div>", unsafe_allow_html=True) # minor alignment offset
         if st.session_state.user_email:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                    <span style="font-size:10px; font-weight:600; color:{text_primary};">{st.session_state.user_name}</span>
+                    <span style="font-size:9px; font-weight:600; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{st.session_state.user_name}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
                 <div class="profile-box">
                     <div class="circle-avatar">G</div>
-                    <span style="font-size:9px; color:#e11d48; font-weight:600;">Guest ({2 - st.session_state.usage_count})</span>
+                    <span style="font-size:8px; color:#e11d48; font-weight:600; white-space:nowrap;">Guest ({2 - st.session_state.usage_count})</span>
                 </div>
             """, unsafe_allow_html=True)
 
