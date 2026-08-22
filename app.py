@@ -62,12 +62,13 @@ init_db()
 # 2. GROQ SETUP
 # =========================================================
 # NOTE ON MODEL NAME:
-# Groq deprecated "llama-3.3-70b-versatile" and "llama-3.1-8b-instant" for
-# free/developer tier usage. Using either of those now throws the exact
-# 404 model_not_found error you were hitting. Groq's own migration guide
-# points to "openai/gpt-oss-20b" as the direct replacement, so that's what
-# is wired in below. If you're on an enterprise contract where the old
-# Llama models are still active, just swap MODEL_NAME back.
+# "llama-3.3-70b-versatile" and "llama-3.1-8b-instant" were deprecated by
+# Groq on their free/developer tier — using either now reproduces the
+# exact 404 model_not_found error this app was originally hit with.
+# Groq's migration guide points to "openai/gpt-oss-20b" as the direct,
+# currently-active replacement, so that's what stays wired in below.
+# If your account has enterprise/committed-spend access where the old
+# Llama models are still live, just change this one constant.
 MODEL_NAME = "openai/gpt-oss-20b"
 
 HAS_GROQ = False
@@ -90,7 +91,6 @@ defaults = {
     "active_mode": "chat",
     "admin_authenticated": False,
     "messages": [],
-    "auth_tab": "login",
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -99,13 +99,12 @@ for k, v in defaults.items():
 # =========================================================
 # 4. PAGE CONFIG
 # =========================================================
-st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
 
-# ---- Glassmorphism color system ----
 if is_dark:
-    bg_gradient = "radial-gradient(circle at 15% 15%, #1b0f3a 0%, #05060f 45%, #000000 100%)"
+    bg_gradient = "radial-gradient(circle at 12% 10%, #1b0f3a 0%, #05060f 45%, #000000 100%)"
     glass_bg = "rgba(255, 255, 255, 0.05)"
     glass_border = "rgba(255, 255, 255, 0.14)"
     glass_shadow = "0 8px 32px rgba(0, 0, 0, 0.55)"
@@ -115,8 +114,9 @@ if is_dark:
     accent_b = "#8b5cf6"
     accent_c = "#38bdf8"
     input_bg = "rgba(255,255,255,0.06)"
+    mesh_opacity = "0.35"
 else:
-    bg_gradient = "radial-gradient(circle at 15% 15%, #eef2ff 0%, #f8fafc 45%, #ffffff 100%)"
+    bg_gradient = "radial-gradient(circle at 12% 10%, #eef2ff 0%, #f8fafc 45%, #ffffff 100%)"
     glass_bg = "rgba(255, 255, 255, 0.55)"
     glass_border = "rgba(15, 23, 42, 0.10)"
     glass_shadow = "0 8px 32px rgba(15, 23, 42, 0.12)"
@@ -126,12 +126,11 @@ else:
     accent_b = "#7c3aed"
     accent_c = "#0284c7"
     input_bg = "rgba(15,23,42,0.04)"
-
-gradient_text = f"linear-gradient(90deg, {accent_a}, {accent_b}, {accent_c})"
+    mesh_opacity = "0.15"
 
 st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Orbitron:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
     #MainMenu, footer, header {{ visibility: hidden; }}
 
@@ -151,9 +150,33 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 1.2rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 3rem !important;
-        max-width: 920px !important;
+        max-width: 960px !important;
+        position: relative;
+        z-index: 1;
+    }}
+
+    /* ---------- GLASS NETWORK BACKGROUND ---------- */
+    .mesh-bg {{
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: {mesh_opacity};
+        background-image:
+            repeating-linear-gradient(115deg, transparent 0px, transparent 90px, {accent_c} 91px, transparent 92px),
+            repeating-linear-gradient(25deg, transparent 0px, transparent 130px, {accent_b} 131px, transparent 132px),
+            radial-gradient({accent_a} 1.4px, transparent 1.6px),
+            radial-gradient({accent_c} 1.4px, transparent 1.6px);
+        background-size: 340px 340px, 420px 420px, 160px 160px, 220px 220px;
+        background-position: 0 0, 0 0, 0 0, 60px 90px;
+        animation: meshDrift 26s linear infinite;
+    }}
+
+    @keyframes meshDrift {{
+        0%   {{ background-position: 0 0, 0 0, 0 0, 60px 90px; }}
+        100% {{ background-position: 340px 340px, -420px 420px, 160px -160px, -160px 310px; }}
     }}
 
     /* ---------- ANIMATIONS ---------- */
@@ -165,7 +188,7 @@ st.markdown(f"""
 
     @keyframes pulseGlow {{
         0%   {{ box-shadow: 0 0 12px rgba(139, 92, 246, 0.45), 0 0 0px rgba(56, 189, 248, 0.0); }}
-        50%  {{ box-shadow: 0 0 30px rgba(236, 72, 153, 0.55), 0 0 14px rgba(56, 189, 248, 0.5); }}
+        50%  {{ box-shadow: 0 0 32px rgba(236, 72, 153, 0.6), 0 0 16px rgba(56, 189, 248, 0.55); }}
         100% {{ box-shadow: 0 0 12px rgba(139, 92, 246, 0.45), 0 0 0px rgba(56, 189, 248, 0.0); }}
     }}
 
@@ -192,11 +215,31 @@ st.markdown(f"""
         100% {{ border-color: rgba(236, 72, 153, 0.55); }}
     }}
 
+    /* RST -> RASITH morph/typewriter */
+    @keyframes showRST {{
+        0%   {{ opacity: 1; filter: blur(0px); }}
+        28%  {{ opacity: 1; filter: blur(0px); }}
+        38%  {{ opacity: 0; filter: blur(6px); }}
+        100% {{ opacity: 0; filter: blur(6px); }}
+    }}
+    @keyframes typeRasith {{
+        0%   {{ width: 0; }}
+        38%  {{ width: 0; }}
+        70%  {{ width: 7ch; }}
+        88%  {{ width: 7ch; }}
+        96%  {{ width: 0; }}
+        100% {{ width: 0; }}
+    }}
+    @keyframes cursorBlink {{
+        0%, 100% {{ opacity: 1; }}
+        50% {{ opacity: 0; }}
+    }}
+
     /* ---------- GLASS CARD ---------- */
     .glass-card {{
         background: {glass_bg} !important;
-        backdrop-filter: blur(16px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+        backdrop-filter: blur(20px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
         border: 1px solid {glass_border} !important;
         border-radius: 20px !important;
         padding: 22px !important;
@@ -204,9 +247,43 @@ st.markdown(f"""
         box-shadow: {glass_shadow} !important;
         animation: fadeSlideUp 0.55s ease both;
     }}
-
     .glass-card-glow {{
         animation: fadeSlideUp 0.55s ease both, borderGlow 6s linear infinite;
+    }}
+
+    /* ---------- HEADER LAYOUT ---------- */
+    .header-controls {{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }}
+
+    .profile-box {{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: {glass_bg};
+        backdrop-filter: blur(14px);
+        border: 1px solid {glass_border};
+        padding: 6px 14px;
+        border-radius: 24px;
+        box-shadow: {glass_shadow};
+        width: fit-content;
+        margin-left: auto;
+    }}
+
+    .circle-avatar {{
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        background: linear-gradient(135deg, {accent_b}, {accent_c});
+        color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 10px;
     }}
 
     /* ---------- LOGO ---------- */
@@ -215,14 +292,13 @@ st.markdown(f"""
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 4px;
         animation: floatLogo 4.5s ease-in-out infinite;
     }}
 
     .robot-head {{
         position: relative;
-        width: 72px;
-        height: 72px;
+        width: 68px;
+        height: 68px;
         border: 3px solid transparent;
         border-radius: 50%;
         background: linear-gradient({glass_bg}, {glass_bg}) padding-box,
@@ -237,7 +313,7 @@ st.markdown(f"""
     .robot-ear-left, .robot-ear-right {{
         position: absolute;
         width: 6px;
-        height: 18px;
+        height: 17px;
         background: linear-gradient(to bottom, {accent_a}, {accent_b});
         border-radius: 3px;
     }}
@@ -245,8 +321,8 @@ st.markdown(f"""
     .robot-ear-right {{ right: -7px; }}
 
     .robot-visor {{
-        width: 38px;
-        height: 19px;
+        width: 36px;
+        height: 18px;
         border: 2px solid {accent_c};
         border-radius: 10px;
         display: flex;
@@ -266,19 +342,39 @@ st.markdown(f"""
         animation: eyeBlink 3s infinite;
     }}
 
-    .rst-title-text {{
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 15px !important;
-        font-weight: 900 !important;
-        text-align: center !important;
-        letter-spacing: 3.5px;
+    /* Brand morph: RST fades out, RASITH types in, on loop */
+    .brand-morph {{
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.5em;
+        margin-top: 6px;
+    }}
+    .brand-rst, .brand-rasith {{
+        font-family: 'Orbitron', 'Poppins', sans-serif;
+        font-weight: 900;
+        font-size: 16px;
+        letter-spacing: 3px;
+        white-space: nowrap;
         background: linear-gradient(90deg, {accent_a}, {accent_b}, {accent_c}, {accent_a});
         background-size: 300% 300%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
         animation: gradientShift 5s ease infinite;
-        margin-top: 8px !important;
-        margin-bottom: 4px !important;
+    }}
+    .brand-rst {{
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: gradientShift 5s ease infinite, showRST 5s ease-in-out infinite;
+    }}
+    .brand-rasith {{
+        overflow: hidden;
+        border-right: 2px solid {accent_c};
+        width: 0;
+        animation: gradientShift 5s ease infinite, typeRasith 5s ease-in-out infinite, cursorBlink 0.7s steps(1) infinite;
     }}
 
     .rst-subtitle-text {{
@@ -286,7 +382,7 @@ st.markdown(f"""
         font-size: 11px;
         color: {text_secondary} !important;
         letter-spacing: 1px;
-        margin-bottom: 6px;
+        margin-top: 2px;
     }}
 
     .owner-badge {{
@@ -296,47 +392,12 @@ st.markdown(f"""
         border-radius: 20px;
         padding: 3px 12px;
         width: fit-content;
-        margin: 0 auto 6px auto;
+        margin: 6px auto 0 auto;
         font-size: 7px;
         letter-spacing: 1px;
         color: {text_secondary} !important;
         font-weight: 700;
-    }}
-
-    /* ---------- HEADER CORNERS ---------- */
-    .absolute-header-grid {{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        width: 100%;
-        margin-bottom: 6px;
-        align-items: flex-start;
-    }}
-    .left-corner-box {{ display: flex; gap: 6px; align-items: flex-start; }}
-    .right-corner-box {{ display: flex; flex-direction: column; align-items: flex-end; width: 100%; }}
-
-    .profile-box {{
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: {glass_bg};
-        backdrop-filter: blur(12px);
-        border: 1px solid {glass_border};
-        padding: 4px 12px;
-        border-radius: 22px;
-        box-shadow: {glass_shadow};
-    }}
-
-    .circle-avatar {{
-        width: 16px;
-        height: 16px;
-        background: linear-gradient(135deg, {accent_b}, {accent_c});
-        color: #ffffff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 8px;
+        text-align: center;
     }}
 
     /* ---------- BUTTONS ---------- */
@@ -348,8 +409,12 @@ st.markdown(f"""
         border: 1px solid {glass_border} !important;
         border-radius: 14px !important;
         font-weight: 700 !important;
+        font-size: 12px !important;
+        padding: 0.45rem 0.9rem !important;
+        min-height: 38px !important;
         transition: all 0.28s cubic-bezier(.2,.8,.2,1) !important;
         box-shadow: {glass_shadow};
+        white-space: nowrap;
     }}
 
     div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
@@ -357,13 +422,6 @@ st.markdown(f"""
         border-color: {accent_b} !important;
         box-shadow: 0 0 22px rgba(139, 92, 246, 0.45) !important;
         color: {text_primary} !important;
-    }}
-
-    .custom-top-btn button {{
-        font-size: 9px !important;
-        height: 30px !important;
-        border-radius: 20px !important;
-        padding: 0 14px !important;
     }}
 
     .gold-btn button {{
@@ -374,7 +432,7 @@ st.markdown(f"""
 
     .google-btn button {{
         width: 100% !important;
-        height: 46px !important;
+        min-height: 48px !important;
         font-size: 14px !important;
         border-radius: 14px !important;
         background: linear-gradient(90deg, rgba(236,72,153,0.16), rgba(139,92,246,0.16), rgba(56,189,248,0.16)) !important;
@@ -395,9 +453,6 @@ st.markdown(f"""
         color: {text_primary} !important;
     }}
 
-    /* ---------- TABS (login/signup) ---------- */
-    .auth-tab-row {{ display: flex; gap: 8px; margin-bottom: 14px; }}
-
     .custom-subheader {{
         font-size: 12px !important;
         font-weight: 800 !important;
@@ -410,7 +465,6 @@ st.markdown(f"""
 
     hr {{ border: 0.5px solid {glass_border} !important; }}
 
-    /* Chat bubbles */
     div[data-testid="stChatMessage"] {{
         background: {glass_bg} !important;
         backdrop-filter: blur(14px) !important;
@@ -420,10 +474,12 @@ st.markdown(f"""
         animation: fadeSlideUp 0.35s ease both;
     }}
     </style>
+
+    <div class="mesh-bg"></div>
 """, unsafe_allow_html=True)
 
 
-def render_logo(title="RST AI CHATBOT", subtitle=None):
+def render_logo(subtitle=None, badge=True):
     st.markdown(f"""
         <div class="rst-logo-container">
             <div class="robot-head">
@@ -434,9 +490,13 @@ def render_logo(title="RST AI CHATBOT", subtitle=None):
                     <div class="robot-eye"></div>
                 </div>
             </div>
+            <div class="brand-morph">
+                <span class="brand-rst">RST AI</span>
+                <span class="brand-rasith">RASITH</span>
+            </div>
+            {f'<div class="rst-subtitle-text">{subtitle}</div>' if subtitle else ''}
+            {f'<div class="owner-badge">SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span></div>' if badge else ''}
         </div>
-        <div class="rst-title-text">{title}</div>
-        {f'<div class="rst-subtitle-text">{subtitle}</div>' if subtitle else ''}
     """, unsafe_allow_html=True)
 
 
@@ -448,8 +508,8 @@ def show_auth_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="glass-card glass-card-glow" style="text-align:center;">', unsafe_allow_html=True)
-        render_logo("RST AI ACCESS", "Sign in to continue your session")
-        st.markdown('<div class="owner-badge">SECURE • ENCRYPTED • RST NETWORK</div>', unsafe_allow_html=True)
+        render_logo("Sign in to continue your session", badge=False)
+        st.markdown('<div class="owner-badge">SECURE • ENCRYPTED • RASITH NETWORK</div>', unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
         tab_login, tab_signup = st.tabs(["🔐  Log In", "✨  Sign Up"])
@@ -457,8 +517,7 @@ def show_auth_page():
         with tab_login:
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.markdown('<div class="google-btn">', unsafe_allow_html=True)
-            if st.button("🔵 Continue with Google", key="google_login_btn"):
-                st.session_state.auth_tab = "google_pending_login"
+            st.button("🔵 Continue with Google", key="google_login_btn")
             st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown(f"<p style='text-align:center;color:{text_secondary};font-size:11px;margin:10px 0;'>— or continue with email —</p>", unsafe_allow_html=True)
@@ -481,8 +540,7 @@ def show_auth_page():
         with tab_signup:
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.markdown('<div class="google-btn">', unsafe_allow_html=True)
-            if st.button("🔵 Sign Up with Google", key="google_signup_btn"):
-                st.session_state.auth_tab = "google_pending_signup"
+            st.button("🔵 Sign Up with Google", key="google_signup_btn")
             st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown(f"<p style='text-align:center;color:{text_secondary};font-size:11px;margin:10px 0;'>— or sign up with email —</p>", unsafe_allow_html=True)
@@ -511,7 +569,7 @@ def show_auth_page():
 # =========================================================
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
-    render_logo("OWNER DASHBOARD", "Full system control panel")
+    render_logo("Full system control panel", badge=False)
 
     col_exit, col_clear = st.columns(2)
     with col_exit:
@@ -564,62 +622,49 @@ elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_auth_page()
 
 else:
-    st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
+    # ---------------- HEADER: controls | logo | profile, all in one row ----------------
+    col_left, col_center, col_right = st.columns([1.1, 1.6, 1.1], gap="small")
 
-    # LEFT CORNER
-    st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
-    st.markdown('<div class="gold-btn custom-top-btn">', unsafe_allow_html=True)
-    if st.button("👑 Admin"):
-        st.session_state.active_mode = "admin"
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col_left:
+        sub_a, sub_b = st.columns(2)
+        with sub_a:
+            st.markdown('<div class="gold-btn">', unsafe_allow_html=True)
+            if st.button("👑 Admin", use_container_width=True):
+                st.session_state.active_mode = "admin"
+            st.markdown('</div>', unsafe_allow_html=True)
+        with sub_b:
+            theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
+            if st.button(theme_icon, use_container_width=True):
+                st.session_state.theme = "light" if is_dark else "dark"
+                st.rerun()
 
-    st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
-    theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
-    if st.button(theme_icon):
-        st.session_state.theme = "light" if is_dark else "dark"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col_center:
+        render_logo()
 
-    # RIGHT CORNER
-    st.markdown('<div class="right-corner-box">', unsafe_allow_html=True)
-    if st.session_state.user_email:
-        st.markdown(f"""
-            <div class="profile-box">
-                <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                <span style="font-size:9px; font-weight:700; color:{text_primary}; white-space:nowrap;">{st.session_state.user_name}</span>
-            </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-            <div class="profile-box">
-                <div class="circle-avatar">G</div>
-                <span style="font-size:9px; color:#f87171; font-weight:700; white-space:nowrap;">Guest ({2 - st.session_state.usage_count} left)</span>
-            </div>
-        """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # CENTER BRANDING
-    render_logo("RST AI CHATBOT", "Your futuristic assistant, always online")
-    st.markdown(f"""
-        <div class="owner-badge" style="margin-top:2px;">
-            SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span>
-        </div>
-    """, unsafe_allow_html=True)
+    with col_right:
+        if st.session_state.user_email:
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
+                    <span style="font-size:10px; font-weight:700; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px;">{st.session_state.user_name}</span>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+                <div class="profile-box">
+                    <div class="circle-avatar">G</div>
+                    <span style="font-size:10px; color:#f87171; font-weight:700; white-space:nowrap;">Guest ({2 - st.session_state.usage_count} left)</span>
+                </div>
+            """, unsafe_allow_html=True)
 
     # MODE SWITCHERS
     btn_chat_col, btn_voice_col = st.columns(2)
     with btn_chat_col:
-        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
         if st.button("🤖 AI Chat", use_container_width=True):
             st.session_state.active_mode = "chat"
-        st.markdown('</div>', unsafe_allow_html=True)
     with btn_voice_col:
-        st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
         if st.button("🎙️ Voice Gen", use_container_width=True):
             st.session_state.active_mode = "voice"
-        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -629,9 +674,9 @@ else:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-        user_input = st.chat_input("Ask RST Assistant...")
+        user_input = st.chat_input("Ask RASITH Assistant...")
 
-        st.markdown('<div class="custom-subheader">🤖 RST Smart AI Assistant</div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-subheader">🤖 RASITH Smart AI Assistant</div>', unsafe_allow_html=True)
 
         if user_input:
             if st.session_state.user_email is None:
@@ -646,19 +691,19 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.status("⚡ RST AI is thinking...", expanded=False) as status:
+            with st.status("⚡ RASITH AI is thinking...", expanded=False) as status:
                 if HAS_GROQ and groq_client is not None:
                     try:
                         completion = groq_client.chat.completions.create(
                             model=MODEL_NAME,
                             messages=[
-                                {"role": "system", "content": "You are RST ASSISTANT built by Mohammed Rasith."},
+                                {"role": "system", "content": "You are RASITH ASSISTANT built by Mohammed Rasith."},
                                 {"role": "user", "content": user_input},
                             ],
                             temperature=0.7,
                         )
                         reply = completion.choices[0].message.content
-                        status.update(label="✨ RST Response Ready!", state="complete", expanded=False)
+                        status.update(label="✨ Response Ready!", state="complete", expanded=False)
                     except Exception as e:
                         err_text = str(e)
                         if "model_not_found" in err_text or "does not exist" in err_text:
@@ -689,8 +734,8 @@ else:
     # ---------------- 2. VOICE GENERATION MODE ----------------
     elif st.session_state.active_mode == "voice":
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown('<div class="custom-subheader">🎙️ RST Voice Generator</div>', unsafe_allow_html=True)
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
+        st.markdown('<div class="custom-subheader">🎙️ RASITH Voice Generator</div>', unsafe_allow_html=True)
+        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RASITH AI Assistant.")
         voice_opt = st.selectbox(
             "குரலைத் தேர்ந்தெடுக்கவும்:",
             ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"],
