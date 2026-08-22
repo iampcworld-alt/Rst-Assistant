@@ -90,7 +90,7 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 # =========================================================
-# 4. PAGE CONFIG
+# 4. PAGE CONFIG & HIGH-LEVEL STYLING
 # =========================================================
 st.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
 
@@ -107,7 +107,6 @@ if is_dark:
     accent_b = "#8b5cf6"
     accent_c = "#38bdf8"
     input_bg = "rgba(255,255,255,0.06)"
-    input_bg_focus = "rgba(255,255,255,0.10)"
     mesh_opacity = "0.35"
 else:
     bg_gradient = "radial-gradient(circle at 12% 10%, #eef2ff 0%, #f8fafc 45%, #ffffff 100%)"
@@ -120,7 +119,6 @@ else:
     accent_b = "#7c3aed"
     accent_c = "#0284c7"
     input_bg = "rgba(15,23,42,0.04)"
-    input_bg_focus = "rgba(15,23,42,0.07)"
     mesh_opacity = "0.15"
 
 def html_block(text: str) -> str:
@@ -150,7 +148,7 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
 
 .block-container {{
     padding-top: 1rem !important;
-    padding-bottom: 3rem !important;
+    padding-bottom: 5rem !important;
     max-width: 960px !important;
     position: relative;
     z-index: 1;
@@ -168,7 +166,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
         radial-gradient({accent_a} 1.4px, transparent 1.6px),
         radial-gradient({accent_c} 1.4px, transparent 1.6px);
     background-size: 340px 340px, 420px 420px, 160px 160px, 220px 220px;
-    background-position: 0 0, 0 0, 0 0, 60px 90px;
     animation: meshDrift 26s linear infinite;
 }}
 
@@ -184,14 +181,16 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
 }}
 
 @keyframes pulseGlow {{
-    0%   {{ box-shadow: 0 0 12px rgba(139, 92, 246, 0.45), 0 0 0px rgba(56, 189, 248, 0.0); }}
-    50%  {{ box-shadow: 0 0 32px rgba(236, 72, 153, 0.6), 0 0 16px rgba(56, 189, 248, 0.55); }}
-    100% {{ box-shadow: 0 0 12px rgba(139, 92, 246, 0.45), 0 0 0px rgba(56, 189, 248, 0.0); }}
+    0%   {{ box-shadow: 0 0 15px rgba(236, 72, 153, 0.4), 0 0 5px rgba(56, 189, 248, 0.2); }}
+    50%  {{ box-shadow: 0 0 35px rgba(236, 72, 153, 0.8), 0 0 20px rgba(56, 189, 248, 0.7); }}
+    100% {{ box-shadow: 0 0 15px rgba(236, 72, 153, 0.4), 0 0 5px rgba(56, 189, 248, 0.2); }}
 }}
 
-@keyframes eyeBlink {{
-    0%, 88%, 100% {{ opacity: 1; }}
-    94% {{ opacity: 0.15; }}
+@keyframes highEndNeon {{
+    0%   {{ border-color: {accent_a}; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5), inset 0 0 10px rgba(236, 72, 153, 0.2); }}
+    33%  {{ border-color: {accent_b}; box-shadow: 0 0 25px rgba(139, 92, 246, 0.7), inset 0 0 15px rgba(139, 92, 246, 0.3); }}
+    66%  {{ border-color: {accent_c}; box-shadow: 0 0 25px rgba(56, 189, 248, 0.7), inset 0 0 15px rgba(56, 189, 248, 0.3); }}
+    100% {{ border-color: {accent_a}; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5), inset 0 0 10px rgba(236, 72, 153, 0.2); }}
 }}
 
 @keyframes gradientShift {{
@@ -205,57 +204,15 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     100% {{ opacity: 1; transform: translateY(0px); }}
 }}
 
-@keyframes borderGlow {{
-    0%   {{ border-color: rgba(236, 72, 153, 0.55); }}
-    33%  {{ border-color: rgba(139, 92, 246, 0.55); }}
-    66%  {{ border-color: rgba(56, 189, 248, 0.55); }}
-    100% {{ border-color: rgba(236, 72, 153, 0.55); }}
-}}
-
-@keyframes inputAura {{
-    0%   {{ box-shadow: 0 0 0px rgba(236, 72, 153, 0.0), 0 0 0px rgba(56, 189, 248, 0.0); }}
-    50%  {{ box-shadow: 0 0 18px rgba(139, 92, 246, 0.35), 0 0 6px rgba(56, 189, 248, 0.25); }}
-    100% {{ box-shadow: 0 0 0px rgba(236, 72, 153, 0.0), 0 0 0px rgba(56, 189, 248, 0.0); }}
-}}
-
-@keyframes sendPulse {{
-    0%   {{ box-shadow: 0 0 0px rgba(56, 189, 248, 0.0); }}
-    50%  {{ box-shadow: 0 0 16px rgba(56, 189, 248, 0.65); }}
-    100% {{ box-shadow: 0 0 0px rgba(56, 189, 248, 0.0); }}
-}}
-
-@keyframes showRST {{
-    0%   {{ opacity: 1; filter: blur(0px); }}
-    28%  {{ opacity: 1; filter: blur(0px); }}
-    38%  {{ opacity: 0; filter: blur(6px); }}
-    100% {{ opacity: 0; filter: blur(6px); }}
-}}
-@keyframes typeRasith {{
-    0%   {{ width: 0; }}
-    38%  {{ width: 0; }}
-    70%  {{ width: 7ch; }}
-    88%  {{ width: 7ch; }}
-    96%  {{ width: 0; }}
-    100% {{ width: 0; }}
-}}
-@keyframes cursorBlink {{
-    0%, 100% {{ opacity: 1; }}
-    50% {{ opacity: 0; }}
-}}
-
 .glass-card {{
     background: {glass_bg} !important;
     backdrop-filter: blur(20px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
     border: 1px solid {glass_border} !important;
     border-radius: 20px !important;
     padding: 22px !important;
     margin-bottom: 14px !important;
     box-shadow: {glass_shadow} !important;
     animation: fadeSlideUp 0.55s ease both;
-}}
-.glass-card-glow {{
-    animation: fadeSlideUp 0.55s ease both, borderGlow 6s linear infinite;
 }}
 
 .profile-box {{
@@ -338,41 +295,25 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     background: {accent_c};
     border-radius: 50%;
     box-shadow: 0 0 8px {accent_c};
-    animation: eyeBlink 3s infinite;
 }}
 
 .brand-morph {{
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 1.5em;
     margin-top: 6px;
 }}
-.brand-rst, .brand-rasith {{
+.brand-rasith {{
     font-family: 'Orbitron', 'Poppins', sans-serif;
     font-weight: 900;
     font-size: 16px;
     letter-spacing: 3px;
-    white-space: nowrap;
     background: linear-gradient(90deg, {accent_a}, {accent_b}, {accent_c}, {accent_a});
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
     animation: gradientShift 5s ease infinite;
-}}
-.brand-rst {{
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: gradientShift 5s ease infinite, showRST 5s ease-in-out infinite;
-}}
-.brand-rasith {{
-    overflow: hidden;
-    border-right: 2px solid {accent_c};
-    width: 0;
-    animation: gradientShift 5s ease infinite, typeRasith 5s ease-in-out infinite, cursorBlink 0.7s steps(1) infinite;
 }}
 
 .rst-subtitle-text {{
@@ -414,40 +355,11 @@ div.stButton > button, div.stFormSubmitButton > button {{
     white-space: nowrap;
 }}
 
-div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
+div.stButton > button:hover {{
     transform: translateY(-2px) scale(1.02) !important;
     border-color: {accent_b} !important;
     box-shadow: 0 0 22px rgba(139, 92, 246, 0.45) !important;
     color: {text_primary} !important;
-}}
-
-.gold-btn button {{
-    border: 1px solid rgba(255, 215, 0, 0.55) !important;
-    color: #ffd166 !important;
-    animation: pulseGlow 2.6s infinite ease-in-out;
-}}
-
-.google-btn button {{
-    width: 100% !important;
-    min-height: 48px !important;
-    font-size: 14px !important;
-    border-radius: 14px !important;
-    background: linear-gradient(90deg, rgba(236,72,153,0.16), rgba(139,92,246,0.16), rgba(56,189,248,0.16)) !important;
-    border: 1px solid {glass_border} !important;
-    letter-spacing: 0.4px;
-}}
-.google-btn button:hover {{
-    box-shadow: 0 0 28px rgba(56, 189, 248, 0.45) !important;
-}}
-
-div[data-testid="stTextInput"] input,
-div[data-testid="stTextArea"] textarea,
-div[data-baseweb="select"] > div {{
-    background: {input_bg} !important;
-    border: 1px solid {glass_border} !important;
-    border-radius: 12px !important;
-    color: {text_primary} !important;
-    transition: all 0.25s ease !important;
 }}
 
 div[data-testid="stChatInput"] {{
@@ -456,31 +368,19 @@ div[data-testid="stChatInput"] {{
 
 div[data-testid="stBottomBlockContainer"] {{
     background: transparent !important;
-    backdrop-filter: blur(18px) !important;
-    -webkit-backdrop-filter: blur(18px) !important;
+    backdrop-filter: blur(20px) !important;
 }}
 
 div[data-testid="stChatInput"] > div {{
-    background: {glass_bg} !important;
-    backdrop-filter: blur(24px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-    border: 1.5px solid {glass_border} !important;
-    border-radius: 22px !important;
-    box-shadow: {glass_shadow} !important;
-    animation: inputAura 4.5s ease-in-out infinite;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease !important;
-    padding: 2px 6px !important;
-}}
-
-div[data-testid="stChatInput"] > div:hover {{
-    border-color: {accent_c} !important;
-    transform: translateY(-1px);
-}}
-
-div[data-testid="stChatInput"] > div:focus-within {{
-    border-color: {accent_b} !important;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.22), 0 0 26px rgba(56, 189, 248, 0.35) !important;
-    animation: none;
+    background: rgba(15, 12, 35, 0.75) !important;
+    backdrop-filter: blur(25px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+    border: 2px solid {accent_a} !important;
+    border-radius: 26px !important;
+    padding: 6px 12px !important;
+    animation: highEndNeon 4s infinite linear !important;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.35) !important;
+    transition: all 0.3s ease !important;
 }}
 
 div[data-testid="stChatInput"] textarea {{
@@ -493,13 +393,13 @@ div[data-testid="stChatInput"] textarea {{
 div[data-testid="stChatInput"] button {{
     background: linear-gradient(135deg, {accent_a}, {accent_b}, {accent_c}) !important;
     border: none !important;
-    border-radius: 16px !important;
-    transition: all 0.25s cubic-bezier(.2,.8,.2,1) !important;
+    border-radius: 18px !important;
+    transition: all 0.3s cubic-bezier(.2,.8,.2,1) !important;
 }}
 
 div[data-testid="stChatInput"] button:hover {{
-    transform: scale(1.08) !important;
-    animation: sendPulse 1.1s ease-in-out infinite;
+    transform: scale(1.12) rotate(8deg) !important;
+    box-shadow: 0 0 25px {accent_c} !important;
 }}
 
 div[data-testid="stChatInput"] button svg {{
@@ -526,19 +426,46 @@ div[data-testid="stChatMessage"] {{
     box-shadow: {glass_shadow};
     animation: fadeSlideUp 0.35s ease both;
 }}
+
+.rst-thinking-badge {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: {glass_bg};
+    backdrop-filter: blur(16px);
+    border: 1.5px solid {accent_b};
+    padding: 10px 18px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    width: fit-content;
+    animation: pulseGlow 1.8s infinite ease-in-out;
+    margin: 10px 0;
+}}
+.rst-thinking-dot {{
+    width: 10px;
+    height: 10px;
+    background: {accent_a};
+    border-radius: 50%;
+    box-shadow: 0 0 10px {accent_a};
+    animation: pulseGlow 1s infinite alternate;
+}}
+.rst-thinking-text {{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, {accent_a}, {accent_c});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}}
 </style>
 
 <div class="mesh-bg"></div>
 """), unsafe_allow_html=True)
 
 
-def render_logo(subtitle=None, badge=True):
+def render_logo(subtitle=None):
     subtitle_html = f'<div class="rst-subtitle-text">{subtitle}</div>' if subtitle else ''
-    badge_html = (
-        f'<div class="owner-badge">SYSTEM ARCHITECT: '
-        f'<span style="color:{accent_c};">MOHAMMED RASITH</span></div>'
-        if badge else ''
-    )
     st.markdown(html_block(f"""
     <div class="rst-logo-container">
         <div class="robot-head">
@@ -550,11 +477,10 @@ def render_logo(subtitle=None, badge=True):
             </div>
         </div>
         <div class="brand-morph">
-            <span class="brand-rst">RST AI</span>
-            <span class="brand-rasith">RASITH</span>
+            <span class="brand-rasith">RST AI ASSISTANT</span>
         </div>
         {subtitle_html}
-        {badge_html}
+        <div class="owner-badge">SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span></div>
     </div>
     """), unsafe_allow_html=True)
 
@@ -566,19 +492,14 @@ def show_auth_page():
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown(html_block('<div class="glass-card glass-card-glow" style="text-align:center;">'), unsafe_allow_html=True)
-        render_logo("Sign in to continue your session", badge=False)
-        st.markdown(html_block('<div class="owner-badge">SECURE • ENCRYPTED • RASITH NETWORK</div>'), unsafe_allow_html=True)
+        st.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        render_logo("Sign in to continue your session")
         st.markdown(html_block('</div>'), unsafe_allow_html=True)
 
         tab_login, tab_signup = st.tabs(["🔐  Log In", "✨  Sign Up"])
 
         with tab_login:
             st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-            st.markdown(html_block('<div class="google-btn">'), unsafe_allow_html=True)
-            st.button("🔵 Continue with Google", key="google_login_btn")
-            st.markdown(html_block('</div>'), unsafe_allow_html=True)
-
             with st.form("login_form"):
                 name_in = st.text_input("👤 Name")
                 email_in = st.text_input("📧 Email")
@@ -596,14 +517,10 @@ def show_auth_page():
 
         with tab_signup:
             st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-            st.markdown(html_block('<div class="google-btn">'), unsafe_allow_html=True)
-            st.button("🔵 Sign Up with Google", key="google_signup_btn")
-            st.markdown(html_block('</div>'), unsafe_allow_html=True)
-
             with st.form("signup_form"):
                 s_name = st.text_input("👤 Full Name")
                 s_email = st.text_input("📧 Email Address")
-                s_confirm = st.checkbox("I agree to be assisted by a sentient robot ⚡")
+                s_confirm = st.checkbox("I agree to be assisted by RASITH AI ⚡")
                 submit_signup = st.form_submit_button("✨ Create Account")
 
                 if submit_signup:
@@ -624,7 +541,7 @@ def show_auth_page():
 # =========================================================
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
-    render_logo("Full system control panel", badge=False)
+    render_logo("Full system control panel")
 
     col_exit, col_clear = st.columns(2)
     with col_exit:
@@ -683,10 +600,10 @@ else:
     with col_left:
         sub_a, sub_b = st.columns(2)
         with sub_a:
-            st.markdown(html_block('<div class="gold-btn">'), unsafe_allow_html=True)
             if st.button("👑 Admin", use_container_width=True):
+                st.session_state.admin_authenticated = True
                 st.session_state.active_mode = "admin"
-            st.markdown(html_block('</div>'), unsafe_allow_html=True)
+                st.rerun()
         with sub_b:
             theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
             if st.button(theme_icon, use_container_width=True):
@@ -729,8 +646,6 @@ else:
 
         user_input = st.chat_input("Ask RASITH Assistant...")
 
-        st.markdown(html_block('<div class="custom-subheader">🤖 RASITH Smart AI Assistant</div>'), unsafe_allow_html=True)
-
         if user_input:
             if st.session_state.user_email is None:
                 st.session_state.usage_count += 1
@@ -744,26 +659,35 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.status("⚡ RASITH AI is thinking...", expanded=False) as status:
-                if HAS_GROQ and groq_client is not None:
-                    try:
-                        completion = groq_client.chat.completions.create(
-                            model=MODEL_NAME,
-                            messages=[
-                                {"role": "system", "content": "You are RASITH ASSISTANT built by Mohammed Rasith."},
-                                {"role": "user", "content": user_input},
-                            ],
-                            temperature=0.7,
-                        )
-                        reply = completion.choices[0].message.content
-                        status.update(label="✨ Response Ready!", state="complete", expanded=False)
-                    except Exception as e:
-                        err_text = str(e)
-                        reply = f"⚠️ Error: {err_text}"
-                        status.update(label="⚠️ Error occurred", state="error", expanded=False)
-                else:
-                    reply = "⚠️ Groq API key not configured in st.secrets."
-                    status.update(label="⚠️ Not configured", state="error", expanded=False)
+            # RST THINKING ANIMATION FUNCTION / BLOCK
+            thinking_placeholder = st.empty()
+            with thinking_placeholder.container():
+                st.markdown(html_block("""
+                <div class="rst-thinking-badge">
+                    <div class="rst-thinking-dot"></div>
+                    <div class="rst-thinking-text">RST THINKING...</div>
+                </div>
+                """), unsafe_allow_html=True)
+
+            reply = ""
+            if HAS_GROQ and groq_client is not None:
+                try:
+                    completion = groq_client.chat.completions.create(
+                        model=MODEL_NAME,
+                        messages=[
+                            {"role": "system", "content": "You are RASITH ASSISTANT built by Mohammed Rasith."},
+                            {"role": "user", "content": user_input},
+                        ],
+                        temperature=0.7,
+                    )
+                    reply = completion.choices[0].message.content
+                except Exception as e:
+                    reply = f"⚠️ Error: {str(e)}"
+            else:
+                reply = "⚠️ Groq API key not configured in st.secrets."
+
+            # Clear thinking animation container
+            thinking_placeholder.empty()
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
