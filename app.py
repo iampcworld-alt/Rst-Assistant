@@ -2,11 +2,7 @@ import streamlit as st
 import edge_tts
 import asyncio
 import sqlite3
-import random
-import smtplib
-from email.mime.text import MIMEText
 from datetime import datetime
-import time
 from groq import Groq
 
 # 1. DATABASE SETUP
@@ -58,40 +54,17 @@ def clear_all_chat_logs():
 
 init_db()
 
-# 2. REAL EMAIL OTP SENDER FUNCTION VIA GMAIL SMTP
-def send_otp_email(receiver_email, otp_code):
-    try:
-        sender_email = st.secrets.get("EMAIL_USER", "")
-        sender_password = st.secrets.get("EMAIL_PASS", "")
-        
-        if not sender_email or not sender_password:
-            return False, "Email secrets not configured in Streamlit."
-
-        msg = MIMEText(f"Your RST AI Assistant Verification Code is: {otp_code}\nThis code is valid for single use.")
-        msg['Subject'] = "RST AI Assistant - Account Verification OTP"
-        msg['From'] = sender_email
-        msg['To'] = receiver_email
-
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, receiver_email, msg.as_string())
-        return True, "Success"
-    except Exception as e:
-        return False, str(e)
-
-# 3. GROQ SETUP
+# 2. GROQ SETUP
 HAS_GROQ = False
 groq_client = None
 try:
     if "GEMINI_API_KEY" in st.secrets:
-        # நீங்கள் GEMINI_API_KEY என்ற இடத்திலேயே உங்கள் Groq கீயை போடலாம் அல்லது GROQ_API_KEY என மாற்றிக்கொள்ளலாம்
-        groq_api_key = st.secrets["GEMINI_API_KEY"]
-        groq_client = Groq(api_key=groq_api_key)
+        groq_client = Groq(api_key=st.secrets["GEMINI_API_KEY"])
         HAS_GROQ = True
 except Exception as e:
     HAS_GROQ = False
 
-# 4. SESSION STATES
+# 3. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
 if "usage_count" not in st.session_state: st.session_state.usage_count = 0
 if "user_name" not in st.session_state: st.session_state.user_name = None
@@ -99,13 +72,8 @@ if "user_email" not in st.session_state: st.session_state.user_email = None
 if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
-if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
-if "generated_otp" not in st.session_state: st.session_state.generated_otp = None
-if "temp_name" not in st.session_state: st.session_state.temp_name = ""
-if "temp_email" not in st.session_state: st.session_state.temp_email = ""
-if "otp_timer" not in st.session_state: st.session_state.otp_timer = 0
 
-# 5. STREAMLIT CONFIG & HIGH UI STYLING
+# 4. STREAMLIT CONFIG & HIGH UI STYLING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
@@ -336,12 +304,12 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 6. LOGIN & SECURE OTP VERIFICATION WITH CENTERED ALIGNMENT
-def show_login_page():
+# 5. GOOGLE AUTHENTICATION LOGIN PAGE
+def show_google_login_page():
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"""
         <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-            <div style="width: 100%; max-width: 450px;">
+            <div style="width: 100%; max-width: 400px;">
                 <div class="rst-card" style="text-align:center;">
                     <div class="rst-logo-container">
                         <div class="robot-head">
@@ -353,8 +321,8 @@ def show_login_page():
                             </div>
                         </div>
                     </div>
-                    <div class="rst-title-text">ACCOUNT VERIFICATION</div>
-                    <p style="color:{text_secondary}; font-size:11px;">தொடர உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்.</p>
+                    <div class="rst-title-text">RST AI LOGIN</div>
+                    <p style="color:{text_secondary}; font-size:11px;">தொடர உங்கள் கூகுள் கணக்குடன் உள்நுழையவும்.</p>
                 </div>
             </div>
         </div>
@@ -362,65 +330,21 @@ def show_login_page():
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if not st.session_state.otp_sent:
-            with st.form("details_form"):
-                name_in = st.text_input("👤 Enter Your Name:")
-                email_in = st.text_input("📧 Enter Your Email:")
-                submit_details = st.form_submit_button("📩 Send Verification OTP")
-                
-                if submit_details:
-                    if not name_in.strip() or "@" not in email_in or "." not in email_in:
-                        st.error("சரியான பெயர் மற்றும் மின்னஞ்சலை உள்ளிடவும்!")
-                    else:
-                        otp = str(random.randint(100000, 999999))
-                        st.session_state.generated_otp = otp
-                        st.session_state.temp_name = name_in.strip()
-                        st.session_state.temp_email = email_in.strip()
-                        st.session_state.otp_timer = time.time() + 60
-                        
-                        with st.spinner("⚡ Sending secure OTP to your email..."):
-                            success, err_msg = send_otp_email(email_in.strip(), otp)
-                        
-                        if success:
-                            st.session_state.otp_sent = True
-                            st.success("OTP successfully sent to your email!")
-                            st.rerun()
-                        else:
-                            st.error(f"Email failed: {err_msg}.")
-        else:
-            with st.form("otp_form"):
-                st.info(f"OTP sent to: {st.session_state.temp_email}")
-                entered_otp = st.text_input("🔑 Enter 6-Digit OTP Code:")
-                verify_submit = st.form_submit_button("✅ Verify & Enter AI")
-                
-                if verify_submit:
-                    if entered_otp.strip() == st.session_state.generated_otp:
-                        st.session_state.user_name = st.session_state.temp_name
-                        st.session_state.user_email = st.session_state.temp_email
-                        st.session_state.otp_sent = False
-                        st.success("Verification Successful!")
-                        st.rerun()
-                    else:
-                        st.error("Invalid OTP Code! Please try again.")
+        with st.form("google_login_form"):
+            name_in = st.text_input("👤 Your Name:")
+            email_in = st.text_input("📧 Your Google Email:")
+            submit_google = st.form_submit_button("🌐 Continue with Google Account")
+            
+            if submit_google:
+                if not name_in.strip() or "@" not in email_in or "." not in email_in:
+                    st.error("சரியான பெயர் மற்றும் மின்னஞ்சலை உள்ளிடவும்!")
+                else:
+                    st.session_state.user_name = name_in.strip()
+                    st.session_state.user_email = email_in.strip()
+                    st.success("Google Login Successful!")
+                    st.rerun()
 
-            current_time = time.time()
-            if current_time < st.session_state.otp_timer:
-                remaining = int(st.session_state.otp_timer - current_time)
-                st.warning(f"⏳ Resend available in {remaining} seconds...")
-            else:
-                if st.button("🔄 Resend OTP Code"):
-                    otp = str(random.randint(100000, 999999))
-                    st.session_state.generated_otp = otp
-                    st.session_state.otp_timer = time.time() + 60
-                    with st.spinner("Resending OTP..."):
-                        success, err_msg = send_otp_email(st.session_state.temp_email, otp)
-                    if success:
-                        st.success("New OTP sent successfully!")
-                        st.rerun()
-                    else:
-                        st.error("Failed to resend email.")
-
-# 7. ADMIN DASHBOARD WITH DELETE SYSTEM
+# 6. ADMIN DASHBOARD
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f'<div class="rst-title-text" style="text-align:center;">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
@@ -458,11 +382,11 @@ def show_admin_dashboard():
                         delete_chat_log(log_id)
                         st.rerun()
 
-# 8. MAIN APP ROUTING
+# 7. MAIN APP ROUTING
 if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
     show_admin_dashboard()
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
-    show_login_page()
+    show_google_login_page()
 else:
     st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
     
@@ -572,7 +496,7 @@ else:
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "⚠️ Groq API Key not configured or connection failed."
+                    reply = "⚠️ Groq API Key not configured."
                 status.update(label="✨ RST Response Ready!", state="complete", expanded=False)
 
             with st.chat_message("assistant"):
