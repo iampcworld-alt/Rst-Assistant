@@ -114,7 +114,7 @@ for k, v in defaults.items():
         str_app.session_state[k] = v
 
 # =========================================================
-# 4. PAGE CONFIG & HIGH-LEVEL STYLING WITH CIRCUIT BOARD BACKGROUND
+# 4. PAGE CONFIG & HIGH-LEVEL STYLING WITH NEW ANIMATED BACKGROUND
 # =========================================================
 str_app.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
 
@@ -170,63 +170,56 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     z-index: 1;
 }}
 
-/* Tech Circuit Board & Moving Grid Animation */
+/* High-End Cyberpunk Glowing Mesh & Moving Grid Animation */
 .mesh-bg {{
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 0;
     pointer-events: none;
-    background-color: #030014;
-    background-image: 
-        linear-gradient(to right, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
-        radial-gradient(circle, rgba(139, 92, 246, 0.25) 2px, transparent 2px),
-        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.2) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.18) 0%, transparent 40%);
-    background-size: 60px 60px, 60px 60px, 60px 60px, 100% 100%, 100% 100%;
-    background-position: 0 0, 0 0, 30px 30px, 0 0, 0 0;
-    animation: circuitMove 15s linear infinite;
+    background: 
+        radial-gradient(circle at 50% 20%, rgba(139, 92, 246, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.18) 0%, transparent 45%),
+        linear-gradient(to right, rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+    animation: gridMove 20s linear infinite;
 }}
 
-@keyframes circuitMove {{
-    0% {{
-        background-position: 0 0, 0 0, 30px 30px, 0 0, 0 0;
-    }}
-    100% {{
-        background-position: 60px 60px, 60px 60px, 90px 90px, 0 0, 0 0;
-    }}
+@keyframes gridMove {{
+    0% {{ background-position: 0 0, 0 0, 0 0, 0 0; }}
+    100% {{ background-position: 0 0, 0 0, 60px 60px, 60px 60px; }}
 }}
 
-/* Floating Glowing Tech Nodes */
+/* Floating Glowing Orbs in Background */
 .bg-orb-1, .bg-orb-2 {{
     position: fixed;
     border-radius: 50%;
-    filter: blur(90px);
+    filter: blur(100px);
     z-index: 0;
     pointer-events: none;
-    animation: orbFloat 8s ease-in-out infinite alternate;
+    animation: orbFloat 10s ease-in-out infinite alternate;
 }}
 
 .bg-orb-1 {{
-    width: 350px;
-    height: 350px;
-    background: rgba(139, 92, 246, 0.3);
-    top: 15%;
+    width: 380px;
+    height: 380px;
+    background: rgba(139, 92, 246, 0.28);
+    top: 10%;
     left: 10%;
 }}
 
 .bg-orb-2 {{
-    width: 380px;
-    height: 380px;
-    background: rgba(56, 189, 248, 0.22);
+    width: 420px;
+    height: 420px;
+    background: rgba(236, 72, 153, 0.22);
     bottom: 10%;
     right: 10%;
-    animation-delay: -4s;
+    animation-delay: -5s;
 }}
 
 @keyframes orbFloat {{
     0% {{ transform: translateY(0px) scale(1); }}
-    100% {{ transform: translateY(40px) scale(1.1); }}
+    100% {{ transform: translateY(35px) scale(1.12); }}
 }}
 
 @keyframes floatLogo {{
