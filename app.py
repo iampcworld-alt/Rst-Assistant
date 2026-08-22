@@ -491,7 +491,7 @@ def render_logo(subtitle=None):
 
 
 # =========================================================
-# 5. AUTH PAGE (WITH PASSWORD)
+# 5. AUTH PAGE (USER LOGIN/SIGNUP)
 # =========================================================
 def show_auth_page():
     st.markdown("<br>", unsafe_allow_html=True)
@@ -541,6 +541,36 @@ def show_auth_page():
                         st.success("Account created! Redirecting…")
                         st.rerun()
             st.markdown(html_block('</div>'), unsafe_allow_html=True)
+
+
+# =========================================================
+# 5.1 ADMIN LOGIN GATEWAY (PASSWORD PROTECTED)
+# =========================================================
+def show_admin_login_page():
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        render_logo("🔒 Admin Access Required")
+        st.markdown(html_block('</div>'), unsafe_allow_html=True)
+
+        st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+        with st.form("admin_login_form"):
+            admin_pwd_in = st.text_input("🔑 Enter Admin Password", type="password")
+            submit_admin_login = st.form_submit_button("🚀 Access Dashboard")
+
+            if submit_admin_login:
+                if admin_pwd_in == "RSTA02EHYDR6":
+                    st.session_state.admin_authenticated = True
+                    st.success("Access Granted! Loading Admin Panel...")
+                    st.rerun()
+                else:
+                    st.error("❌ Incorrect Password! Access Denied.")
+        
+        if st.button("⬅️ Back to Home / Chat", use_container_width=True):
+            st.session_state.active_mode = "chat"
+            st.rerun()
+        st.markdown(html_block('</div>'), unsafe_allow_html=True)
 
 
 # =========================================================
@@ -595,8 +625,11 @@ def show_admin_dashboard():
 # =========================================================
 # 7. MAIN APP ROUTING
 # =========================================================
-if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
-    show_admin_dashboard()
+if st.session_state.active_mode == "admin":
+    if not st.session_state.admin_authenticated:
+        show_admin_login_page()
+    else:
+        show_admin_dashboard()
 
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_auth_page()
@@ -608,7 +641,6 @@ else:
         sub_a, sub_b = st.columns(2)
         with sub_a:
             if st.button("👑 Admin", use_container_width=True):
-                st.session_state.admin_authenticated = True
                 st.session_state.active_mode = "admin"
                 st.rerun()
         with sub_b:
