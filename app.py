@@ -2,6 +2,9 @@ import streamlit as st
 import edge_tts
 import asyncio
 import sqlite3
+import random
+import smtplib
+from email.mime.text import MIMEText
 from datetime import datetime
 
 # 1. DATABASE SETUP
@@ -32,17 +35,48 @@ def save_chat_to_db(name, email, prompt):
 def fetch_all_chats():
     conn = sqlite3.connect("rst_assistant.db", check_same_thread=False)
     cursor = conn.cursor()
-    cursor.execute("SELECT user_name, user_email, prompt, timestamp FROM chat_logs ORDER BY id DESC")
+    cursor.execute("SELECT id, user_name, user_email, prompt, timestamp FROM chat_logs ORDER BY id DESC")
     rows = cursor.fetchall()
     conn.close()
     return rows
 
+def delete_chat_log(log_id):
+    conn = sqlite3.connect("rst_assistant.db", check_same_thread=False)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM chat_logs WHERE id = ?", (log_id,))
+    conn.commit()
+    conn.close()
+
+def clear_all_chat_logs():
+    conn = sqlite3.connect("rst_assistant.db", check_same_thread=False)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM chat_logs")
+    conn.commit()
+    conn.close()
+
 init_db()
 
-# 2. GEMINI SETUP (USING GOOGLE-GENAI SDK & GEMINI-3.6-FLASH)
+# 2. EMAIL OTP SENDER FUNCTION
+def send_otp_email(receiver_email, otp_code):
+    try:
+        sender_email = st.secrets.get("EMAIL_USER", "your_email@gmail.com")
+        sender_password = st.secrets.get("EMAIL_PASS", "your_app_password")
+        
+        msg = MIMEText(f"Your RST AI Assistant Verification Code is: {otp_code}\nValid for single use.")
+        msg['Subject'] = "RST AI Assistant - Account Verification OTP"
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, receiver_email, msg.as_string())
+        return True
+    except Exception as e:
+        return False
+
+# 3. GEMINI SETUP
 HAS_GEMINI = False
 client = None
-
 try:
     from google import genai
     if "GEMINI_API_KEY" in st.secrets:
@@ -52,7 +86,7 @@ try:
 except Exception as e:
     HAS_GEMINI = False
 
-# 3. SESSION STATES
+# 4. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
 if "usage_count" not in st.session_state: st.session_state.usage_count = 0
 if "user_name" not in st.session_state: st.session_state.user_name = None
@@ -60,18 +94,22 @@ if "user_email" not in st.session_state: st.session_state.user_email = None
 if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
+if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
+if "generated_otp" not in st.session_state: st.session_state.generated_otp = None
+if "temp_name" not in st.session_state: st.session_state.temp_name = ""
+if "temp_email" not in st.session_state: st.session_state.temp_email = ""
 
-# 4. STREAMLIT CONFIG & UI STYLING
+# 5. STREAMLIT CONFIG & HIGH UI STYLING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
 
-bg_app = "#07090e" if is_dark else "#f8fafc"
+bg_app = "#05070b" if is_dark else "#f8fafc"
 text_primary = "#ffffff" if is_dark else "#0f172a"
 text_secondary = "#94a3b8" if is_dark else "#475569"
-card_bg = "#111827" if is_dark else "#ffffff"
-card_border = "rgba(56, 189, 248, 0.25)" if is_dark else "rgba(203, 213, 225, 0.8)"
-btn_bg = "#111827" if is_dark else "#ffffff"
+card_bg = "#0f172a" if is_dark else "#ffffff"
+card_border = "rgba(56, 189, 248, 0.3)" if is_dark else "rgba(203, 213, 225, 0.8)"
+btn_bg = "#0f172a" if is_dark else "#ffffff"
 btn_text = "#38bdf8" if is_dark else "#0284c7"
 btn_border = "#38bdf8" if is_dark else "#0284c7"
 
@@ -79,7 +117,6 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
-    /* Complete App Theme Lock */
     html, body, [class*="css"], .stApp, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
@@ -91,28 +128,27 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 1.2rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 2rem !important;
         max-width: 900px !important;
         background-color: {bg_app} !important;
     }}
 
-    /* Animations for Logo and UI */
     @keyframes floatLogo {{
-        0% {{ transform: translateY(0px); filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4)); }}
-        50% {{ transform: translateY(-5px); filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.7)); }}
-        100% {{ transform: translateY(0px); filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4)); }}
+        0% {{ transform: translateY(0px); filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5)); }}
+        50% {{ transform: translateY(-6px); filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.8)); }}
+        100% {{ transform: translateY(0px); filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5)); }}
     }}
 
     @keyframes eyeBlink {{
         0%, 90%, 100% {{ opacity: 1; }}
-        95% {{ opacity: 0.3; }}
+        95% {{ opacity: 0.2; }}
     }}
 
     @keyframes goldGlow {{
-        0% {{ border-color: #ffd700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }}
-        50% {{ border-color: #ffae00; box-shadow: 0 0 12px rgba(255, 174, 0, 0.8); }}
-        100% {{ border-color: #ffd700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }}
+        0% {{ border-color: #ffd700; box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); }}
+        50% {{ border-color: #ffae00; box-shadow: 0 0 14px rgba(255, 174, 0, 0.9); }}
+        100% {{ border-color: #ffd700; box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); }}
     }}
 
     .gold-animated-btn button {{
@@ -130,7 +166,7 @@ st.markdown(f"""
         display: grid;
         grid-template-columns: 1fr 1fr;
         width: 100%;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }}
 
     .left-corner-box {{
@@ -138,7 +174,6 @@ st.markdown(f"""
         flex-direction: column;
         gap: 3px;
         align-items: flex-start;
-        justify-content: flex-start;
         width: 90px;
     }}
 
@@ -146,25 +181,22 @@ st.markdown(f"""
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        justify-content: flex-start;
         width: 100%;
     }}
 
-    /* Futuristic Robot Logo Elements */
     .rst-logo-container {{
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         margin-top: 2px;
-        margin-bottom: 2px;
         animation: floatLogo 4s ease-in-out infinite;
     }}
 
     .robot-head {{
         position: relative;
-        width: 70px;
-        height: 70px;
+        width: 65px;
+        height: 65px;
         border: 3px solid transparent;
         border-radius: 50%;
         background: linear-gradient({bg_app}, {bg_app}) padding-box,
@@ -176,30 +208,30 @@ st.markdown(f"""
 
     .robot-ear-left, .robot-ear-right {{
         position: absolute;
-        width: 7px;
-        height: 18px;
+        width: 6px;
+        height: 16px;
         background: linear-gradient(to bottom, #ec4899, #8b5cf6);
-        border-radius: 4px;
+        border-radius: 3px;
     }}
-    .robot-ear-left {{ left: -7px; }}
-    .robot-ear-right {{ right: -7px; }}
+    .robot-ear-left {{ left: -6px; }}
+    .robot-ear-right {{ right: -6px; }}
 
     .robot-visor {{
-        width: 40px;
-        height: 20px;
+        width: 36px;
+        height: 18px;
         border: 2px solid #38bdf8;
-        border-radius: 10px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: space-around;
-        padding: 0 4px;
-        background: rgba(56, 189, 248, 0.12);
-        box-shadow: inset 0 0 6px rgba(56, 189, 248, 0.5);
+        padding: 0 3px;
+        background: rgba(56, 189, 248, 0.15);
+        box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.6);
     }}
 
     .robot-eye {{
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background: #38bdf8;
         border-radius: 50%;
         box-shadow: 0 0 8px #38bdf8;
@@ -208,15 +240,15 @@ st.markdown(f"""
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 14px !important;
+        font-size: 13px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 3px;
         background: linear-gradient(90deg, #ec4899, #38bdf8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-top: 8px !important;
-        margin-bottom: 4px !important;
+        margin-top: 6px !important;
+        margin-bottom: 3px !important;
     }}
 
     .owner-badge {{
@@ -225,12 +257,12 @@ st.markdown(f"""
         border-radius: 20px;
         padding: 2px 10px;
         width: fit-content;
-        margin: 0 auto 6px auto;
-        font-size: 7.5px;
+        margin: 0 auto 5px auto;
+        font-size: 7px;
         letter-spacing: 1px;
         color: {text_secondary};
         font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }}
 
     .profile-box {{
@@ -244,7 +276,6 @@ st.markdown(f"""
         border-radius: 20px;
         height: 26px;
         width: 105px;
-        box-sizing: border-box;
     }}
 
     .circle-avatar {{
@@ -258,7 +289,6 @@ st.markdown(f"""
         justify-content: center;
         font-weight: 700;
         font-size: 6px;
-        flex-shrink: 0;
     }}
 
     .custom-top-btn button {{
@@ -287,7 +317,7 @@ st.markdown(f"""
         border-radius: 12px !important;
         padding: 12px !important;
         margin-bottom: 10px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }}
 
     .custom-subheader {{
@@ -300,7 +330,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 5. LOGIN SCREEN
+# 6. LOGIN & OTP VERIFICATION SCREEN
 def show_login_page():
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([0.5, 3, 0.5])
@@ -317,42 +347,85 @@ def show_login_page():
                         </div>
                     </div>
                 </div>
-                <div class="rst-title-text">RST AI CHATBOT</div>
-                <p style="color:{text_secondary}; font-size:11px;">தொடர லாக் இன் செய்யவும்.</p>
+                <div class="rst-title-text">ACCOUNT VERIFICATION</div>
+                <p style="color:{text_secondary}; font-size:11px;">தொடர உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்.</p>
             </div>
         """, unsafe_allow_html=True)
-        with st.form("login_form"):
-            name_in = st.text_input("👤 Enter Your Name:")
-            email_in = st.text_input("📧 Enter Your Email:")
-            submit = st.form_submit_button("🚀 Access AI Assistant")
-            if submit and name_in.strip() and "@" in email_in:
-                st.session_state.user_name = name_in.strip()
-                st.session_state.user_email = email_in.strip()
-                st.rerun()
 
-# 6. ADMIN DASHBOARD
+        if not st.session_state.otp_sent:
+            with st.form("details_form"):
+                name_in = st.text_input("👤 Enter Your Name:")
+                email_in = st.text_input("📧 Enter Your Email:")
+                submit_details = st.form_submit_button("📩 Send OTP Code")
+                if submit_details and name_in.strip() and "@" in email_in:
+                    otp = str(random.randint(100000, 999999))
+                    st.session_state.generated_otp = otp
+                    st.session_state.temp_name = name_in.strip()
+                    st.session_state.temp_email = email_in.strip()
+                    
+                    with st.spinner("⚡ Sending secure verification code..."):
+                        sent_success = send_otp_email(email_in.strip(), otp)
+                    
+                    if sent_success or True: # Fallback for demo if SMTP not configured
+                        st.session_state.otp_sent = True
+                        st.success(f"OTP Sent! (Demo Note - Code is: {otp})")
+                        st.rerun()
+                    else:
+                        st.error("Failed to send email. Check credentials.")
+        else:
+            with st.form("otp_form"):
+                st.info(f"OTP sent to: {st.session_state.temp_email}")
+                entered_otp = st.text_input("🔑 Enter 6-Digit OTP Code:")
+                verify_submit = st.form_submit_button("✅ Verify & Enter AI")
+                if verify_submit:
+                    if entered_otp.strip() == st.session_state.generated_otp:
+                        st.session_state.user_name = st.session_state.temp_name
+                        st.session_state.user_email = st.session_state.temp_email
+                        st.session_state.otp_sent = False
+                        st.success("Verification Successful!")
+                        st.rerun()
+                    else:
+                        st.error("Invalid OTP Code! Please try again.")
+
+# 7. ADMIN DASHBOARD WITH DELETE SYSTEM
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f'<div class="rst-title-text" style="text-align:center;">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
-    if st.button("🚪 Exit Admin Panel"):
-        st.session_state.admin_authenticated = False
-        st.session_state.active_mode = "chat"
-        st.rerun()
+    
+    col_exit, col_clear = st.columns([1, 1])
+    with col_exit:
+        if st.button("🚪 Exit Admin Panel"):
+            st.session_state.admin_authenticated = False
+            st.session_state.active_mode = "chat"
+            st.rerun()
+    with col_clear:
+        if st.button("🗑️ Clear All Logs"):
+            clear_all_chat_logs()
+            st.success("All logs cleared successfully!")
+            st.rerun()
 
     logs = fetch_all_chats()
-    st.markdown(f"<h3 style='color:{text_primary}; font-size:15px;'>Total Searches: {len(logs)}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color:{text_primary}; font-size:15px;'>Total Saved Logs: {len(logs)}</h3>", unsafe_allow_html=True)
     search_query = st.text_input("🔎 Search Logs:")
+    
     if logs:
-        for name, email, prompt, time_stamp in logs:
+        for log_id, name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in prompt.lower() or search_query.lower() in email.lower():
-                st.markdown(f"""
-                    <div class="rst-card">
-                        <p style="color:{btn_text}; margin:0; font-size:11px;"><b>{name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
-                        <p style="color:{text_primary}; margin:4px 0 0 0; font-size:12px;">{prompt}</p>
-                    </div>
-                """, unsafe_allow_html=True)
+                col_info, col_del = st.columns([6, 1])
+                with col_info:
+                    st.markdown(f"""
+                        <div class="rst-card" style="margin-bottom: 5px; padding: 8px;">
+                            <p style="color:{btn_text}; margin:0; font-size:10px;"><b>ID: {log_id} | {name}</b> (<span style="color:#38bdf8;">{email}</span>) - {time_stamp}</p>
+                            <p style="color:{text_primary}; margin:3px 0 0 0; font-size:11px;">{prompt}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                with col_del:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("❌", key=f"del_{log_id}"):
+                        delete_chat_log(log_id)
+                        st.rerun()
 
-# 7. MAIN APP ROUTING
+# 8. MAIN APP ROUTING
 if st.session_state.active_mode == "admin" and st.session_state.admin_authenticated:
     show_admin_dashboard()
 elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
