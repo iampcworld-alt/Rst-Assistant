@@ -7,7 +7,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 import time
-import google.generativeai as genai
+from groq import Groq
 
 # 1. DATABASE SETUP
 def init_db():
@@ -79,15 +79,17 @@ def send_otp_email(receiver_email, otp_code):
     except Exception as e:
         return False, str(e)
 
-# 3. OLD GEMINI SETUP (Using google-generativeai)
-HAS_GEMINI = False
+# 3. GROQ SETUP
+HAS_GROQ = False
+groq_client = None
 try:
     if "GEMINI_API_KEY" in st.secrets:
-        genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        HAS_GEMINI = True
+        # நீங்கள் GEMINI_API_KEY என்ற இடத்திலேயே உங்கள் Groq கீயை போடலாம் அல்லது GROQ_API_KEY என மாற்றிக்கொள்ளலாம்
+        groq_api_key = st.secrets["GEMINI_API_KEY"]
+        groq_client = Groq(api_key=groq_api_key)
+        HAS_GROQ = True
 except Exception as e:
-    HAS_GEMINI = False
+    HAS_GROQ = False
 
 # 4. SESSION STATES
 if "theme" not in st.session_state: st.session_state.theme = "dark"
@@ -556,14 +558,21 @@ else:
                 st.markdown(user_input)
 
             with st.status("⚡ RST AI is thinking...", expanded=False) as status:
-                if HAS_GEMINI:
+                if HAS_GROQ and groq_client is not None:
                     try:
-                        response = model.generate_content(f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}")
-                        reply = response.text
+                        completion = groq_client.chat.completions.create(
+                            model="llama3-70b-8192",
+                            messages=[
+                                {"role": "system", "content": "You are RST ASSISTANT built by Mohammed Rasith."},
+                                {"role": "user", "content": user_input}
+                            ],
+                            temperature=0.7,
+                        )
+                        reply = completion.choices[0].message.content
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "⚠️ Gemini API Key not configured."
+                    reply = "⚠️ Groq API Key not configured or connection failed."
                 status.update(label="✨ RST Response Ready!", state="complete", expanded=False)
 
             with st.chat_message("assistant"):
