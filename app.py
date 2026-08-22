@@ -334,7 +334,7 @@ def show_google_login_page():
             name_in = st.text_input("👤 Your Name:")
             email_in = st.text_input("📧 Your Google Email:")
             submit_google = st.form_submit_button("🌐 Continue with Google Account")
-            
+
             if submit_google:
                 if not name_in.strip() or "@" not in email_in or "." not in email_in:
                     st.error("சரியான பெயர் மற்றும் மின்னஞ்சலை உள்ளிடவும்!")
@@ -348,7 +348,7 @@ def show_google_login_page():
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f'<div class="rst-title-text" style="text-align:center;">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
-    
+
     col_exit, col_clear = st.columns([1, 1])
     with col_exit:
         if st.button("🚪 Exit Admin Panel"):
@@ -364,7 +364,7 @@ def show_admin_dashboard():
     logs = fetch_all_chats()
     st.markdown(f"<h3 style='color:{text_primary}; font-size:15px;'>Total Saved Logs: {len(logs)}</h3>", unsafe_allow_html=True)
     search_query = st.text_input("🔎 Search Logs:")
-    
+
     if logs:
         for log_id, name, email, prompt, time_stamp in logs:
             if search_query.lower() in name.lower() or search_query.lower() in prompt.lower() or search_query.lower() in email.lower():
@@ -389,11 +389,11 @@ elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_google_login_page()
 else:
     st.markdown('<div class="absolute-header-grid">', unsafe_allow_html=True)
-    
+
     # LEFT CORNER
     st.markdown('<div class="left-corner-box">', unsafe_allow_html=True)
     st.markdown('<div class="gold-animated-btn custom-top-btn">', unsafe_allow_html=True)
-    if st.button("👑 Admin"): 
+    if st.button("👑 Admin"):
         st.session_state.active_mode = "admin"
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -447,12 +447,12 @@ else:
     btn_chat_col, btn_voice_col = st.columns(2)
     with btn_chat_col:
         st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
-        if st.button("🤖 AI Chat"): 
+        if st.button("🤖 AI Chat"):
             st.session_state.active_mode = "chat"
         st.markdown('</div>', unsafe_allow_html=True)
     with btn_voice_col:
         st.markdown('<div class="custom-top-btn">', unsafe_allow_html=True)
-        if st.button("🎙️ Voice Gen"): 
+        if st.button("🎙️ Voice Gen"):
             st.session_state.active_mode = "voice"
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -485,7 +485,7 @@ else:
                 if HAS_GROQ and groq_client is not None:
                     try:
                         completion = groq_client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
+                            model="openai/gpt-oss-20b",
                             messages=[
                                 {"role": "system", "content": "You are RST ASSISTANT built by Mohammed Rasith."},
                                 {"role": "user", "content": user_input}
@@ -512,7 +512,7 @@ else:
         v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RST AI Assistant.")
         voice_opt = st.selectbox("குரலைத் தேர்ந்தெடுக்கவும்:", ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"])
         voice_code = "ta-IN-ValluvarNeural" if "Valluvar" in voice_opt else "ta-IN-PallaviNeural"
-        
+
         if st.button("Generate Voice"):
             if v_text:
                 async def make_voice():
