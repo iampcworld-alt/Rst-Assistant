@@ -79,7 +79,6 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
-    /* Force background and text color globally across all Streamlit elements */
     html, body, [class*="css"], .stApp, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
@@ -138,41 +137,72 @@ st.markdown(f"""
         width: 100%;
     }}
 
-    .rst-emblem-container {{
+    /* RST AI Custom Robot Logo Styling */
+    .rst-logo-container {{
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
+        justify-content: center;
         margin-top: 5px;
         margin-bottom: 2px;
     }}
 
-    .rst-emblem-box {{
-        padding: 2px 20px;
-        background: {card_bg};
-        border-radius: 10px;
-        border: 2px solid {btn_text};
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+    .robot-head {{
+        position: relative;
+        width: 75px;
+        height: 75px;
+        border: 4px solid transparent;
+        border-radius: 50%;
+        background: linear-gradient({bg_app}, {bg_app}) padding-box,
+                    linear-gradient(135deg, #ec4899, #8b5cf6, #38bdf8) border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
     }}
 
-    .rst-emblem-text {{
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 24px;
-        font-weight: 900;
-        letter-spacing: 3px;
-        color: {btn_text};
-        margin: 0;
-        line-height: 1;
+    .robot-ear-left, .robot-ear-right {{
+        position: absolute;
+        width: 8px;
+        height: 20px;
+        background: linear-gradient(to bottom, #ec4899, #8b5cf6);
+        border-radius: 4px;
+    }}
+    .robot-ear-left {{ left: -8px; }}
+    .robot-ear-right {{ right: -8px; }}
+
+    .robot-visor {{
+        width: 44px;
+        height: 22px;
+        border: 2px solid #38bdf8;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 4px;
+        background: rgba(56, 189, 248, 0.1);
+        box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.4);
+    }}
+
+    .robot-eye {{
+        width: 7px;
+        height: 7px;
+        background: #38bdf8;
+        border-radius: 50%;
+        box-shadow: 0 0 6px #38bdf8;
     }}
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         font-weight: 800 !important;
         text-align: center !important;
-        letter-spacing: 2px;
-        color: {text_primary} !important;
-        margin-top: 15px !important;
-        margin-bottom: 10px !important;
+        letter-spacing: 3px;
+        background: linear-gradient(90deg, #ec4899, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-top: 10px !important;
+        margin-bottom: 6px !important;
     }}
 
     .owner-badge {{
@@ -260,12 +290,17 @@ def show_login_page():
     with col2:
         st.markdown(f"""
             <div class="rst-card" style="text-align:center;">
-                <div class="rst-emblem-container">
-                    <div class="rst-emblem-box">
-                        <div class="rst-emblem-text">RST</div>
+                <div class="rst-logo-container">
+                    <div class="robot-head">
+                        <div class="robot-ear-left"></div>
+                        <div class="robot-ear-right"></div>
+                        <div class="robot-visor">
+                            <div class="robot-eye"></div>
+                            <div class="robot-eye"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="rst-title-text" style="color:{text_primary};">LOGIN</div>
+                <div class="rst-title-text">RST AI CHATBOT</div>
                 <p style="color:{text_secondary}; font-size:11px;">தொடர லாக் இன் செய்யவும்.</p>
             </div>
         """, unsafe_allow_html=True)
@@ -281,7 +316,7 @@ def show_login_page():
 # 6. ADMIN DASHBOARD
 def show_admin_dashboard():
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f'<div class="rst-title-text" style="color:{text_primary};">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="rst-title-text" style="text-align:center;">👑 OWNER ADMIN DASHBOARD</div>', unsafe_allow_html=True)
     if st.button("🚪 Exit Admin Panel"):
         st.session_state.admin_authenticated = False
         st.session_state.active_mode = "chat"
@@ -343,14 +378,19 @@ else:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # CENTER EMBLEM BRANDING
+    # CENTER ROBOT LOGO & BRANDING
     st.markdown(f"""
-        <div class="rst-emblem-container">
-            <div class="rst-emblem-box">
-                <div class="rst-emblem-text">RST</div>
+        <div class="rst-logo-container">
+            <div class="robot-head">
+                <div class="robot-ear-left"></div>
+                <div class="robot-ear-right"></div>
+                <div class="robot-visor">
+                    <div class="robot-eye"></div>
+                    <div class="robot-eye"></div>
+                </div>
             </div>
         </div>
-        <div class="rst-title-text" style="color:{text_primary};">⚡ ASSISTANT ⚡</div>
+        <div class="rst-title-text">RST AI CHATBOT</div>
         <div class="owner-badge">
             SYSTEM ARCHITECT: <span style="color:{btn_text};">MOHAMMED RASITH</span>
         </div>
