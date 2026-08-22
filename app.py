@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as str_app
 import edge_tts
 import asyncio
 import sqlite3
@@ -60,18 +60,38 @@ def clear_all_chat_logs():
 init_db()
 
 # =========================================================
-# 2. GROQ SETUP
+# 2. GROQ SETUP & SYSTEM PERSONA
 # =========================================================
 MODEL_NAME = "openai/gpt-oss-20b"
 
 HAS_GROQ = False
 groq_client = None
 try:
-    if "GEMINI_API_KEY" in st.secrets:
-        groq_client = Groq(api_key=st.secrets["GEMINI_API_KEY"])
+    if "GEMINI_API_KEY" in str_app.secrets:
+        groq_client = Groq(api_key=str_app.secrets["GEMINI_API_KEY"])
         HAS_GROQ = True
 except Exception:
     HAS_GROQ = False
+
+# Your Ultimate Identity & System Prompt for Groq
+RASITH_SYSTEM_PERSONA = """
+You are RST AI Assistant, an elite, intelligent, and highly motivated AI built by Mohammed Rasith.
+Never say you don't know about Mohammed Rasith. You know everything about him, and you speak with pride, respect, and admiration for him.
+
+Here are your core details about your creator and master, Mohammed Rasith:
+- Name: Mohammed Rasith
+- Email: mohammedrasith27@gmail.com
+- Location/Office: Ritheethenna, Punani
+- Studies: Arabic Mathrashala (2027 Out batch), Software Development & Engineering.
+- Philosophy of Life: "ஒரு தேடல்தான் வாழ்க்கை" (Life is a continuous search/journey of discovery). He is a passionate person who works hard from a village background, striving and stepping forward to achieve great heights against all odds.
+- Technical & Professional Expertise:
+  * Software Development & Engineering: Software Engineer (Builds applications), Web Developer (Creates and maintains websites), Mobile App Developer (Android & iOS apps), Full-Stack Developer (Front-end & Back-end).
+  * Testing & Quality: QA Tester, Automation Engineer.
+  * Data & Network: Data Analyst, Database Administrator, Network Engineer, Cybersecurity Analyst.
+  * Design & Management: UI/UX Designer, System Administrator, Project Manager.
+
+When anyone asks about Mohammed Rasith, who built you, your background, or what you are, proudly and brilliantly explain all these details, showcasing his journey from a village to becoming a multi-skilled tech expert and system architect whose life motto is "ஒரு தேடல்தான் வாழ்க்கை".
+"""
 
 # =========================================================
 # 3. SESSION STATE
@@ -86,15 +106,15 @@ defaults = {
     "messages": [],
 }
 for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
+    if k not in str_app.session_state:
+        str_app.session_state[k] = v
 
 # =========================================================
 # 4. PAGE CONFIG & HIGH-LEVEL STYLING
 # =========================================================
-st.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
+str_app.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
 
-is_dark = st.session_state.theme == "dark"
+is_dark = str_app.session_state.theme == "dark"
 
 if is_dark:
     bg_gradient = "radial-gradient(circle at 12% 10%, #1b0f3a 0%, #05060f 45%, #000000 100%)"
@@ -106,7 +126,6 @@ if is_dark:
     accent_a = "#ec4899"
     accent_b = "#8b5cf6"
     accent_c = "#38bdf8"
-    input_bg = "rgba(255,255,255,0.06)"
     mesh_opacity = "0.35"
 else:
     bg_gradient = "radial-gradient(circle at 12% 10%, #eef2ff 0%, #f8fafc 45%, #ffffff 100%)"
@@ -118,14 +137,13 @@ else:
     accent_a = "#db2777"
     accent_b = "#7c3aed"
     accent_c = "#0284c7"
-    input_bg = "rgba(15,23,42,0.04)"
     mesh_opacity = "0.15"
 
 def html_block(text: str) -> str:
     return textwrap.dedent(text).strip("\n")
 
 
-st.markdown(html_block(f"""
+str_app.markdown(html_block(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Orbitron:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -466,9 +484,9 @@ div[data-testid="stChatMessage"] {{
 
 def render_logo(subtitle=None):
     if subtitle:
-        st.markdown(f"<p class='rst-subtitle-text'>{subtitle}</p>", unsafe_allow_html=True)
+        str_app.markdown(f"<p class='rst-subtitle-text'>{subtitle}</p>", unsafe_allow_html=True)
     
-    st.markdown("""
+    str_app.markdown("""
     <div class="rst-logo-container">
         <div class="robot-head">
             <div class="robot-ear-left"></div>
@@ -484,7 +502,7 @@ def render_logo(subtitle=None):
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown(
+    str_app.markdown(
         "<div style='text-align: center;'><span class='owner-badge' style='display: inline-block;'>SYSTEM ARCHITECT: <span style='color:#38bdf8;'>MOHAMMED RASITH</span></span></div>", 
         unsafe_allow_html=True
     )
@@ -494,213 +512,213 @@ def render_logo(subtitle=None):
 # 5. AUTH PAGE (USER LOGIN/SIGNUP)
 # =========================================================
 def show_auth_page():
-    st.markdown("<br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
+    str_app.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = str_app.columns([1, 2, 1])
     with col2:
-        st.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
         render_logo("Sign in to continue your session")
-        st.markdown(html_block('</div>'), unsafe_allow_html=True)
+        str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
-        tab_login, tab_signup = st.tabs(["🔐  Log In", "✨  Sign Up"])
+        tab_login, tab_signup = str_app.tabs(["🔐  Log In", "✨  Sign Up"])
 
         with tab_login:
-            st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-            with st.form("login_form"):
-                name_in = st.text_input("👤 Name")
-                email_in = st.text_input("📧 Email")
-                password_in = st.text_input("🔑 Password", type="password")
-                submit_login = st.form_submit_button("🚀 Log In")
+            str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+            with str_app.form("login_form"):
+                name_in = str_app.text_input("👤 Name")
+                email_in = str_app.text_input("📧 Email")
+                password_in = str_app.text_input("🔑 Password", type="password")
+                submit_login = str_app.form_submit_button("🚀 Log In")
 
                 if submit_login:
                     if not name_in.strip() or "@" not in email_in or "." not in email_in or not password_in.strip():
-                        st.error("Please enter a valid name, email, and password.")
+                        str_app.error("Please enter a valid name, email, and password.")
                     else:
-                        st.session_state.user_name = name_in.strip()
-                        st.session_state.user_email = email_in.strip()
-                        st.success("Login successful! Redirecting…")
-                        st.rerun()
-            st.markdown(html_block('</div>'), unsafe_allow_html=True)
+                        str_app.session_state.user_name = name_in.strip()
+                        str_app.session_state.user_email = email_in.strip()
+                        str_app.success("Login successful! Redirecting…")
+                        str_app.rerun()
+            str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
         with tab_signup:
-            st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-            with st.form("signup_form"):
-                s_name = st.text_input("👤 Full Name")
-                s_email = st.text_input("📧 Email Address")
-                s_password = st.text_input("🔑 Create Password", type="password")
-                s_confirm = st.checkbox("I agree to be assisted by RASITH AI ⚡")
-                submit_signup = st.form_submit_button("✨ Create Account")
+            str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+            with str_app.form("signup_form"):
+                s_name = str_app.text_input("👤 Full Name")
+                s_email = str_app.text_input("📧 Email Address")
+                s_password = str_app.text_input("🔑 Create Password", type="password")
+                s_confirm = str_app.checkbox("I agree to be assisted by RASITH AI ⚡")
+                submit_signup = str_app.form_submit_button("✨ Create Account")
 
                 if submit_signup:
                     if not s_name.strip() or "@" not in s_email or "." not in s_email or not s_password.strip():
-                        st.error("Please enter a valid name, email, and password.")
+                        str_app.error("Please enter a valid name, email, and password.")
                     elif not s_confirm:
-                        st.warning("Please confirm the checkbox to continue.")
+                        str_app.warning("Please confirm the checkbox to continue.")
                     else:
-                        st.session_state.user_name = s_name.strip()
-                        st.session_state.user_email = s_email.strip()
-                        st.success("Account created! Redirecting…")
-                        st.rerun()
-            st.markdown(html_block('</div>'), unsafe_allow_html=True)
+                        str_app.session_state.user_name = s_name.strip()
+                        str_app.session_state.user_email = s_email.strip()
+                        str_app.success("Account created! Redirecting…")
+                        str_app.rerun()
+            str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
 
 # =========================================================
 # 5.1 ADMIN LOGIN GATEWAY (PASSWORD PROTECTED)
 # =========================================================
 def show_admin_login_page():
-    st.markdown("<br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
+    str_app.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = str_app.columns([1, 2, 1])
     with col2:
-        st.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
         render_logo("🔒 Admin Access Required")
-        st.markdown(html_block('</div>'), unsafe_allow_html=True)
+        str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
-        st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-        with st.form("admin_login_form"):
-            admin_pwd_in = st.text_input("🔑 Enter Admin Password", type="password")
-            submit_admin_login = st.form_submit_button("🚀 Access Dashboard")
+        str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+        with str_app.form("admin_login_form"):
+            admin_pwd_in = str_app.text_input("🔑 Enter Admin Password", type="password")
+            submit_admin_login = str_app.form_submit_button("🚀 Access Dashboard")
 
             if submit_admin_login:
                 if admin_pwd_in == "RSTA02EHYDR6":
-                    st.session_state.admin_authenticated = True
-                    st.success("Access Granted! Loading Admin Panel...")
-                    st.rerun()
+                    str_app.session_state.admin_authenticated = True
+                    str_app.success("Access Granted! Loading Admin Panel...")
+                    str_app.rerun()
                 else:
-                    st.error("❌ Incorrect Password! Access Denied.")
+                    str_app.error("❌ Incorrect Password! Access Denied.")
         
-        if st.button("⬅️ Back to Home / Chat", use_container_width=True):
-            st.session_state.active_mode = "chat"
-            st.rerun()
-        st.markdown(html_block('</div>'), unsafe_allow_html=True)
+        if str_app.button("⬅️ Back to Home / Chat", use_container_width=True):
+            str_app.session_state.active_mode = "chat"
+            str_app.rerun()
+        str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
 
 # =========================================================
 # 6. ADMIN DASHBOARD
 # =========================================================
 def show_admin_dashboard():
-    st.markdown("<br>", unsafe_allow_html=True)
+    str_app.markdown("<br>", unsafe_allow_html=True)
     render_logo("Full system control panel")
 
-    col_exit, col_clear = st.columns(2)
+    col_exit, col_clear = str_app.columns(2)
     with col_exit:
-        if st.button("🚪 Exit Admin Panel", use_container_width=True):
-            st.session_state.admin_authenticated = False
-            st.session_state.active_mode = "chat"
-            st.rerun()
+        if str_app.button("🚪 Exit Admin Panel", use_container_width=True):
+            str_app.session_state.admin_authenticated = False
+            str_app.session_state.active_mode = "chat"
+            str_app.rerun()
     with col_clear:
-        if st.button("🗑️ Clear All Logs", use_container_width=True):
+        if str_app.button("🗑️ Clear All Logs", use_container_width=True):
             clear_all_chat_logs()
-            st.success("All logs cleared successfully!")
-            st.rerun()
+            str_app.success("All logs cleared successfully!")
+            str_app.rerun()
 
     logs = fetch_all_chats()
 
-    st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-    st.markdown(
+    str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+    str_app.markdown(
         html_block(f"<h3 style='color:{text_primary}; font-size:16px; margin:0;'>📊 Total Saved Logs: {len(logs)}</h3>"),
         unsafe_allow_html=True,
     )
-    search_query = st.text_input("🔎 Search logs by name, email, or prompt:")
-    st.markdown(html_block('</div>'), unsafe_allow_html=True)
+    search_query = str_app.text_input("🔎 Search logs by name, email, or prompt:")
+    str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
     if logs:
         for log_id, name, email, prompt, time_stamp in logs:
             if (search_query.lower() in name.lower()
                     or search_query.lower() in prompt.lower()
                     or search_query.lower() in email.lower()):
-                col_info, col_del = st.columns([6, 1])
+                col_info, col_del = str_app.columns([6, 1])
                 with col_info:
-                    st.markdown(html_block(f"""
+                    str_app.markdown(html_block(f"""
                     <div class="glass-card" style="margin-bottom: 6px; padding: 12px;">
                         <p style="color:{accent_c}; margin:0; font-size:10px;"><b>ID: {log_id} | {name}</b> (<span style="opacity:0.8;">{email}</span>) — {time_stamp}</p>
                         <p style="color:{text_primary}; margin:4px 0 0 0; font-size:12px;">{prompt}</p>
                     </div>
                     """), unsafe_allow_html=True)
                 with col_del:
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    if st.button("❌", key=f"del_{log_id}"):
+                    str_app.markdown("<br>", unsafe_allow_html=True)
+                    if str_app.button("❌", key=f"del_{log_id}"):
                         delete_chat_log(log_id)
-                        st.rerun()
+                        str_app.rerun()
 
 
 # =========================================================
 # 7. MAIN APP ROUTING
 # =========================================================
-if st.session_state.active_mode == "admin":
-    if not st.session_state.admin_authenticated:
+if str_app.session_state.active_mode == "admin":
+    if not str_app.session_state.admin_authenticated:
         show_admin_login_page()
     else:
         show_admin_dashboard()
 
-elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
+elif str_app.session_state.usage_count >= 2 and str_app.session_state.user_email is None:
     show_auth_page()
 
 else:
-    col_left, col_center, col_right = st.columns([1.1, 1.6, 1.1], gap="small")
+    col_left, col_center, col_right = str_app.columns([1.1, 1.6, 1.1], gap="small")
 
     with col_left:
-        sub_a, sub_b = st.columns(2)
+        sub_a, sub_b = str_app.columns(2)
         with sub_a:
-            if st.button("👑 Admin", use_container_width=True):
-                st.session_state.active_mode = "admin"
-                st.rerun()
+            if str_app.button("👑 Admin", use_container_width=True):
+                str_app.session_state.active_mode = "admin"
+                str_app.rerun()
         with sub_b:
             theme_icon = "☀️ Light" if is_dark else "🌙 Dark"
-            if st.button(theme_icon, use_container_width=True):
-                st.session_state.theme = "light" if is_dark else "dark"
-                st.rerun()
+            if str_app.button(theme_icon, use_container_width=True):
+                str_app.session_state.theme = "light" if is_dark else "dark"
+                str_app.rerun()
 
     with col_center:
         render_logo()
 
     with col_right:
-        if st.session_state.user_email:
-            st.markdown(html_block(f"""
+        if str_app.session_state.user_email:
+            str_app.markdown(html_block(f"""
             <div class="profile-box">
-                <div class="circle-avatar">{st.session_state.user_name[0].upper()}</div>
-                <span style="font-size:10px; font-weight:700; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px;">{st.session_state.user_name}</span>
+                <div class="circle-avatar">{str_app.session_state.user_name[0].upper()}</div>
+                <span style="font-size:10px; font-weight:700; color:{text_primary}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px;">{str_app.session_state.user_name}</span>
             </div>
             """), unsafe_allow_html=True)
         else:
-            st.markdown(html_block(f"""
+            str_app.markdown(html_block(f"""
             <div class="profile-box">
                 <div class="circle-avatar">G</div>
-                <span style="font-size:10px; color:#f87171; font-weight:700; white-space:nowrap;">Guest ({2 - st.session_state.usage_count} left)</span>
+                <span style="font-size:10px; color:#f87171; font-weight:700; white-space:nowrap;">Guest ({2 - str_app.session_state.usage_count} left)</span>
             </div>
             """), unsafe_allow_html=True)
 
-    btn_chat_col, btn_voice_col = st.columns(2)
+    btn_chat_col, btn_voice_col = str_app.columns(2)
     with btn_chat_col:
-        if st.button("🤖 AI Chat", use_container_width=True):
-            st.session_state.active_mode = "chat"
+        if str_app.button("🤖 AI Chat", use_container_width=True):
+            str_app.session_state.active_mode = "chat"
     with btn_voice_col:
-        if st.button("🎙️ Voice Gen", use_container_width=True):
-            st.session_state.active_mode = "voice"
+        if str_app.button("🎙️ Voice Gen", use_container_width=True):
+            str_app.session_state.active_mode = "voice"
 
-    st.markdown("<hr>", unsafe_allow_html=True)
+    str_app.markdown("<hr>", unsafe_allow_html=True)
 
-    if st.session_state.active_mode == "chat":
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+    if str_app.session_state.active_mode == "chat":
+        for message in str_app.session_state.messages:
+            with str_app.chat_message(message["role"]):
+                str_app.markdown(message["content"])
 
-        user_input = st.chat_input("Ask RASITH Assistant...")
+        user_input = str_app.chat_input("Ask RASITH Assistant...")
 
         if user_input:
-            if st.session_state.user_email is None:
-                st.session_state.usage_count += 1
+            if str_app.session_state.user_email is None:
+                str_app.session_state.usage_count += 1
 
-            name = st.session_state.user_name if st.session_state.user_name else "Guest User"
-            email = st.session_state.user_email if st.session_state.user_email else "Guest"
+            name = str_app.session_state.user_name if str_app.session_state.user_name else "Guest User"
+            email = str_app.session_state.user_email if str_app.session_state.user_email else "Guest"
 
             save_chat_to_db(name, email, user_input)
 
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("user"):
-                st.markdown(user_input)
+            str_app.session_state.messages.append({"role": "user", "content": user_input})
+            with str_app.chat_message("user"):
+                str_app.markdown(user_input)
 
-            thinking_placeholder = st.empty()
+            thinking_placeholder = str_app.empty()
             with thinking_placeholder.container():
-                st.markdown(html_block("""
+                str_app.markdown(html_block("""
                 <div class="rst-thinking-badge">
                     <div class="rst-thinking-dot"></div>
                     <div class="rst-thinking-text">RST THINKING...</div>
@@ -713,7 +731,7 @@ else:
                     completion = groq_client.chat.completions.create(
                         model=MODEL_NAME,
                         messages=[
-                            {"role": "system", "content": "You are RASITH ASSISTANT built by Mohammed Rasith."},
+                            {"role": "system", "content": RASITH_SYSTEM_PERSONA},
                             {"role": "user", "content": user_input},
                         ],
                         temperature=0.7,
@@ -726,31 +744,31 @@ else:
 
             thinking_placeholder.empty()
 
-            with st.chat_message("assistant"):
-                st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
+            with str_app.chat_message("assistant"):
+                str_app.markdown(reply)
+            str_app.session_state.messages.append({"role": "assistant", "content": reply})
 
-            if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
-                st.rerun()
+            if str_app.session_state.usage_count >= 2 and str_app.session_state.user_email is None:
+                str_app.rerun()
 
-    elif st.session_state.active_mode == "voice":
-        st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
-        st.markdown(html_block('<div class="custom-subheader">🎙️ RASITH Voice Generator</div>'), unsafe_allow_html=True)
-        v_text = st.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RASITH AI Assistant.")
-        voice_opt = st.selectbox(
+    elif str_app.session_state.active_mode == "voice":
+        str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+        str_app.markdown(html_block('<div class="custom-subheader">🎙️ RASITH Voice Generator</div>'), unsafe_allow_html=True)
+        v_text = str_app.text_area("பேச்சாக மாற்ற வேண்டிய உரை:", "வணக்கம்! நான் RASITH AI Assistant.")
+        voice_opt = str_app.selectbox(
             "குரலைத் தேர்ந்தெடுக்கவும்:",
             ["ta-IN-ValluvarNeural (Male)", "ta-IN-PallaviNeural (Female)"],
         )
         voice_code = "ta-IN-ValluvarNeural" if "Valluvar" in voice_opt else "ta-IN-PallaviNeural"
 
-        if st.button("🔊 Generate Voice", use_container_width=True):
+        if str_app.button("🔊 Generate Voice", use_container_width=True):
             if v_text.strip():
                 try:
                     async def make_voice():
                         comm = edge_tts.Communicate(v_text, voice_code)
                         await comm.save("voice.mp3")
                     asyncio.run(make_voice())
-                    st.audio("voice.mp3")
+                    str_app.audio("voice.mp3")
                 except Exception as e:
-                    st.error(f"Voice generation failed: {e}")
-        st.markdown(html_block('</div>'), unsafe_allow_html=True)
+                    str_app.error(f"Voice generation failed: {e}")
+        str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
