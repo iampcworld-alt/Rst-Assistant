@@ -465,10 +465,10 @@ div[data-testid="stChatMessage"] {{
 
 
 def render_logo(subtitle=None):
-    subtitle_html = f'<div class="rst-subtitle-text">{subtitle}</div>' if subtitle else ''
-    badge_html = f'<div class="owner-badge">SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span></div>'
+    if subtitle:
+        st.markdown(f"<p class='rst-subtitle-text'>{subtitle}</p>", unsafe_allow_html=True)
     
-    st.markdown(html_block(f"""
+    st.markdown("""
     <div class="rst-logo-container">
         <div class="robot-head">
             <div class="robot-ear-left"></div>
@@ -481,10 +481,13 @@ def render_logo(subtitle=None):
         <div class="brand-morph">
             <span class="brand-rasith">RST AI ASSISTANT</span>
         </div>
-        {subtitle_html}
-        {badge_html}
     </div>
-    """), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+    
+    st.markdown(
+        "<div style='text-align: center;'><span class='owner-badge' style='display: inline-block;'>SYSTEM ARCHITECT: <span style='color:#38bdf8;'>MOHAMMED RASITH</span></span></div>", 
+        unsafe_allow_html=True
+    )
 
 
 # =========================================================
