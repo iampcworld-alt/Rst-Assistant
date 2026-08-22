@@ -62,14 +62,6 @@ init_db()
 # =========================================================
 # 2. GROQ SETUP
 # =========================================================
-# NOTE ON MODEL NAME:
-# "llama-3.3-70b-versatile" and "llama-3.1-8b-instant" were deprecated by
-# Groq on their free/developer tier — using either now reproduces the
-# exact 404 model_not_found error this app was originally hit with.
-# Groq's migration guide points to "openai/gpt-oss-20b" as the direct,
-# currently-active replacement, so that's what stays wired in below.
-# If your account has enterprise/committed-spend access where the old
-# Llama models are still live, just change this one constant.
 MODEL_NAME = "openai/gpt-oss-20b"
 
 HAS_GROQ = False
@@ -131,13 +123,6 @@ else:
     input_bg_focus = "rgba(15,23,42,0.07)"
     mesh_opacity = "0.15"
 
-# ---------------------------------------------------------
-# Small helper: Streamlit's markdown renderer treats any block
-# that is indented 4+ spaces (after a blank line) as a literal
-# "code block" and prints the raw HTML instead of rendering it.
-# All HTML strings below are passed through this so nothing
-# ever leaks onto the screen as visible tags/text again.
-# ---------------------------------------------------------
 def html_block(text: str) -> str:
     return textwrap.dedent(text).strip("\n")
 
@@ -171,7 +156,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     z-index: 1;
 }}
 
-/* ---------- GLASS NETWORK BACKGROUND ---------- */
 .mesh-bg {{
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -193,7 +177,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     100% {{ background-position: 340px 340px, -420px 420px, 160px -160px, -160px 310px; }}
 }}
 
-/* ---------- ANIMATIONS ---------- */
 @keyframes floatLogo {{
     0%   {{ transform: translateY(0px) rotate(0deg); }}
     50%  {{ transform: translateY(-8px) rotate(1.5deg); }}
@@ -229,7 +212,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     100% {{ border-color: rgba(236, 72, 153, 0.55); }}
 }}
 
-/* Neon breathing ring for the chat input */
 @keyframes inputAura {{
     0%   {{ box-shadow: 0 0 0px rgba(236, 72, 153, 0.0), 0 0 0px rgba(56, 189, 248, 0.0); }}
     50%  {{ box-shadow: 0 0 18px rgba(139, 92, 246, 0.35), 0 0 6px rgba(56, 189, 248, 0.25); }}
@@ -242,7 +224,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     100% {{ box-shadow: 0 0 0px rgba(56, 189, 248, 0.0); }}
 }}
 
-/* RST -> RASITH morph/typewriter */
 @keyframes showRST {{
     0%   {{ opacity: 1; filter: blur(0px); }}
     28%  {{ opacity: 1; filter: blur(0px); }}
@@ -262,7 +243,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     50% {{ opacity: 0; }}
 }}
 
-/* ---------- GLASS CARD ---------- */
 .glass-card {{
     background: {glass_bg} !important;
     backdrop-filter: blur(20px) saturate(160%) !important;
@@ -276,13 +256,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
 }}
 .glass-card-glow {{
     animation: fadeSlideUp 0.55s ease both, borderGlow 6s linear infinite;
-}}
-
-/* ---------- HEADER LAYOUT ---------- */
-.header-controls {{
-    display: flex;
-    gap: 8px;
-    align-items: center;
 }}
 
 .profile-box {{
@@ -313,7 +286,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     font-size: 10px;
 }}
 
-/* ---------- LOGO ---------- */
 .rst-logo-container {{
     display: flex;
     flex-direction: column;
@@ -369,7 +341,6 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     animation: eyeBlink 3s infinite;
 }}
 
-/* Brand morph: RST fades out, RASITH types in, on loop */
 .brand-morph {{
     position: relative;
     display: inline-flex;
@@ -420,14 +391,13 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     padding: 3px 12px;
     width: fit-content;
     margin: 6px auto 0 auto;
-    font-size: 7px;
+    font-size: 9px;
     letter-spacing: 1px;
     color: {text_secondary} !important;
     font-weight: 700;
     text-align: center;
 }}
 
-/* ---------- BUTTONS ---------- */
 div.stButton > button, div.stFormSubmitButton > button {{
     font-family: 'Poppins', sans-serif !important;
     background: {glass_bg} !important;
@@ -451,10 +421,6 @@ div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
     color: {text_primary} !important;
 }}
 
-div.stButton > button:active, div.stFormSubmitButton > button:active {{
-    transform: translateY(0px) scale(0.98) !important;
-}}
-
 .gold-btn button {{
     border: 1px solid rgba(255, 215, 0, 0.55) !important;
     color: #ffd166 !important;
@@ -474,7 +440,6 @@ div.stButton > button:active, div.stFormSubmitButton > button:active {{
     box-shadow: 0 0 28px rgba(56, 189, 248, 0.45) !important;
 }}
 
-/* ---------- INPUTS (text/textarea/select) ---------- */
 div[data-testid="stTextInput"] input,
 div[data-testid="stTextArea"] textarea,
 div[data-baseweb="select"] > div {{
@@ -485,14 +450,6 @@ div[data-baseweb="select"] > div {{
     transition: all 0.25s ease !important;
 }}
 
-div[data-testid="stTextInput"] input:focus,
-div[data-testid="stTextArea"] textarea:focus {{
-    background: {input_bg_focus} !important;
-    border-color: {accent_b} !important;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18) !important;
-}}
-
-/* ---------- CHAT INPUT: top-tier glassmorphism + neon ---------- */
 div[data-testid="stChatInput"] {{
     background: transparent !important;
 }}
@@ -531,11 +488,6 @@ div[data-testid="stChatInput"] textarea {{
     color: {text_primary} !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 14px !important;
-}}
-
-div[data-testid="stChatInput"] textarea::placeholder {{
-    color: {text_secondary} !important;
-    opacity: 0.85 !important;
 }}
 
 div[data-testid="stChatInput"] button {{
@@ -608,7 +560,7 @@ def render_logo(subtitle=None, badge=True):
 
 
 # =========================================================
-# 5. AUTH PAGE (Login / Signup, glassmorphism modal-style)
+# 5. AUTH PAGE
 # =========================================================
 def show_auth_page():
     st.markdown("<br>", unsafe_allow_html=True)
@@ -626,11 +578,6 @@ def show_auth_page():
             st.markdown(html_block('<div class="google-btn">'), unsafe_allow_html=True)
             st.button("🔵 Continue with Google", key="google_login_btn")
             st.markdown(html_block('</div>'), unsafe_allow_html=True)
-
-            st.markdown(
-                html_block(f"<p style='text-align:center;color:{text_secondary};font-size:11px;margin:10px 0;'>— or continue with email —</p>"),
-                unsafe_allow_html=True,
-            )
 
             with st.form("login_form"):
                 name_in = st.text_input("👤 Name")
@@ -652,11 +599,6 @@ def show_auth_page():
             st.markdown(html_block('<div class="google-btn">'), unsafe_allow_html=True)
             st.button("🔵 Sign Up with Google", key="google_signup_btn")
             st.markdown(html_block('</div>'), unsafe_allow_html=True)
-
-            st.markdown(
-                html_block(f"<p style='text-align:center;color:{text_secondary};font-size:11px;margin:10px 0;'>— or sign up with email —</p>"),
-                unsafe_allow_html=True,
-            )
 
             with st.form("signup_form"):
                 s_name = st.text_input("👤 Full Name")
@@ -724,11 +666,6 @@ def show_admin_dashboard():
                     if st.button("❌", key=f"del_{log_id}"):
                         delete_chat_log(log_id)
                         st.rerun()
-    else:
-        st.markdown(
-            html_block(f"<p style='color:{text_secondary};text-align:center;'>No chat logs yet.</p>"),
-            unsafe_allow_html=True,
-        )
 
 
 # =========================================================
@@ -741,7 +678,6 @@ elif st.session_state.usage_count >= 2 and st.session_state.user_email is None:
     show_auth_page()
 
 else:
-    # ---------------- HEADER: controls | logo | profile, all in one row ----------------
     col_left, col_center, col_right = st.columns([1.1, 1.6, 1.1], gap="small")
 
     with col_left:
@@ -776,7 +712,6 @@ else:
             </div>
             """), unsafe_allow_html=True)
 
-    # MODE SWITCHERS
     btn_chat_col, btn_voice_col = st.columns(2)
     with btn_chat_col:
         if st.button("🤖 AI Chat", use_container_width=True):
@@ -787,7 +722,6 @@ else:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # ---------------- 1. AI CHAT MODE ----------------
     if st.session_state.active_mode == "chat":
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -825,22 +759,10 @@ else:
                         status.update(label="✨ Response Ready!", state="complete", expanded=False)
                     except Exception as e:
                         err_text = str(e)
-                        if "model_not_found" in err_text or "does not exist" in err_text:
-                            reply = (
-                                "⚠️ The configured Groq model is unavailable "
-                                "(it may have been deprecated or renamed). "
-                                "Please update `MODEL_NAME` in app.py to a currently "
-                                "active model from the Groq console."
-                            )
-                        elif "authentication" in err_text.lower() or "api key" in err_text.lower():
-                            reply = "⚠️ Groq authentication failed. Please check that your API key in `st.secrets` is a valid Groq key."
-                        elif "rate limit" in err_text.lower():
-                            reply = "⚠️ Groq rate limit reached. Please wait a moment and try again."
-                        else:
-                            reply = f"⚠️ Something went wrong talking to Groq: {err_text}"
+                        reply = f"⚠️ Error: {err_text}"
                         status.update(label="⚠️ Error occurred", state="error", expanded=False)
                 else:
-                    reply = "⚠️ Groq API key not configured. Please add it to `st.secrets`."
+                    reply = "⚠️ Groq API key not configured in st.secrets."
                     status.update(label="⚠️ Not configured", state="error", expanded=False)
 
             with st.chat_message("assistant"):
@@ -850,7 +772,6 @@ else:
             if st.session_state.usage_count >= 2 and st.session_state.user_email is None:
                 st.rerun()
 
-    # ---------------- 2. VOICE GENERATION MODE ----------------
     elif st.session_state.active_mode == "voice":
         st.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
         st.markdown(html_block('<div class="custom-subheader">🎙️ RASITH Voice Generator</div>'), unsafe_allow_html=True)
@@ -870,20 +791,5 @@ else:
                     asyncio.run(make_voice())
                     st.audio("voice.mp3")
                 except Exception as e:
-                    st.error(f"Voice generation failed: {str(e)}")
-            else:
-                st.warning("Please enter some text first.")
-        st.markdown(html_block('</div>'), unsafe_allow_html=True)
-
-    # ---------------- 3. ADMIN LOGIN MODE ----------------
-    elif st.session_state.active_mode == "admin":
-        st.markdown(html_block('<div class="glass-card" style="max-width:420px;margin:0 auto;">'), unsafe_allow_html=True)
-        st.markdown(html_block('<div class="custom-subheader">👑 Admin Authentication</div>'), unsafe_allow_html=True)
-        pwd = st.text_input("Enter Master Password:", type="password")
-        if st.button("🔓 Access Admin Console", use_container_width=True):
-            if pwd == "RSTA02EHYDR6":
-                st.session_state.admin_authenticated = True
-                st.rerun()
-            else:
-                st.error("Incorrect Password!")
+                    st.error(f"Voice generation failed: {e}")
         st.markdown(html_block('</div>'), unsafe_allow_html=True)
