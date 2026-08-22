@@ -7,6 +7,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 import time
+import google.generativeai as genai
 
 # 1. DATABASE SETUP
 def init_db():
@@ -78,14 +79,12 @@ def send_otp_email(receiver_email, otp_code):
     except Exception as e:
         return False, str(e)
 
-# 3. GEMINI SETUP (Fixed 401 Error)
+# 3. OLD GEMINI SETUP (Using google-generativeai)
 HAS_GEMINI = False
-client = None
 try:
-    from google import genai
     if "GEMINI_API_KEY" in st.secrets:
-        api_key = st.secrets["GEMINI_API_KEY"]
-        client = genai.Client(api_key=api_key)
+        genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+        model = genai.GenerativeModel("gemini-1.5-flash")
         HAS_GEMINI = True
 except Exception as e:
     HAS_GEMINI = False
@@ -557,17 +556,14 @@ else:
                 st.markdown(user_input)
 
             with st.status("⚡ RST AI is thinking...", expanded=False) as status:
-                if HAS_GEMINI and client is not None:
+                if HAS_GEMINI:
                     try:
-                        response = client.models.generate_content(
-                            model="gemini-1.5-flash",
-                            contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}",
-                        )
+                        response = model.generate_content(f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}")
                         reply = response.text
                     except Exception as e:
                         reply = f"Error: {str(e)}"
                 else:
-                    reply = "⚠️ Gemini API Key not configured or connection failed."
+                    reply = "⚠️ Gemini API Key not configured."
                 status.update(label="✨ RST Response Ready!", state="complete", expanded=False)
 
             with st.chat_message("assistant"):
