@@ -466,6 +466,8 @@ div[data-testid="stChatMessage"] {{
 
 def render_logo(subtitle=None):
     subtitle_html = f'<div class="rst-subtitle-text">{subtitle}</div>' if subtitle else ''
+    badge_html = f'<div class="owner-badge">SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span></div>'
+    
     st.markdown(html_block(f"""
     <div class="rst-logo-container">
         <div class="robot-head">
@@ -480,13 +482,13 @@ def render_logo(subtitle=None):
             <span class="brand-rasith">RST AI ASSISTANT</span>
         </div>
         {subtitle_html}
-        <div class="owner-badge">SYSTEM ARCHITECT: <span style="color:{accent_c};">MOHAMMED RASITH</span></div>
+        {badge_html}
     </div>
     """), unsafe_allow_html=True)
 
 
 # =========================================================
-# 5. AUTH PAGE
+# 5. AUTH PAGE (WITH PASSWORD)
 # =========================================================
 def show_auth_page():
     st.markdown("<br>", unsafe_allow_html=True)
@@ -503,11 +505,12 @@ def show_auth_page():
             with st.form("login_form"):
                 name_in = st.text_input("👤 Name")
                 email_in = st.text_input("📧 Email")
+                password_in = st.text_input("🔑 Password", type="password")
                 submit_login = st.form_submit_button("🚀 Log In")
 
                 if submit_login:
-                    if not name_in.strip() or "@" not in email_in or "." not in email_in:
-                        st.error("Please enter a valid name and email address.")
+                    if not name_in.strip() or "@" not in email_in or "." not in email_in or not password_in.strip():
+                        st.error("Please enter a valid name, email, and password.")
                     else:
                         st.session_state.user_name = name_in.strip()
                         st.session_state.user_email = email_in.strip()
@@ -520,12 +523,13 @@ def show_auth_page():
             with st.form("signup_form"):
                 s_name = st.text_input("👤 Full Name")
                 s_email = st.text_input("📧 Email Address")
+                s_password = st.text_input("🔑 Create Password", type="password")
                 s_confirm = st.checkbox("I agree to be assisted by RASITH AI ⚡")
                 submit_signup = st.form_submit_button("✨ Create Account")
 
                 if submit_signup:
-                    if not s_name.strip() or "@" not in s_email or "." not in s_email:
-                        st.error("Please enter a valid name and email address.")
+                    if not s_name.strip() or "@" not in s_email or "." not in s_email or not s_password.strip():
+                        st.error("Please enter a valid name, email, and password.")
                     elif not s_confirm:
                         st.warning("Please confirm the checkbox to continue.")
                     else:
@@ -659,7 +663,6 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            # RST THINKING ANIMATION FUNCTION / BLOCK
             thinking_placeholder = st.empty()
             with thinking_placeholder.container():
                 st.markdown(html_block("""
@@ -686,7 +689,6 @@ else:
             else:
                 reply = "⚠️ Groq API key not configured in st.secrets."
 
-            # Clear thinking animation container
             thinking_placeholder.empty()
 
             with st.chat_message("assistant"):
