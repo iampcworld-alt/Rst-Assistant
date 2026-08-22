@@ -485,7 +485,7 @@ else:
                 if HAS_GROQ and groq_client is not None:
                     try:
                         completion = groq_client.chat.completions.create(
-                            model="llama-3.1-70b-versatile",
+                            model="llama-3.1-8b-instant",
                             messages=[
                                 {"role": "system", "content": "You are RST ASSISTANT built by Mohammed Rasith."},
                                 {"role": "user", "content": user_input}
