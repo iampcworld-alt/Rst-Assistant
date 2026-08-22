@@ -1,5 +1,5 @@
 streamlit
-google-generativeai
+groq
 edge-tts
 pillow
 streamlit-option-menu
