@@ -90,20 +90,6 @@ try:
 except Exception as e:
     HAS_GEMINI = False
 
-# 4. SESSION STATES
-if "theme" not in st.session_state: st.session_state.theme = "dark"
-if "usage_count" not in st.session_state: st.session_state.usage_count = 0
-if "user_name" not in st.session_state: st.session_state.user_name = None
-if "user_email" not in st.session_state: st.session_state.user_email = None
-if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
-if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
-if "messages" not in st.session_state: st.session_state.messages = []
-if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
-if "generated_otp" not in st.session_state: st.session_state.generated_otp = None
-if "temp_name" not in st.session_state: st.session_state.temp_name = ""
-if "temp_email" not in st.session_state: st.session_state.temp_email = ""
-if "otp_timer" not in st.session_state: st.session_state.otp_timer = 0
-
 # 5. STREAMLIT CONFIG & HIGH UI STYLING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
