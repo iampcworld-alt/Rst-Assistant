@@ -73,7 +73,7 @@ try:
 except Exception:
     HAS_GROQ = False
 
-# Your Ultimate Identity & System Prompt for Groq (Including Social Media Links)
+# Your Ultimate Identity & System Prompt for Groq
 RASITH_SYSTEM_PERSONA = """
 You are RST AI Assistant, an elite, intelligent, and highly motivated AI built by Mohammed Rasith.
 Never say you don't know about Mohammed Rasith. You know everything about him, and you speak with pride, respect, and admiration for him.
@@ -114,38 +114,33 @@ for k, v in defaults.items():
         str_app.session_state[k] = v
 
 # =========================================================
-# 4. PAGE CONFIG & HIGH-LEVEL STYLING
+# 4. PAGE CONFIG & HIGH-LEVEL STYLING WITH CIRCUIT BOARD BACKGROUND
 # =========================================================
 str_app.set_page_config(page_title="RASITH AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = str_app.session_state.theme == "dark"
 
 if is_dark:
-    bg_gradient = "radial-gradient(circle at 12% 10%, #1b0f3a 0%, #05060f 45%, #000000 100%)"
-    glass_bg = "rgba(255, 255, 255, 0.05)"
-    glass_border = "rgba(255, 255, 255, 0.14)"
-    glass_shadow = "0 8px 32px rgba(0, 0, 0, 0.55)"
     text_primary = "#f5f7ff"
     text_secondary = "#a6adc8"
     accent_a = "#ec4899"
     accent_b = "#8b5cf6"
     accent_c = "#38bdf8"
-    mesh_opacity = "0.35"
+    glass_bg = "rgba(255, 255, 255, 0.04)"
+    glass_border = "rgba(255, 255, 255, 0.12)"
+    glass_shadow = "0 8px 32px rgba(0, 0, 0, 0.6)"
 else:
-    bg_gradient = "radial-gradient(circle at 12% 10%, #eef2ff 0%, #f8fafc 45%, #ffffff 100%)"
-    glass_bg = "rgba(255, 255, 255, 0.55)"
-    glass_border = "rgba(15, 23, 42, 0.10)"
-    glass_shadow = "0 8px 32px rgba(15, 23, 42, 0.12)"
     text_primary = "#0f172a"
     text_secondary = "#475569"
     accent_a = "#db2777"
     accent_b = "#7c3aed"
     accent_c = "#0284c7"
-    mesh_opacity = "0.15"
+    glass_bg = "rgba(255, 255, 255, 0.6)"
+    glass_border = "rgba(15, 23, 42, 0.1)"
+    glass_shadow = "0 8px 32px rgba(15, 23, 42, 0.12)"
 
 def html_block(text: str) -> str:
     return textwrap.dedent(text).strip("\n")
-
 
 str_app.markdown(html_block(f"""
 <style>
@@ -154,8 +149,7 @@ str_app.markdown(html_block(f"""
 #MainMenu, footer, header {{ visibility: hidden; }}
 
 html, body, [class*="css"], .stApp {{
-    background: {bg_gradient} !important;
-    background-attachment: fixed !important;
+    background: #030014 !important;
     color: {text_primary} !important;
     font-family: 'Inter', sans-serif !important;
 }}
@@ -176,24 +170,63 @@ p, span, label, h1, h2, h3, div[data-testid="stMarkdownContainer"] {{
     z-index: 1;
 }}
 
+/* Tech Circuit Board & Moving Grid Animation */
 .mesh-bg {{
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: {mesh_opacity};
-    background-image:
-        repeating-linear-gradient(115deg, transparent 0px, transparent 90px, {accent_c} 91px, transparent 92px),
-        repeating-linear-gradient(25deg, transparent 0px, transparent 130px, {accent_b} 131px, transparent 132px),
-        radial-gradient({accent_a} 1.4px, transparent 1.6px),
-        radial-gradient({accent_c} 1.4px, transparent 1.6px);
-    background-size: 340px 340px, 420px 420px, 160px 160px, 220px 220px;
-    animation: meshDrift 26s linear infinite;
+    background-color: #030014;
+    background-image: 
+        linear-gradient(to right, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+        radial-gradient(circle, rgba(139, 92, 246, 0.25) 2px, transparent 2px),
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.18) 0%, transparent 40%);
+    background-size: 60px 60px, 60px 60px, 60px 60px, 100% 100%, 100% 100%;
+    background-position: 0 0, 0 0, 30px 30px, 0 0, 0 0;
+    animation: circuitMove 15s linear infinite;
 }}
 
-@keyframes meshDrift {{
-    0%   {{ background-position: 0 0, 0 0, 0 0, 60px 90px; }}
-    100% {{ background-position: 340px 340px, -420px 420px, 160px -160px, -160px 310px; }}
+@keyframes circuitMove {{
+    0% {{
+        background-position: 0 0, 0 0, 30px 30px, 0 0, 0 0;
+    }}
+    100% {{
+        background-position: 60px 60px, 60px 60px, 90px 90px, 0 0, 0 0;
+    }}
+}}
+
+/* Floating Glowing Tech Nodes */
+.bg-orb-1, .bg-orb-2 {{
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    z-index: 0;
+    pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite alternate;
+}}
+
+.bg-orb-1 {{
+    width: 350px;
+    height: 350px;
+    background: rgba(139, 92, 246, 0.3);
+    top: 15%;
+    left: 10%;
+}}
+
+.bg-orb-2 {{
+    width: 380px;
+    height: 380px;
+    background: rgba(56, 189, 248, 0.22);
+    bottom: 10%;
+    right: 10%;
+    animation-delay: -4s;
+}}
+
+@keyframes orbFloat {{
+    0% {{ transform: translateY(0px) scale(1); }}
+    100% {{ transform: translateY(40px) scale(1.1); }}
 }}
 
 @keyframes floatLogo {{
@@ -483,6 +516,8 @@ div[data-testid="stChatMessage"] {{
 </style>
 
 <div class="mesh-bg"></div>
+<div class="bg-orb-1"></div>
+<div class="bg-orb-2"></div>
 """), unsafe_allow_html=True)
 
 
