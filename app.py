@@ -6,6 +6,7 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
+import time
 
 # 1. DATABASE SETUP
 def init_db():
@@ -56,13 +57,16 @@ def clear_all_chat_logs():
 
 init_db()
 
-# 2. EMAIL OTP SENDER FUNCTION
+# 2. REAL EMAIL OTP SENDER FUNCTION VIA GMAIL SMTP
 def send_otp_email(receiver_email, otp_code):
     try:
-        sender_email = st.secrets.get("EMAIL_USER", "your_email@gmail.com")
-        sender_password = st.secrets.get("EMAIL_PASS", "your_app_password")
+        sender_email = st.secrets.get("EMAIL_USER", "")
+        sender_password = st.secrets.get("EMAIL_PASS", "")
         
-        msg = MIMEText(f"Your RST AI Assistant Verification Code is: {otp_code}\nValid for single use.")
+        if not sender_email or not sender_password:
+            return False, "Email secrets not configured in Streamlit."
+
+        msg = MIMEText(f"Your RST AI Assistant Verification Code is: {otp_code}\nThis code is valid for single use.")
         msg['Subject'] = "RST AI Assistant - Account Verification OTP"
         msg['From'] = sender_email
         msg['To'] = receiver_email
@@ -70,9 +74,9 @@ def send_otp_email(receiver_email, otp_code):
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, receiver_email, msg.as_string())
-        return True
+        return True, "Success"
     except Exception as e:
-        return False
+        return False, str(e)
 
 # 3. GEMINI SETUP
 HAS_GEMINI = False
@@ -98,6 +102,7 @@ if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
 if "generated_otp" not in st.session_state: st.session_state.generated_otp = None
 if "temp_name" not in st.session_state: st.session_state.temp_name = ""
 if "temp_email" not in st.session_state: st.session_state.temp_email = ""
+if "otp_timer" not in st.session_state: st.session_state.otp_timer = 0
 
 # 5. STREAMLIT CONFIG & HIGH UI STYLING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
@@ -330,53 +335,63 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 6. LOGIN & OTP VERIFICATION SCREEN
+# 6. LOGIN & SECURE OTP VERIFICATION WITH CENTERED ALIGNMENT
 def show_login_page():
     st.markdown("<br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([0.5, 3, 0.5])
-    with col2:
-        st.markdown(f"""
-            <div class="rst-card" style="text-align:center;">
-                <div class="rst-logo-container">
-                    <div class="robot-head">
-                        <div class="robot-ear-left"></div>
-                        <div class="robot-ear-right"></div>
-                        <div class="robot-visor">
-                            <div class="robot-eye"></div>
-                            <div class="robot-eye"></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+            <div style="width: 100%; max-width: 450px;">
+                <div class="rst-card" style="text-align:center;">
+                    <div class="rst-logo-container">
+                        <div class="robot-head">
+                            <div class="robot-ear-left"></div>
+                            <div class="robot-ear-right"></div>
+                            <div class="robot-visor">
+                                <div class="robot-eye"></div>
+                                <div class="robot-eye"></div>
+                            </div>
                         </div>
                     </div>
+                    <div class="rst-title-text">ACCOUNT VERIFICATION</div>
+                    <p style="color:{text_secondary}; font-size:11px;">தொடர உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்.</p>
                 </div>
-                <div class="rst-title-text">ACCOUNT VERIFICATION</div>
-                <p style="color:{text_secondary}; font-size:11px;">தொடர உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்.</p>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
         if not st.session_state.otp_sent:
             with st.form("details_form"):
                 name_in = st.text_input("👤 Enter Your Name:")
                 email_in = st.text_input("📧 Enter Your Email:")
-                submit_details = st.form_submit_button("📩 Send OTP Code")
-                if submit_details and name_in.strip() and "@" in email_in:
-                    otp = str(random.randint(100000, 999999))
-                    st.session_state.generated_otp = otp
-                    st.session_state.temp_name = name_in.strip()
-                    st.session_state.temp_email = email_in.strip()
-                    
-                    with st.spinner("⚡ Sending secure verification code..."):
-                        sent_success = send_otp_email(email_in.strip(), otp)
-                    
-                    if sent_success or True: # Fallback for demo if SMTP not configured
-                        st.session_state.otp_sent = True
-                        st.success(f"OTP Sent! (Demo Note - Code is: {otp})")
-                        st.rerun()
+                submit_details = st.form_submit_button("📩 Send Verification OTP")
+                
+                if submit_details:
+                    if not name_in.strip() or "@" not in email_in or "." not in email_in:
+                        st.error("சரியான பெயர் மற்றும் மின்னஞ்சலை உள்ளிடவும்!")
                     else:
-                        st.error("Failed to send email. Check credentials.")
+                        otp = str(random.randint(100000, 999999))
+                        st.session_state.generated_otp = otp
+                        st.session_state.temp_name = name_in.strip()
+                        st.session_state.temp_email = email_in.strip()
+                        st.session_state.otp_timer = time.time() + 60  # 1 Minute Cooldown
+                        
+                        with st.spinner("⚡ Sending secure OTP to your email..."):
+                            success, err_msg = send_otp_email(email_in.strip(), otp)
+                        
+                        if success:
+                            st.session_state.otp_sent = True
+                            st.success("OTP successfully sent to your email!")
+                            st.rerun()
+                        else:
+                            st.error(f"Email failed: {err_msg}.")
         else:
             with st.form("otp_form"):
                 st.info(f"OTP sent to: {st.session_state.temp_email}")
                 entered_otp = st.text_input("🔑 Enter 6-Digit OTP Code:")
                 verify_submit = st.form_submit_button("✅ Verify & Enter AI")
+                
                 if verify_submit:
                     if entered_otp.strip() == st.session_state.generated_otp:
                         st.session_state.user_name = st.session_state.temp_name
@@ -386,6 +401,23 @@ def show_login_page():
                         st.rerun()
                     else:
                         st.error("Invalid OTP Code! Please try again.")
+
+            current_time = time.time()
+            if current_time < st.session_state.otp_timer:
+                remaining = int(st.session_state.otp_timer - current_time)
+                st.warning(f"⏳ Resend available in {remaining} seconds...")
+            else:
+                if st.button("🔄 Resend OTP Code"):
+                    otp = str(random.randint(100000, 999999))
+                    st.session_state.generated_otp = otp
+                    st.session_state.otp_timer = time.time() + 60
+                    with st.spinner("Resending OTP..."):
+                        success, err_msg = send_otp_email(st.session_state.temp_email, otp)
+                    if success:
+                        st.success("New OTP sent successfully!")
+                        st.rerun()
+                    else:
+                        st.error("Failed to resend email.")
 
 # 7. ADMIN DASHBOARD WITH DELETE SYSTEM
 def show_admin_dashboard():
@@ -524,11 +556,11 @@ else:
             with st.chat_message("user"):
                 st.markdown(user_input)
 
-            with st.spinner("⚡ RST Processing..."):
+            with st.status("⚡ RST AI is thinking...", expanded=False) as status:
                 if HAS_GEMINI and client is not None:
                     try:
                         response = client.models.generate_content(
-                            model="gemini-3.6-flash",
+                            model="gemini-2.5-flash",
                             contents=f"You are RST ASSISTANT built by Mohammed Rasith. Reply to: {user_input}",
                         )
                         reply = response.text
@@ -536,6 +568,7 @@ else:
                         reply = f"Error: {str(e)}"
                 else:
                     reply = "⚠️ Gemini API Key not configured or connection failed."
+                status.update(label="✨ RST Response Ready!", state="complete", expanded=False)
 
             with st.chat_message("assistant"):
                 st.markdown(reply)
