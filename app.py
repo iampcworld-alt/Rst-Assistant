@@ -61,17 +61,17 @@ if "active_mode" not in st.session_state: st.session_state.active_mode = "chat"
 if "admin_authenticated" not in st.session_state: st.session_state.admin_authenticated = False
 if "messages" not in st.session_state: st.session_state.messages = []
 
-# 4. STREAMLIT CONFIG & CSS
+# 4. STREAMLIT CONFIG & UI STYLING
 st.set_page_config(page_title="RST AI ASSISTANT", page_icon="⚡", layout="wide")
 
 is_dark = st.session_state.theme == "dark"
 
-bg_app = "#0b0f19" if is_dark else "#f8fafc"
+bg_app = "#07090e" if is_dark else "#f8fafc"
 text_primary = "#ffffff" if is_dark else "#0f172a"
 text_secondary = "#94a3b8" if is_dark else "#475569"
-card_bg = "#1e293b" if is_dark else "#ffffff"
-card_border = "rgba(56, 189, 248, 0.3)" if is_dark else "rgba(203, 213, 225, 0.8)"
-btn_bg = "#1e293b" if is_dark else "#ffffff"
+card_bg = "#111827" if is_dark else "#ffffff"
+card_border = "rgba(56, 189, 248, 0.25)" if is_dark else "rgba(203, 213, 225, 0.8)"
+btn_bg = "#111827" if is_dark else "#ffffff"
 btn_text = "#38bdf8" if is_dark else "#0284c7"
 btn_border = "#38bdf8" if is_dark else "#0284c7"
 
@@ -79,6 +79,7 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
+    /* Complete App Theme Lock */
     html, body, [class*="css"], .stApp, div[data-testid="stAppViewContainer"], div[data-testid="stHeader"] {{
         background-color: {bg_app} !important;
         color: {text_primary} !important;
@@ -90,10 +91,22 @@ st.markdown(f"""
     }}
 
     .block-container {{
-        padding-top: 1.5rem !important;
+        padding-top: 1.2rem !important;
         padding-bottom: 2rem !important;
-        max-width: 950px !important;
+        max-width: 900px !important;
         background-color: {bg_app} !important;
+    }}
+
+    /* Animations for Logo and UI */
+    @keyframes floatLogo {{
+        0% {{ transform: translateY(0px); filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4)); }}
+        50% {{ transform: translateY(-5px); filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.7)); }}
+        100% {{ transform: translateY(0px); filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4)); }}
+    }}
+
+    @keyframes eyeBlink {{
+        0%, 90%, 100% {{ opacity: 1; }}
+        95% {{ opacity: 0.3; }}
     }}
 
     @keyframes goldGlow {{
@@ -107,7 +120,7 @@ st.markdown(f"""
         color: #ffd700 !important;
         font-weight: 800 !important;
         background: {card_bg} !important;
-        width: 90px !important;
+        width: 85px !important;
         height: 26px !important;
         font-size: 8px !important;
         border-radius: 20px !important;
@@ -137,72 +150,73 @@ st.markdown(f"""
         width: 100%;
     }}
 
-    /* RST AI Custom Robot Logo Styling */
+    /* Futuristic Robot Logo Elements */
     .rst-logo-container {{
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 5px;
+        margin-top: 2px;
         margin-bottom: 2px;
+        animation: floatLogo 4s ease-in-out infinite;
     }}
 
     .robot-head {{
         position: relative;
-        width: 75px;
-        height: 75px;
-        border: 4px solid transparent;
+        width: 70px;
+        height: 70px;
+        border: 3px solid transparent;
         border-radius: 50%;
         background: linear-gradient({bg_app}, {bg_app}) padding-box,
                     linear-gradient(135deg, #ec4899, #8b5cf6, #38bdf8) border-box;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
     }}
 
     .robot-ear-left, .robot-ear-right {{
         position: absolute;
-        width: 8px;
-        height: 20px;
+        width: 7px;
+        height: 18px;
         background: linear-gradient(to bottom, #ec4899, #8b5cf6);
         border-radius: 4px;
     }}
-    .robot-ear-left {{ left: -8px; }}
-    .robot-ear-right {{ right: -8px; }}
+    .robot-ear-left {{ left: -7px; }}
+    .robot-ear-right {{ right: -7px; }}
 
     .robot-visor {{
-        width: 44px;
-        height: 22px;
+        width: 40px;
+        height: 20px;
         border: 2px solid #38bdf8;
-        border-radius: 12px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: space-around;
         padding: 0 4px;
-        background: rgba(56, 189, 248, 0.1);
-        box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.4);
+        background: rgba(56, 189, 248, 0.12);
+        box-shadow: inset 0 0 6px rgba(56, 189, 248, 0.5);
     }}
 
     .robot-eye {{
-        width: 7px;
-        height: 7px;
+        width: 6px;
+        height: 6px;
         background: #38bdf8;
         border-radius: 50%;
-        box-shadow: 0 0 6px #38bdf8;
+        box-shadow: 0 0 8px #38bdf8;
+        animation: eyeBlink 3s infinite;
     }}
 
     .rst-title-text {{
         font-family: 'Poppins', sans-serif !important;
-        font-size: 15px !important;
+        font-size: 14px !important;
         font-weight: 800 !important;
         text-align: center !important;
         letter-spacing: 3px;
         background: linear-gradient(90deg, #ec4899, #38bdf8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-top: 10px !important;
-        margin-bottom: 6px !important;
+        margin-top: 8px !important;
+        margin-bottom: 4px !important;
     }}
 
     .owner-badge {{
@@ -212,10 +226,11 @@ st.markdown(f"""
         padding: 2px 10px;
         width: fit-content;
         margin: 0 auto 6px auto;
-        font-size: 8px;
+        font-size: 7.5px;
         letter-spacing: 1px;
         color: {text_secondary};
         font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }}
 
     .profile-box {{
@@ -254,15 +269,16 @@ st.markdown(f"""
         border-radius: 20px !important;
         font-weight: 700 !important;
         font-size: 8px !important;
-        width: 90px !important;
+        width: 85px !important;
         height: 26px !important;
         padding: 0px !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.25s ease !important;
     }}
 
     .custom-top-btn button:hover {{
         background: {btn_text} !important;
         color: #ffffff !important;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }}
 
     .rst-card {{
@@ -271,10 +287,11 @@ st.markdown(f"""
         border-radius: 12px !important;
         padding: 12px !important;
         margin-bottom: 10px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }}
 
     .custom-subheader {{
-        font-size: 12px !important;
+        font-size: 11px !important;
         font-weight: 700 !important;
         color: {btn_text} !important;
         margin-bottom: 4px !important;
@@ -323,7 +340,7 @@ def show_admin_dashboard():
         st.rerun()
 
     logs = fetch_all_chats()
-    st.markdown(f"<h3 style='color:{text_primary}; font-size:16px;'>Total Searches: {len(logs)}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color:{text_primary}; font-size:15px;'>Total Searches: {len(logs)}</h3>", unsafe_allow_html=True)
     search_query = st.text_input("🔎 Search Logs:")
     if logs:
         for name, email, prompt, time_stamp in logs:
@@ -378,7 +395,7 @@ else:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # CENTER ROBOT LOGO & BRANDING
+    # CENTER ANIMATED LOGO & BRANDING
     st.markdown(f"""
         <div class="rst-logo-container">
             <div class="robot-head">
