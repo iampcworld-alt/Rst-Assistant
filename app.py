@@ -573,6 +573,299 @@ def show_admin_login_page():
     col1, col2, col3 = str_app.columns([1, 2, 1])
     with col2:
         str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        render_logo("🔒 Admin Access              linear-gradient(135deg, {accent_a}, {accent_b}, {accent_c}) border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    animation: pulseGlow 3.2s ease-in-out infinite;
+}}
+
+.robot-ear-left, .robot-ear-right {{
+    position: absolute;
+    width: 6px;
+    height: 17px;
+    background: linear-gradient(to bottom, {accent_a}, {accent_b});
+    border-radius: 3px;
+}}
+.robot-ear-left {{ left: -7px; }}
+.robot-ear-right {{ right: -7px; }}
+
+.robot-visor {{
+    width: 36px;
+    height: 18px;
+    border: 2px solid {accent_c};
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 3px;
+    background: rgba(56, 189, 248, 0.15);
+    box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.6);
+}}
+
+.robot-eye {{
+    width: 5px;
+    height: 5px;
+    background: {accent_c};
+    border-radius: 50%;
+    box-shadow: 0 0 8px {accent_c};
+}}
+
+.brand-morph {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5em;
+    margin-top: 6px;
+}}
+.brand-rasith {{
+    font-family: 'Orbitron', 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, {accent_a}, {accent_b}, {accent_c}, {accent_a});
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 5s ease infinite;
+}}
+
+.rst-subtitle-text {{
+    text-align: center;
+    font-size: 11px;
+    color: {text_secondary} !important;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}}
+
+.owner-badge {{
+    background: {glass_bg};
+    backdrop-filter: blur(10px);
+    border: 1px solid {glass_border};
+    border-radius: 20px;
+    padding: 3px 12px;
+    width: fit-content;
+    margin: 6px auto 0 auto;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: {text_secondary} !important;
+    font-weight: 700;
+    text-align: center;
+}}
+
+div.stButton > button, div.stFormSubmitButton > button {{
+    font-family: 'Poppins', sans-serif !important;
+    background: {glass_bg} !important;
+    backdrop-filter: blur(10px) !important;
+    color: {accent_c} !important;
+    border: 1px solid {glass_border} !important;
+    border-radius: 14px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    padding: 0.45rem 0.9rem !important;
+    min-height: 38px !important;
+    transition: all 0.28s cubic-bezier(.2,.8,.2,1) !important;
+    box-shadow: {glass_shadow};
+    white-space: nowrap;
+}}
+
+div.stButton > button:hover {{
+    transform: translateY(-2px) scale(1.02) !important;
+    border-color: {accent_b} !important;
+    box-shadow: 0 0 22px rgba(139, 92, 246, 0.45) !important;
+    color: {text_primary} !important;
+}}
+
+div[data-testid="stChatInput"] {{
+    background: transparent !important;
+}}
+
+div[data-testid="stBottomBlockContainer"] {{
+    background: transparent !important;
+    backdrop-filter: blur(20px) !important;
+}}
+
+div[data-testid="stChatInput"] > div {{
+    background: rgba(15, 12, 35, 0.75) !important;
+    backdrop-filter: blur(25px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+    border: 2px solid {accent_a} !important;
+    border-radius: 26px !important;
+    padding: 6px 12px !important;
+    animation: highEndNeon 4s infinite linear !important;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.35) !important;
+    transition: all 0.3s ease !important;
+}}
+
+div[data-testid="stChatInput"] textarea {{
+    background: transparent !important;
+    color: {text_primary} !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+}}
+
+div[data-testid="stChatInput"] button {{
+    background: linear-gradient(135deg, {accent_a}, {accent_b}, {accent_c}) !important;
+    border: none !important;
+    border-radius: 18px !important;
+    transition: all 0.3s cubic-bezier(.2,.8,.2,1) !important;
+}}
+
+div[data-testid="stChatInput"] button:hover {{
+    transform: scale(1.12) rotate(8deg) !important;
+    box-shadow: 0 0 25px {accent_c} !important;
+}}
+
+div[data-testid="stChatInput"] button svg {{
+    fill: #ffffff !important;
+}}
+
+.custom-subheader {{
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px;
+    color: {accent_c} !important;
+    margin-bottom: 6px !important;
+    margin-top: 8px !important;
+    text-transform: uppercase;
+}}
+
+hr {{ border: 0.5px solid {glass_border} !important; }}
+
+div[data-testid="stChatMessage"] {{
+    background: {glass_bg} !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid {glass_border} !important;
+    border-radius: 16px !important;
+    box-shadow: {glass_shadow};
+    animation: fadeSlideUp 0.35s ease both;
+}}
+
+.rst-thinking-badge {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: {glass_bg};
+    backdrop-filter: blur(16px);
+    border: 1.5px solid {accent_b};
+    padding: 10px 18px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    width: fit-content;
+    animation: pulseGlow 1.8s infinite ease-in-out;
+    margin: 10px 0;
+}}
+.rst-thinking-dot {{
+    width: 10px;
+    height: 10px;
+    background: {accent_a};
+    border-radius: 50%;
+    box-shadow: 0 0 10px {accent_a};
+    animation: pulseGlow 1s infinite alternate;
+}}
+.rst-thinking-text {{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, {accent_a}, {accent_c});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}}
+</style>
+
+<div class="mesh-bg"></div>
+"""), unsafe_allow_html=True)
+
+
+def render_logo(subtitle=None):
+    if subtitle:
+        str_app.markdown(f"<p class='rst-subtitle-text'>{subtitle}</p>", unsafe_allow_html=True)
+    
+    str_app.markdown("""
+    <div class="rst-logo-container">
+        <div class="robot-head">
+            <div class="robot-ear-left"></div>
+            <div class="robot-ear-right"></div>
+            <div class="robot-visor">
+                <div class="robot-eye"></div>
+                <div class="robot-eye"></div>
+            </div>
+        </div>
+        <div class="brand-morph">
+            <span class="brand-rasith">RST AI ASSISTANT</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    str_app.markdown(
+        "<div style='text-align: center;'><span class='owner-badge' style='display: inline-block;'>SYSTEM ARCHITECT: <span style='color:#38bdf8;'>MOHAMMED RASITH</span></span></div>", 
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# 5. AUTH PAGE (USER LOGIN/SIGNUP)
+# =========================================================
+def show_auth_page():
+    str_app.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = str_app.columns([1, 2, 1])
+    with col2:
+        str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
+        render_logo("Sign in to continue your session")
+        str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
+
+        tab_login, tab_signup = str_app.tabs(["🔐  Log In", "✨  Sign Up"])
+
+        with tab_login:
+            str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+            with str_app.form("login_form"):
+                name_in = str_app.text_input("👤 Name")
+                email_in = str_app.text_input("📧 Email")
+                password_in = str_app.text_input("🔑 Password", type="password")
+                submit_login = str_app.form_submit_button("🚀 Log In")
+
+                if submit_login:
+                    if not name_in.strip() or "@" not in email_in or "." not in email_in or not password_in.strip():
+                        str_app.error("Please enter a valid name, email, and password.")
+                    else:
+                        str_app.session_state.user_name = name_in.strip()
+                        str_app.session_state.user_email = email_in.strip()
+                        str_app.success("Login successful! Redirecting…")
+                        str_app.rerun()
+            str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
+
+        with tab_signup:
+            str_app.markdown(html_block('<div class="glass-card">'), unsafe_allow_html=True)
+            with str_app.form("signup_form"):
+                s_name = str_app.text_input("👤 Full Name")
+                s_email = str_app.text_input("📧 Email Address")
+                s_password = str_app.text_input("🔑 Create Password", type="password")
+                s_confirm = str_app.checkbox("I agree to be assisted by RASITH AI ⚡")
+                submit_signup = str_app.form_submit_button("✨ Create Account")
+
+                if submit_signup:
+                    if not s_name.strip() or "@" not in s_email or "." not in s_email or not s_password.strip():
+                        str_app.error("Please enter a valid name, email, and password.")
+                    elif not s_confirm:
+                        str_app.warning("Please confirm the checkbox to continue.")
+                    else:
+                        str_app.session_state.user_name = s_name.strip()
+                        str_app.session_state.user_email = s_email.strip()
+                        str_app.success("Account created! Redirecting…")
+                        str_app.rerun()
+            str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
+
+
+# =========================================================
+# 5.1 ADMIN LOGIN GATEWAY (PASSWORD PROTECTED)
+# =========================================================
+def show_admin_login_page():
+    str_app.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = str_app.columns([1, 2, 1])
+    with col2:
+        str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
         render_logo("🔒 Admin Access Required")
         str_app.markdown(html_block('</div>'), unsafe_allow_html=True)
 
