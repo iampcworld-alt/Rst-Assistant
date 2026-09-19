@@ -573,7 +573,7 @@ def show_admin_login_page():
     col1, col2, col3 = str_app.columns([1, 2, 1])
     with col2:
         str_app.markdown(html_block('<div class="glass-card" style="text-align:center;">'), unsafe_allow_html=True)
-        render_logo("🔒 Admin Access     conn.close()
+        render_logo("Admin Access Required")
 
 init_db()
 
